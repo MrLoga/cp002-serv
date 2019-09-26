@@ -49,7 +49,7 @@ router.post('/payment/:address', asyncMiddleware(async (req, res) => {
 			requests: [request],
 		}));
 	});
-	client.connect('ws://localhost:3000/api/payment');
+	client.connect('ws://cp002.na4u.ru/api/payment');
 
 }));
 
