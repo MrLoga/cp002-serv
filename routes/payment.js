@@ -47,7 +47,7 @@ export default function(ws, req) {
 				case "payment":
 					ws.customClientId = msg.requests[0]._id;
 					clients.set(msg.requests[0]._id, ws);
-					if(clients.has(msg.to)){
+					if(clients.has(msg.to) && clients.get(msg.to)!="undefined"){
 						msg.date = new Date();
 						clients.get(msg.to).send(JSON.stringify(msg));
 					}
