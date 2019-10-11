@@ -4,7 +4,8 @@
   "description": "seed secure",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node ./bin/www",
+    "start": "forever start --exec babel-node ./bin/www",
+    "dev": "nodemon --exec babel-node ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

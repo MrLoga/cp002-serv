@@ -1,64 +1,108 @@
-import errors from '../utils/errors';
-import models from '../models';
+import { Router } from 'express';
+// import models from '../models';
+import Payment from '../models/payment';
+
+import asyncMiddleware from '../utils/asyncMiddleware';
+const router = Router();
+
+var WebSocketClient = require('websocket').client;
 
 
-async function findByAddress(address) {
-	return await models.Request.findPendingByAddress(address);
-}
-async function findPendingByAddress(address) {
-	return await models.Request.findPendingByAddress(address);
-}
+router.post('/:address', asyncMiddleware(async (req, res) => {
+	// if (req.headers.host != req.headers.origin) return res.send("Hi");
+	let request;
+	try {
+		request = await Payment.create({
+			address: req.params.address,
+			requesting: req.headers.origin,
+			txArray: req.body.data,
+		});
+	} catch (error) {
+		console.log("payment.js routes error");
+		console.log(error);
+	}
 
-const clients = new Map();
+	let wsPaymentClient = new WebSocketClient();
+	wsPaymentClient.on('connect', (wsConnect) => {
 
-export default function(ws, req) {
-	ws.on('message', function(messageRaw) {
-		let msg = false;
-		try {
-			msg = JSON.parse(messageRaw);
-		} catch(e) {
-			ws.send(JSON.stringify(errors['400']));
-		}
+		let timerId = setTimeout(()=>{
+			wsConnect.close();
+			Payment.findByIdAndUpdate({ _id: request._id }, { $set: { "status": "timeout" } }, { new: true, select: "address status -_id" })
+				.then((updateDoc)=>{
+					res.send(updateDoc);
+				}).catch(err => {
+					console.log(err);
+					res.status(500).send(err);
+				});
+		}, 60*1000);
 
-		if(msg.from==="user"){
-			switch(msg.status) {
-				case "open":
-					ws.customClientId = msg.address;
-					clients.set(msg.address, ws);
-					findPendingByAddress(msg.address).then((requests)=>{
-						ws.send(JSON.stringify({
-							from: "user",
-							status: "pending",
-							date: new Date(),
-							requests: requests
-						}));
-					});
-					break;
-				case "resolve":
-				case "reject":
-					clients.get(msg._id).send(messageRaw);
-					break;
-				default: // Либо отдаём 404
-					ws.send( JSON.stringify(errors['404']) )
-					break;
+		wsConnect.on('message', (messageRaw) => {
+			let msg = JSON.parse(messageRaw.utf8Data);
+			if(msg.from == "user" && (msg.status == "resolve" || msg.status == "reject")){
+				clearTimeout(timerId);
+				wsConnect.close();
+				res.send(messageRaw.utf8Data);
+			}else if(msg.from == "user" && msg.status == "resolve"){
+				clearTimeout(timerId);
+				wsConnect.close();
+				res.status(500).send(messageRaw.utf8Data);
 			}
-		}else if(msg.from==="service"){
-			switch(msg.action) {
-				case "payment":
-					ws.customClientId = msg.requests[0]._id;
-					clients.set(msg.requests[0]._id, ws);
-					if(clients.has(msg.to) && clients.get(msg.to)!="undefined"){
-						msg.date = new Date();
-						clients.get(msg.to).send(JSON.stringify(msg));
-					}
-				default: // Либо отдаём 404
-					ws.send(JSON.stringify(errors['404']));
-					break;
-			}
-		}
+		});
+		// wsConnect.on('close', (x,y) => {});
+		wsConnect.sendUTF(JSON.stringify({
+			from: "service",
+			action: "payment",
+			to: request.address,
+			requests: [request],
+		}));
 	});
-	ws.on('close', function(data) {
-		console.log("delete", ws.customClientId);
-		clients.delete(ws.customClientId);
+
+	wsPaymentClient.connect(process.env.WS_API_URL + '/payment');
+}));
+
+
+router.get('/clear', asyncMiddleware(async (req, res) => {
+	console.log("drop");
+	const requests = await Payment.deleteMany({});
+	return res.send(requests);
+}));
+
+router.get('/:address', asyncMiddleware(async (req, res) => {
+	// if (req.headers.host != req.headers.origin) return res.send("Hi");
+	const requests = await Payment.findByAddress(req.params.address);
+	return res.send(requests);
+}));
+
+router.post('/bill/:address', asyncMiddleware(async (req, res) => {
+	const request = await Payment.create({
+		address: req.params.address,
+		type: "bill",
+		b64tx: req.body.b64tx,
+		requesting: req.headers.origin
 	});
-};
+	return res.send(request);
+}));
+// router.get('/save/:address/', asyncMiddleware(async (req, res) => {
+// 	const push = await Payment.create({
+// 		_id: req.params.address,
+// 		pub: "123",
+// 	});
+// 	return res.send(push);
+// }));
+
+
+
+router.delete('/:address', asyncMiddleware(async (req, res) => {
+	const push = await Payment.find(req.params.address);
+	let result = null;
+	if(push){
+		result = await push.deleteOne();
+	}
+	return res.send(result);
+}));
+
+router.put('/', (req, res) => {
+	return res.send('Received a PUT HTTP method');
+});
+
+export default router;

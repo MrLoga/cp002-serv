@@ -6,21 +6,23 @@ import cors from 'cors';
 import http from 'http';
 let server = require('http').Server(app);
 let expressWs = require('express-ws')(app,server);
-// import expressWs from 'express-ws';
 
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+
 import mongoose from 'mongoose';
 
 // const appWs = expressWs(app);
 
-import indexRouter from './routes/index';
-import apiRouter from './routes/api';
-import apiWs from './routes/payment';
+// import indexRouter from './routes/index';
+import routerPayment from './routes/payment';
+import wsPayment from './routes/payment-ws';
+// import routerAuth from './routes/auth';
+// import wsAuth from './routes/auth-ws';
 
 // import models from './models';
-import asyncMiddleware from './utils/asyncMiddleware';
+// import asyncMiddleware from './utils/asyncMiddleware';
 
 
 app.use(cors());
@@ -32,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'front/dist')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+mongoose.set('useFindAndModify', false);
+mongoose.set('useUnifiedTopology', true);
 const DB_options = {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -43,10 +47,13 @@ MConnect.on('error', console.error.bind(console, 'connection error:'));
 MConnect.once('open', () =>{ console.log('connected to Mongo') });
 
 
-
 // app.use('/', indexRouter);
-app.ws('/api/payment', apiWs);
-app.use('/api', apiRouter);
+
+// app.ws('/api/auth', wsAuth);
+// app.use('/api/auth', routerAuth);
+
+app.ws('/api/payment', wsPayment);
+app.use('/api/payment', routerPayment);
 
 // app.get('/clear', asyncMiddleware(async (req, res) => {
 // 	const requests = await MConnect.db.dropCollection('requests');

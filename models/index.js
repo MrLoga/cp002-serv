@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 // import Push from './push';
-import Request from './request';
+import Payment from './payment';
 // import Message from './message';
 
-mongoose.set('useFindAndModify', false);
-const models = { Request };
+mongoose.set('useFindAndModify', true);
+const models = { Payment };
 // const models = { Push, Message };
 
 export default models;
