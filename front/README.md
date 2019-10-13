@@ -1,4 +1,4 @@
-# CP002 front
+# CP002 Wallet
 
 ## Project setup
 ```

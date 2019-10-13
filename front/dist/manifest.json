@@ -1,12 +1,12 @@
 {
   "name": "CP002 Wallet",
-  "short_name": "CP002",
+  "short_name": "CP002 Wallet",
   "theme_color": "#03a9f4",
   "background_color": "#2196f3",
   "display": "standalone",
   "orientation": "portrait",
   "Scope": "/",
-  "start_url": "/",
+  "start_url": "./index.html",
   "icons": [
     {
       "src": "images/icons/icon-72x72.png",
@@ -49,5 +49,4 @@
       "type": "image/png"
     }
   ],
-  "splash_pages": null
 }
