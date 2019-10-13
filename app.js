@@ -30,8 +30,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'front/dist')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/front/dist')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 
 mongoose.set('useFindAndModify', false);
@@ -54,6 +54,9 @@ MConnect.once('open', () =>{ console.log('connected to Mongo') });
 
 app.ws('/api/payment', wsPayment);
 app.use('/api/payment', routerPayment);
+app.get('*', function(req, res){
+	res.sendfile(__dirname + '/front/dist/index.html');
+});
 
 // app.get('/clear', asyncMiddleware(async (req, res) => {
 // 	const requests = await MConnect.db.dropCollection('requests');
