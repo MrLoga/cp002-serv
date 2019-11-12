@@ -6,8 +6,8 @@ nacl.util = require('tweetnacl-util')
 const state = {
   wsRequest: null,
   wsStatus: false,
-  wssApi: 'wss://cp002.na4u.ru/api/ws',
-  httpApi: 'https://cp002.na4u.ru/api/',
+  wssApi: 'wss://cp002.cloudp.group/api/ws',
+  httpApi: 'https://cp002.cloudp.group/api/',
   requests: []
 }
 
@@ -21,8 +21,8 @@ const mutations = {
   },
   RESET_REQUEST: state => {
     state.wsRequest = null
-    state.wssApi = 'wss://cp002.na4u.ru/api/ws'
-    state.httpApi = 'https://cp002.na4u.ru/api/'
+    state.wssApi = 'wss://cp002.cloudp.group/api/ws'
+    state.httpApi = 'https://cp002.cloudp.group/api/'
     state.requests = []
   },
   SET_DEV: (state) => {
