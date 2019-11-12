@@ -2,22 +2,18 @@ import 'dotenv/config';
 import express from 'express';
 let app = express();
 
-import cors from 'cors';
+
 import http from 'http';
 let server = require('http').Server(app);
-let expressWs = require('express-ws')(app,server);
 
 import path from 'path';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import logger from 'morgan';
 
 import mongoose from 'mongoose';
+let expressWs = require('express-ws')(app, server)
 
-// const appWs = expressWs(app);
-
-// import indexRouter from './routes/index';
-import routerPayment from './routes/payment';
-import wsPayment from './routes/payment-ws';
 // import routerAuth from './routes/auth';
 // import wsAuth from './routes/auth-ws';
 
@@ -25,11 +21,12 @@ import wsPayment from './routes/payment-ws';
 // import asyncMiddleware from './utils/asyncMiddleware';
 
 
-app.use(cors());
+// app.use(cors());
 app.use(logger('dev'));
+app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/front/dist')));
 // app.use(express.static(path.join(__dirname, 'public')));
 
@@ -46,25 +43,27 @@ const MConnect = mongoose.connection;
 MConnect.on('error', console.error.bind(console, 'connection error:'));  
 MConnect.once('open', () =>{ console.log('connected to Mongo') });
 
+import routerReg from './routes/reg';
+import routerLogin from './routes/login';
+import wsRoute from './routes/wsroute';
+import routerPayment from './routes/payment';
+import routerStatus from './routes/status';
 
-// app.use('/', indexRouter);
+app.get('/api', (req, res) => {
+  console.log(req.url)
+  res.json({
+    message: 'Welcome to the API'
+  })
+})
+app.use('/api/reg', routerReg)
+app.use('/api/login/', routerLogin)
+app.ws('/api/ws', wsRoute)
+app.use('/api/payment/', routerPayment)
+app.use('/api/status', routerStatus)
 
-// app.ws('/api/auth', wsAuth);
-// app.use('/api/auth', routerAuth);
-
-app.ws('/api/payment', wsPayment);
-app.use('/api/payment', routerPayment);
 app.get('*', function(req, res){
-	res.sendfile(__dirname + '/front/dist/index.html');
-});
-
-// app.get('/clear', asyncMiddleware(async (req, res) => {
-// 	const requests = await MConnect.db.dropCollection('requests');
-// 	console.log("drop");
-// 	return res.send(requests);
-// }));
-
-
+	res.status(404).send('Not Found');
+})
 
 // export default app;
-module.exports = {app: app,server: server};;
+module.exports = { app: app, server: server };

@@ -27,7 +27,7 @@ const paymentSchema = new mongoose.Schema({
 // 	});
 // 	return request;
 // };
-paymentSchema.statics.findPendingByAddress = async function (address) {
+paymentSchema.statics.findPendingByNonce = async function (address) {
 	let request = await this.find({
 		address: address,
 		status: 'pending',

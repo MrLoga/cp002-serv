@@ -14,8 +14,16 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
+    "big.js": "^5.2.2",
+    "minter-js-sdk": "^0.20.2",
+    "minterjs-util": "^0.13.0",
+    "minterjs-wallet": "^4.0.2",
+    "qrcode": "^1.4.4",
     "quasar": "^1.0.0",
-    "vue-i18n": "^8.0.0"
+    "tweetnacl": "^1.0.1",
+    "tweetnacl-util": "^0.15.0",
+    "vue-i18n": "^8.0.0",
+    "vuex-persistedstate": "^2.7.0"
   },
   "devDependencies": {
     "@quasar/app": "^1.0.0",

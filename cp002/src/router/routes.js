@@ -1,10 +1,23 @@
 
 const routes = [
   {
+    path: '/start',
+    component: () => import('layouts/Start.vue')
+  },
+  {
     path: '/',
-    component: () => import('layouts/MyLayout.vue'),
+    component: () => import('layouts/Main.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { path: '', component: () => import('pages/Index.vue') },
+      { path: 'send', component: () => import('pages/Send.vue') },
+      { path: 'qr-code', component: () => import('pages/QRcode.vue') },
+      { path: 'requests', component: () => import('pages/Requests.vue') },
+      { path: 'setting', component: () => import('pages/setting/Index.vue') },
+      { path: 'setting/private', component: () => import('pages/setting/Private.vue') },
+      { path: 'authenticator', component: () => import('pages/Authenticator.vue') },
+      { path: 'contacts', component: () => import('pages/Soon.vue') },
+      { path: 'wallet', component: () => import('pages/Wallet.vue') },
+      { path: 'soon', component: () => import('pages/Soon.vue') }
     ]
   }
 ]

@@ -3,6 +3,13 @@ import Vuex from 'vuex'
 
 // import example from './module-example'
 
+import app from './modules/app'
+import api from './modules/api'
+import wallet from './modules/wallet'
+import auth from './modules/auth'
+import request from './modules/request'
+import createPersistedState from 'vuex-persistedstate'
+
 Vue.use(Vuex)
 
 /*
@@ -13,8 +20,13 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      // example
+      app,
+      api,
+      wallet,
+      auth,
+      request
     },
+    plugins: [createPersistedState()],
 
     // enable strict mode (adds overhead!)
     // for dev mode only
