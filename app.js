@@ -2,7 +2,6 @@ import 'dotenv/config';
 import express from 'express';
 let app = express();
 
-
 import http from 'http';
 let server = require('http').Server(app);
 
@@ -14,13 +13,6 @@ import logger from 'morgan';
 import mongoose from 'mongoose';
 let expressWs = require('express-ws')(app, server)
 
-// import routerAuth from './routes/auth';
-// import wsAuth from './routes/auth-ws';
-
-// import models from './models';
-// import asyncMiddleware from './utils/asyncMiddleware';
-
-
 // app.use(cors());
 app.use(logger('dev'));
 app.use(cookieParser());
@@ -28,15 +20,13 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '/cp002/dist/pwa')));
-// app.use(express.static(path.join(__dirname, 'public')));
-
 
 mongoose.set('useFindAndModify', false);
 mongoose.set('useUnifiedTopology', true);
 const DB_options = {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    autoIndex: process.env.NODE_ENV !== "production"
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  autoIndex: process.env.NODE_ENV !== "production"
 };
 mongoose.connect(process.env.DB_CONNECTION_STRING, DB_options);
 const MConnect = mongoose.connection;
@@ -50,7 +40,6 @@ import routerPayment from './routes/payment';
 import routerStatus from './routes/status';
 
 app.get('/api', (req, res) => {
-  console.log(req.url)
   res.json({
     message: 'Welcome to the API'
   })
