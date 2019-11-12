@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, '/front/dist')));
+app.use(express.static(path.join(__dirname, '/cp002/dist/pwa/')));
 // app.use(express.static(path.join(__dirname, 'public')));
 
 
