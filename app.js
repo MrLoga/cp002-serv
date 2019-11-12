@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, '/cp002/dist/pwa/')));
+app.use(express.static(path.join(__dirname, '/cp002/dist/pwa')));
 // app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -60,6 +60,8 @@ app.use('/api/login/', routerLogin)
 app.ws('/api/ws', wsRoute)
 app.use('/api/payment/', routerPayment)
 app.use('/api/status', routerStatus)
+
+app.use('/', express.static(path.join(__dirname, '/cp002/dist/pwa')));
 
 app.get('*', function(req, res){
 	res.status(404).send('Not Found');
