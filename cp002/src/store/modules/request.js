@@ -21,6 +21,7 @@ const mutations = {
   },
   RESET_REQUEST: state => {
     state.wsRequest = null
+    state.wsStatus = false
     state.wssApi = 'wss://cp002.cloudp.group/api/ws'
     state.httpApi = 'https://cp002.cloudp.group/api/'
     state.requests = []

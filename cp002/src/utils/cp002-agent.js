@@ -1,7 +1,8 @@
 // cp002-agent.js
 
-const API_URL = 'http://localhost:3000/api'
-// const API_URL = 'https://cp002.na4u.ru/api'
+let API_URL = ''
+if (location.host === 'localhost:3000') API_URL = 'http://localhost:3000/api'
+else API_URL = 'https://cp002.cloudp.group/api'
 function btoaUTF16 (sString) {
   let aUTF16CodeUnits = new Uint16Array(sString.length)
   Array.prototype.forEach.call(aUTF16CodeUnits, function (el, idx, arr) { arr[idx] = sString.charCodeAt(idx) })

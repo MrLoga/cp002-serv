@@ -9,8 +9,9 @@ nacl.util = require('tweetnacl-util')
 
 const router = Router()
 const corsOptions = {
-  origin: '*',
+  // origin: '*',
   // origin: 'https://cp002.na4u.ru/',
+  origin: process.env.LOCAL_URL,
   methods: 'POST, GET, OPTIONS',
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   preflightContinue: true,
@@ -18,7 +19,7 @@ const corsOptions = {
 }
 const explorerApi = 'https://explorer-api.minter.network/api/v1/'
 
-router.options('*', cors())
+router.options('*', cors(corsOptions))
 
 router.get('/address/:address', cors(corsOptions), (req, res) => {
   Wallet.findOne({ address: req.params.address})
