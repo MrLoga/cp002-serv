@@ -38,9 +38,13 @@ router.post('/:address', cors(corsOptions), (req, res) => {
       })
     }
     let loginNonce = ''
+    if (!walletDoc.get('login')){
+      walletDoc.login = {}
+    }
     if (walletDoc.get('login') && walletDoc.login[appOrigin]) {
       loginNonce = walletDoc.login[appOrigin]
     }
+
     if (loginNonce === 'blocked') {
       return res.status(423).json({
         code: '423',

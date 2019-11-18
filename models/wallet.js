@@ -12,7 +12,10 @@ const WalletSchema = new mongoose.Schema({
     // unique: true
   },
   key: String,
-  login: mongoose.Schema.Types.Mixed,
+  login: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   project: {
     type: Boolean,
     default: false
@@ -22,7 +25,7 @@ const WalletSchema = new mongoose.Schema({
   created: {
     type: Date
   }
-})
+}, { minimize: false })
 
 const Wallet = mongoose.model('Wallet', WalletSchema)
 
