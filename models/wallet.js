@@ -24,17 +24,6 @@ const WalletSchema = new mongoose.Schema({
   }
 })
 
-WalletSchema.pre('save', next => {
-  this.created = Date.now()
-  next()
-})
-// WalletSchema.statics.findByAddress = async function (address) {
-//   let request = await this.find({
-//     address: address,
-//   });
-//   return request;
-// }
+const Wallet = mongoose.model('Wallet', WalletSchema)
 
-const Wallet = mongoose.model('Wallet', WalletSchema);
-
-export default Wallet;
+export default Wallet

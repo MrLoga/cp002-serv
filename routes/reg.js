@@ -42,7 +42,8 @@ router.post('/:hash', cors(corsOptions), (req, res) => {
           let newWallet = new Wallet({
             address: txData.from,
             key: req.body.userKeyString,
-            nonce: req.body.userNonceString
+            nonce: req.body.userNonceString,
+            created: new Date()
           })
           newWallet.save().then(newSaveDoc => {
             res.send(newSaveDoc)
