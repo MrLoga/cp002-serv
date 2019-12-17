@@ -7,8 +7,8 @@
       indicator-color="white"
       class="bg-teal text-white shadow-2"
     >
-      <q-tab name="balance" icon="toll" label="Balance" />
-      <q-tab name="delegations" icon="work" label="Delegations" />
+      <q-tab name="balance" icon="toll" :label="$t('Balance')" />
+      <q-tab name="delegations" icon="work" :label="$t('Delegations')" />
     </q-tabs>
 
     <q-tab-panels v-model="balanceTab" animated>
@@ -55,7 +55,7 @@
             </q-item-section>
           </q-item>
         </q-list>
-        <q-item-label v-else header>No delegations</q-item-label>
+        <q-item-label v-else header>{{ $t('No delegations') }}</q-item-label>
       </q-tab-panel>
     </q-tab-panels>
   </q-page>

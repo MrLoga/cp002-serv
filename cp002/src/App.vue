@@ -14,6 +14,7 @@ export default {
   method: {},
   computed: {
     ...mapState({
+      language: state => state.app.language,
       coinsJSON: state => state.api.coinsJSON,
       validators: state => state.api.validators
     }),
@@ -23,7 +24,8 @@ export default {
     ])
   },
   created () {
-    if (process.env.DEV) {
+    this.$i18n.locale = this.language
+    if (process.env.DEV || location.hostname === 'localhost') {
       this.$store.commit('SET_DEV')
     }
   },
@@ -32,6 +34,7 @@ export default {
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')
       this.$store.dispatch('FETCH_DELEGATION')
+      this.$store.dispatch('FETCH_COINS')
 
       if (this.coinsJSON['BIP'] && this.coinsJSON['BIP'].crr === 0) {
         // console.log('Coins was uploaded')

@@ -3,29 +3,36 @@
     <div class="q-gutter-md">
       <q-card flat bordered>
         <q-card-section>
-          <div class="text-h6">My Address</div>
-          <div v-if="balances && balances.available_balance_sum" class="text-subtitle1">Available balance {{ numberSpaces(pretty(balances.available_balance_sum, 3)) }} BIP</div>
-          <div class="text-subtitle1">{{ address }}</div>
+          <div class="text-h6">{{ $t('My Address') }} <span class="text-grey-7">({{ address.substr(0,4) + "..." + address.substr(-4) }})</span></div>
+          <div v-if="balances && balances.available_balance_sum" class="text-subtitle1">{{ $t('Available balance') }} {{ numberSpaces(pretty(balances.available_balance_sum, 3)) }} BIP</div>
         </q-card-section>
 
         <q-separator inset />
 
         <q-card-actions align="around">
-          <q-btn @click="copyAddress" flat>Copy address</q-btn>
-          <q-btn @click="qrAddress = true" flat>Show QR</q-btn>
+          <q-btn @click="copyAddress" flat>{{ $t('Copy address') }}</q-btn>
+          <q-btn @click="qrAddress = true" flat>{{ $t('Show QR') }}</q-btn>
         </q-card-actions>
       </q-card>
 
       <q-card v-if="!isRegistered">
         <q-card-section class="bg-purple text-white">
-          <div class="text-h6">You are not registered in the CP002</div>
-          <div>Registration is free, but you must have at least 0.01 bip on your balance to pay network commission</div>
+          <div class="text-h6">{{ $t('You are not registered in the CP002') }}</div>
+          <div>{{ $t('CP002 Registration text') }}</div>
         </q-card-section>
 
         <q-card-actions align="around">
-          <q-btn :disabled="balancesJSON['BIP'] <= signFee" @click="registerAddress" flat>Sign in</q-btn>
+          <q-btn :disabled="balancesJSON['BIP'] <= signFee" @click="registerAddress" flat>{{ $t('Sign in') }}</q-btn>
         </q-card-actions>
       </q-card>
+
+      <q-list>
+        <q-item-label header>{{ $t('Coins') }}</q-item-label>
+
+        <q-item to="/convert" clickable v-ripple>
+          <q-btn size="16px" icon="compare_arrows" class="bg-secondary text-white full-width" flat :label="$t('Convert coins')" />
+        </q-item>
+      </q-list>
     </div>
 
     <q-dialog v-model="qrAddress">

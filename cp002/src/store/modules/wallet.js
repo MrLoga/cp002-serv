@@ -1,4 +1,4 @@
-import { Minter, SendTxParams, DelegateTxParams, API_TYPE_NODE } from 'minter-js-sdk'
+import { Minter, SendTxParams, DelegateTxParams, SellTxParams, BuyTxParams } from 'minter-js-sdk'
 
 const getDefaultState = () => {
   return {
@@ -36,7 +36,8 @@ const mutations = {
     state._id = payload._id
   },
   SAVE_GATE: (state) => {
-    state.minterGate = new Minter({ apiType: API_TYPE_NODE, baseURL: 'https://api.minter.stakeholder.space/' })
+    state.minterGate = new Minter({ apiType: 'gate', baseURL: 'https://gate-api.minter.network/api/v1/' })
+    // state.minterGate = new Minter({ apiType: API_TYPE_NODE, baseURL: 'https://api.minter.stakeholder.space/' })
   }
 }
 
@@ -51,6 +52,12 @@ const actions = {
         break
       case 'DelegateTxParams':
         txParams = new DelegateTxParams(payload)
+        break
+      case 'SellTxParams':
+        txParams = new SellTxParams(payload)
+        break
+      case 'BuyTxParams':
+        txParams = new BuyTxParams(payload)
         break
       default:
         return false

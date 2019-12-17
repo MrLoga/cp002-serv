@@ -12,6 +12,7 @@ const routes = [
       { path: 'send', component: () => import('pages/Send.vue') },
       { path: 'qr-code', component: () => import('pages/QRcode.vue') },
       { path: 'requests', component: () => import('pages/Requests.vue') },
+      { path: 'convert', component: () => import('pages/Convert.vue') },
       { path: 'setting', component: () => import('pages/setting/Index.vue') },
       { path: 'setting/private', component: () => import('pages/setting/Private.vue') },
       { path: 'authenticator', component: () => import('pages/Authenticator.vue') },

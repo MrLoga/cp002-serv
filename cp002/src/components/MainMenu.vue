@@ -22,7 +22,7 @@
         <q-item-section avatar>
           <q-icon name="exit_to_app" />
         </q-item-section>
-        <q-item-section>Exit</q-item-section>
+        <q-item-section>{{ $t('Exit') }}</q-item-section>
       </q-item>
     </q-list>
   </q-drawer>
@@ -36,13 +36,13 @@ export default {
     return {
       menu: [
         { icon: 'accessibility_new', text: 'CP Authenticator', url: '/authenticator' },
-        { icon: 'supervisor_account', text: 'Сontact list', url: '/contacts' }
+        { icon: 'supervisor_account', text: this.$t('Сontact list'), url: '/contacts' }
         // { icon: 'star_border', text: 'Favourites' },
         // { icon: 'search', text: 'Saved searches' }
       ],
       menu2: [
-        { icon: 'person', text: 'Profile', url: '/soon' },
-        { icon: 'settings', text: 'Settings', url: '/setting' }
+        { icon: 'person', text: this.$t('Profile'), url: '/soon' },
+        { icon: 'settings', text: this.$t('Settings'), url: '/setting' }
       ]
     }
   },
@@ -68,7 +68,7 @@ export default {
         this.$store.commit('RESET_REQUEST')
 
         this.$router.push({ path: '/start' })
-      }, 200)
+      }, 150)
     }
   },
   created () {

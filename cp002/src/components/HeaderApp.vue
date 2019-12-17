@@ -9,10 +9,10 @@
     </q-toolbar>
 
     <q-tabs align="left" v-model="tab">
-      <q-route-tab to="/" label="Home" icon="home" />
-      <q-route-tab to="/wallet" label="My Wallet" icon="account_balance_wallet" />
-      <q-route-tab to="/send" label="Send" icon="send" />
-      <q-route-tab to="/requests" label="Request" icon="comment">
+      <q-route-tab to="/" :label="$t('Home')" icon="home" />
+      <q-route-tab to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
+      <q-route-tab to="/send" :label="$t('Send')" icon="send" />
+      <q-route-tab to="/requests" :label="$t('Request')" icon="comment">
         <q-badge v-if="requestsCount" color="red" floating style="margin-right: 6px;" :label="requestsCount" />
       </q-route-tab>
       <!-- <q-route-tab to="/request" label="Request" icon="lock_open" /> -->

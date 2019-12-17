@@ -10,6 +10,7 @@ const getDefaultState = () => {
     balancesJSON: {},
     balancesSelect: [],
     coinsJSON: null,
+    coinsSelect: [],
     delegations: null,
     validators: null,
     validatorsSelect: null
@@ -57,6 +58,13 @@ const mutations = {
         name: item.name.length ? item.name : ''
       }
     })
+    let tmpArr = []
+    payload.forEach(item => {
+      item.label = item.symbol
+      item.value = item.symbol
+      tmpArr.push(item)
+    })
+    state.coinsSelect = tmpArr
     state.coinsJSON = coinsJSON
   },
   SET_DELEGATION: (state, payload) => {

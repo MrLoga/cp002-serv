@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
-    <form @submit.prevent.stop="confirmSend = true" class="q-pa-md">
-      <div class="q-gutter-md">
+    <form @submit.prevent.stop="confirmSend = true">
+      <div class="q-gutter-md q-pa-md">
         <q-input
           v-model="addressTo"
           outlined
@@ -25,14 +25,14 @@
               indicator-color="white"
               class="bg-teal text-white shadow-2"
             >
-              <q-tab name="addressSelectTab" icon="toll" label="Address" />
-              <q-tab name="validatorsSelectTab" icon="work" label="Validators" />
+              <q-tab name="addressSelectTab" icon="toll" :label="$t('Address')" />
+              <q-tab name="validatorsSelectTab" icon="work" :label="$t('Validators')" />
             </q-tabs>
 
             <q-tab-panels v-model="popupAddressTab" animated>
               <q-tab-panel name="addressSelectTab">
                 <div class="flex flex-center">
-                  <h2>Soon</h2>
+                  <h2>{{ $t('Soon') }}</h2>
                 </div>
               </q-tab-panel>
               <q-tab-panel name="validatorsSelectTab">
@@ -69,7 +69,7 @@
         <q-select
           outlined
           v-model="coinSymbol"
-          label="Сhoose coin"
+          :label="$t('Сhoose coin')"
           bottom-slots
           behavior="dialog"
           :display-value="coinSymbol && coinSymbol.coin ? `<b>${coinSymbol.coin}</b> (${coinSymbol.amountPretty})` : ''"
@@ -97,25 +97,29 @@
         <q-input
           v-model.number="amount"
           outlined
-          label='Amount'
-          :hint="'Fee ' + senderFee + ' bip'"
-          :rules='[val => !!val.toString().length || "Field is required"]'
+          :label="$t('Amount')"
+          :rules="[val => !!val.toString().length || 'Field is required']"
         >
           <template v-slot:after>
             <q-btn round no-caps flat label="Max" @click="maxValue" />
           </template>
         </q-input>
-        <q-btn type="submit" color="teal" :disabled="!coinSymbol || !coinSymbol.coin || !addressTo || balancesJSON['BIP'] <= senderFee">
-          <q-icon left name="send" />
-          {{ txAction === 'DelegateTxParams' ? 'Delegate' : 'Send' }}
-        </q-btn>
+        <div>
+          <q-btn type="submit" color="teal" size="16px"  class="full-width" :disabled="!coinSymbol || !coinSymbol.coin || !addressTo || balancesJSON['BIP'] <= senderFee">
+            <q-icon left name="send" />
+            {{ txAction === 'DelegateTxParams' ? $t('Delegate') : $t('formSend') }}
+          </q-btn>
+        </div>
+        <div class="text-grey-7">
+          {{ $t('Transaction fee') }}: {{ senderFee }} BIP
+        </div>
       </div>
     </form>
 
     <q-dialog v-if="coinSymbol && coinSymbol.coin && addressTo" v-model="confirmSend" persistent full-width transition-show="scale" transition-hide="scale">
       <q-card>
         <q-card-section style="text-align: center;">
-          <div class="text-h5" style="color: #666;">You're {{ txAction === 'DelegateTxParams' ? 'Delegate' : 'Send' }}</div>
+          <div class="text-h5 text-grey-7">You're {{ txAction === 'DelegateTxParams' ? 'Delegate' : 'Send' }}</div>
           <div class="text-h6">{{ numberSpaces(pretty(amount, 3)) }} <b>{{ coinSymbol.coin }}</b></div>
           <div style="color: #999;">to</div>
         </q-card-section>
@@ -127,7 +131,7 @@
           <q-icon v-else style="color: #ccc;" size="xl" name="developer_board" />
           <span class="q-ml-sm">
             {{ profileTo.title }}
-            <div style="color: #999;">{{ addressTo.substr(0,4) + "..." + addressTo.substr(-4) }}</div>
+            <div class="text-grey-7">{{ addressTo.substr(0,4) + "..." + addressTo.substr(-4) }}</div>
           </span>
         </q-card-section>
         <q-card-section v-else style="word-break: break-word;">
@@ -207,7 +211,6 @@ export default {
       }
     },
     sender () {
-      // if (this.validateForm) {
       let txData = {
         txAction: this.txAction,
         coinSymbol: this.coinSymbol.coin,
@@ -223,10 +226,12 @@ export default {
       }
       this.$store.dispatch('SENDER', txData).then(txHash => {
         this.$q.notify({
-          message: 'Transaction successful',
+          message: this.$t('Transaction successful'),
           icon: 'tag_faces',
           color: 'teal'
         })
+        this.$store.dispatch('FETCH_BALANCE')
+        this.$store.dispatch('FETCH_DELEGATION')
         this.clearAll()
       }).catch(error => {
         this.$q.notify({
@@ -234,9 +239,7 @@ export default {
           icon: 'report_problem',
           color: 'negative'
         })
-        // console.log(error)
       })
-      // }
     },
     clearAll () {
       this.coinSymbol = ''

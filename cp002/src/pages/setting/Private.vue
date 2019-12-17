@@ -2,7 +2,7 @@
   <q-page padding>
     <!-- <q-btn align="left" flat to="/setting" color="primary" label="Back to setting" icon="arrow_back" /> -->
 
-    <div class="text-h5 gray" style="margin-top: 0.5em">Keep it secret</div>
+    <div class="text-h5 gray" style="margin-top: 0.5em">{{ $t('Keep it secret') }}</div>
     <q-card class="mnemonic__card">
       <q-card-section>
         <div class="text-h6 ">{{ mnemonic }}</div>
@@ -11,10 +11,10 @@
       <q-separator />
 
       <q-card-actions vertical>
-        <q-btn @click="copyMnemonic" flat>Copy phrase</q-btn>
+        <q-btn @click="copyMnemonic" flat>{{ $t('Copy phrase') }}</q-btn>
       </q-card-actions>
     </q-card>
-    <p>Save this seed phrase in case you plan to use this address in the future.</p>
+    <p>{{ $t('Save seed phrase text') }}</p>
   </q-page>
 </template>
 
@@ -45,7 +45,7 @@ export default {
     copyMnemonic () {
       navigator.clipboard.writeText(this.mnemonic).then(() => {
         this.$q.notify({
-          message: 'Seed phrase copied',
+          message: this.$t('Seed phrase copied'),
           color: 'purple'
         })
       }).catch(() => {})

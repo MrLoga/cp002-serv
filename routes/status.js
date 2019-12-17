@@ -6,13 +6,14 @@ const router = Router()
 const WebSocketClient = require('websocket').client
 
 router.get('/address/:address', (req, res) => {
-  Wallet.find({address: req.params.address}).then(data => {
+  Wallet.find({ address: req.params.address }).then(data => {
+    console.log(data)
     res.json({
       wallet: data
     })
   }).catch(err => {
-    console.log(err);
-    res.status(500).send(err);
+    console.log(err)
+    res.status(500).send(err)
   })
 })
 
@@ -44,9 +45,9 @@ router.get('/ws', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-  Wallet.find({}).then(data => {
+  Wallet.count({}).then(data => {
     res.json({
-      wallet: data  
+      wallets: data  
     })
   }).catch(err => {
     console.log(err);
