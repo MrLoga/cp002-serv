@@ -97,7 +97,7 @@
           bottom-slots
           behavior="dialog"
           :display-value="coinSymbol && coinSymbol.coin ? `<b>${coinSymbol.coin}</b> (${coinSymbol.amountPretty})` : ''"
-          :options="balancesSelect"
+          :options="!isHello ? balancesSelect : pushBalancesSelect"
           :hint="coinSymbol && coinSymbol.coin ? coinsJSON[coinSymbol.coin].name : ''"
         >
           <template v-slot:option="scope">
@@ -152,14 +152,15 @@
     </form>
 
     <q-dialog v-if="coinSymbol && coinSymbol.coin && addressTo" v-model="confirmSend" persistent full-width transition-show="scale" transition-hide="scale">
-      <q-card>
+      <q-card style="max-width: 440px !important">
         <q-card-section style="text-align: center;">
           <div class="text-h5 text-grey-7">{{ $t('You are') }} {{ txAction === 'DelegateTxParams' ? $t('Delegate dialog') : $t('Send dialog') }}</div>
           <div class="text-h6">{{ numberSpaces(pretty(amount, 3)) }} <b>{{ coinSymbol.coin }}</b></div>
 
         </q-card-section>
 
-        <q-card-section v-if="profileTo && profileTo.title" class="row justify-center items-center q-pt-none">
+        <!-- <q-card-section v-if="profileTo && profileTo.title" class="row justify-center items-center q-pt-none"> -->
+        <q-card-section class="row justify-center items-center q-pt-none">
           <q-avatar v-if="profileTo && profileTo.icon">
             <img :src="profileTo.icon">
           </q-avatar>
@@ -169,9 +170,9 @@
             <div class="text-grey-7">{{ addressTo.substr(0,4) + "..." + addressTo.substr(-4) }}</div>
           </span>
         </q-card-section>
-        <q-card-section v-else style="word-break: break-word;">
+        <!-- <q-card-section v-else style="word-break: break-word;">
           {{ addressTo }}
-        </q-card-section>
+        </q-card-section> -->
 
         <q-separator inset />
         <q-card-actions align='around'>
@@ -335,7 +336,6 @@ export default {
       this.txReady = false
       this.txError = ''
       this.updateFee()
-      console.log()
       try {
         this.$refs.sendForm.submit()
       } catch (error) {
@@ -356,6 +356,7 @@ export default {
       address: state => state.wallet.address,
       coinsJSON: state => state.api.coinsJSON,
       balances: state => state.api.balances,
+      pushBalances: state => state.push.balances,
       balancesJSON: state => state.api.balancesJSON,
       validatorsSelect: state => state.api.validatorsSelect,
       contactList: state => state.contacts.contactList
@@ -365,6 +366,7 @@ export default {
       'findValidator',
       'findByAddress',
       'balancesSelect',
+      'pushBalancesSelect',
       'getBalancesSelectItem'
     ])
   },
@@ -376,8 +378,6 @@ export default {
       this.addressTo = this.routeAddressTo
     }
     if (this.sendTxData && (this.sendTxData.type === TX_TYPE_SEND || this.sendTxData.type === TX_TYPE_DELEGATE)) {
-      // console.log(TX_TYPE_SEND, this.sendTxData.type)
-      // console.log(this.getBalancesSelectItem(this.sendTxData.data.coin))
       this.addressTo = this.sendTxData.data.to
       this.amountString = this.sendTxData.data.value
       let sendTxCoin = this.sendTxData.data.coin
@@ -387,6 +387,13 @@ export default {
         this.coinSymbol = { coin: sendTxCoin, amount: 0, label: sendTxCoin, value: sendTxCoin }
       }
       this.calcSend()
+    }
+    console.log('Length = ' + this.pushBalancesSelect.length)
+    if (!this.coinSymbol && !this.isHello && this.balancesSelect.length === 1) {
+      this.coinSymbol = this.balancesSelect[0]
+    }
+    if (!this.coinSymbol && this.isHello && this.pushBalancesSelect.length === 1) {
+      this.coinSymbol = this.pushBalancesSelect[0]
     }
   },
   mounted () {},

@@ -48,7 +48,9 @@
       <div class="text-center text-h5 q-pb-sm">{{ $t('With this you can') }}</div>
       <services-list></services-list>
       <div class="text-center text-h5 q-pt-lg q-pb-xs">{{ $t('or send to someone else') }}</div>
-      <send></send>
+      <div v-if="balances">
+        <send></send>
+      </div>
     </q-page>
     <!-- <router-view></router-view> -->
     </q-page-container>
@@ -94,7 +96,6 @@ export default {
       mnemonic: '',
       action: 'sent',
       wallet: null,
-      balance: null,
       total_balance_sum: null,
       total_balance_sum_usd: null,
       total_balance_sum_rub: null
@@ -106,7 +107,6 @@ export default {
     }
   },
   created () {
-    console.log(this.$route.query)
     if (this.$route.query.username && this.$route.query.username !== '') this.username = this.$route.query.username
     if (this.$route.query.from && this.$route.query.from !== '') this.from = this.$route.query.from
     if (this.$route.query.action && this.$route.query.action !== '') this.action = this.$route.query.action
@@ -119,8 +119,12 @@ export default {
       if (isValidMnemonic(this.mnemonic)) {
         this.wallet = walletFromMnemonic(this.mnemonic)
         let address = this.wallet.getAddressString()
+        this.$store.commit('PUSH_DATA', {
+          mnemonic: this.mnemonic,
+          address: address
+        })
         this.$store.dispatch('FETCH_BALANCE_ADDRESS', address).then(data => {
-          this.balance = data
+          this.$store.commit('PUSH_BALANCE', data)
           this.total_balance_sum = prettyNumber(data.total_balance_sum, 3)
           this.total_balance_sum_usd = prettyNumber(data.total_balance_sum_usd, 2)
           this.total_balance_sum_rub = prettyNumber(data.total_balance_sum_usd * this.currency['USDRUB'], 2)
@@ -130,7 +134,8 @@ export default {
   },
   computed: {
     ...mapState({
-      currency: state => state.request.currency
+      currency: state => state.request.currency,
+      balances: state => state.push.balances
     }),
     language: {
       get () {
