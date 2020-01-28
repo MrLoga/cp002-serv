@@ -5,6 +5,7 @@ export const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 }
 
+const cookieDel = { maxAge: 1, httpOnly: true }
 // Cookie: token <access_token>
 // Authorization: Bearer <access_token>
 export const verifyToken = (req, res, next) => {
@@ -20,9 +21,10 @@ export const verifyToken = (req, res, next) => {
     const appOrigin = req.get('origin')
     jwt.verify(jwtToken, process.env.NACL_SECRET, (err, tokenData) => {
       if (err) {
-        res.cookie('token', 'kek', { maxAge: 1, httpOnly: true })
+        res.cookie('token', 'kek', cookieDel)
         res.cookie('cp002', false)
-        res.status(403).json({
+        console.log('utils 1')
+        res.status(423).json({
           code: '423',
           message: 'Token error: ' + err.name
         })
@@ -33,9 +35,10 @@ export const verifyToken = (req, res, next) => {
         //   nonce: boxMsg.split(' ')[1]
         // }
         if (appOrigin !== tokenData.aud) {
-          res.cookie('token', 'kek', { maxAge: 1, httpOnly: true })
+          res.cookie('token', 'kek', cookieDel)
           res.cookie('cp002', false)
-          res.status(403).json({
+          console.log('utils 2')
+          res.status(423).json({
             code: '423',
             message: 'Token error'
           })
@@ -45,9 +48,10 @@ export const verifyToken = (req, res, next) => {
       }
     })
   } else {
-    res.cookie('token', 'kek', { maxAge: 1, httpOnly: true })
+    res.cookie('token', 'kek', cookieDel)
     res.cookie('cp002', false)
-    res.status(403).json({
+    console.log('utils 3')
+    res.status(423).json({
       code: '423',
       message: 'Forbidden'
     })

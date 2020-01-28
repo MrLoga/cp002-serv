@@ -9,12 +9,14 @@
     </q-toolbar>
 
     <q-tabs align="left" v-model="tab">
-      <q-route-tab to="/" :label="$t('Home')" icon="home" />
+      <q-route-tab to="/home" :label="$t('Home')" icon="home" />
       <q-route-tab to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
       <q-route-tab to="/send" :label="$t('Send')" icon="send" />
-      <q-route-tab to="/requests" :label="$t('Request')" icon="comment">
+      <q-route-tab to="/services" :label="$t('Services')" icon="star" />
+
+      <!-- <q-route-tab to="/requests" :label="$t('Request')" icon="comment">
         <q-badge v-if="requestsCount" color="red" floating style="margin-right: 6px;" :label="requestsCount" />
-      </q-route-tab>
+      </q-route-tab> -->
       <!-- <q-route-tab to="/request" label="Request" icon="lock_open" /> -->
       <!-- <q-route-tab to="/qr-code" label="QR Code" icon="camera_alt" /> -->
     </q-tabs>
@@ -44,10 +46,10 @@ export default {
       this.$store.commit('SET_MENU', true)
     },
     logout () {
-      setTimeout(() => {
-        this.$store.commit('LOGOUT')
-        this.$router.push({ path: '/start' })
-      }, 200)
+      // setTimeout(() => {
+      //   this.$store.commit('LOGOUT')
+      //   this.$router.push({ path: '/start' })
+      // }, 200)
     }
   }
 }

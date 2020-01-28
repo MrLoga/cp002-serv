@@ -38,6 +38,7 @@ import routerLogin from './routes/login';
 import wsRoute from './routes/wsroute';
 import routerPayment from './routes/payment';
 import routerStatus from './routes/status';
+import currencyApi from './routes/currencyApi';
 
 app.get('/api', (req, res) => {
   res.json({
@@ -49,6 +50,7 @@ app.use('/api/login/', routerLogin)
 app.ws('/api/ws', wsRoute)
 app.use('/api/payment/', routerPayment)
 app.use('/api/status', routerStatus)
+app.use('/api/currency', currencyApi)
 
 app.use('/', express.static(path.join(__dirname, '/cp002/dist/pwa')));
 

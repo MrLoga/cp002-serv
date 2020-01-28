@@ -27,6 +27,7 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex'
 import HeaderApp from '../components/HeaderApp.vue'
 import MainMenu from '../components/MainMenu.vue'
 export default {
@@ -44,6 +45,17 @@ export default {
     }
   },
   methods: {
+  },
+  computed: {
+    ...mapGetters([
+      'isLogin',
+      'isRegistered'
+    ])
+  },
+  created () {
+    if (!this.isLogin) {
+      this.$router.push({ path: '/start' })
+    }
   },
   watch: {
     '$route' (to, from) {

@@ -6,10 +6,13 @@
     <q-separator />
     <q-card-section class='bg-accent text-white'>
       <div class='' v-html="humanFriendly(item.requests[0])"></div>
+      <div>
+        {{ timerSeconds }}
+      </div>
     </q-card-section>
 
-    <q-separator inset v-if="item.requests[0].message.length" />
-    <q-card-section v-if="item.requests[0].message.length">
+    <q-separator inset v-if="item.requests[0].message && item.requests[0].message.length" />
+    <q-card-section v-if="item.requests[0].message && item.requests[0].message.length">
       <q-item-label caption>Message</q-item-label>
       <div class='text-subtitle2'>{{ item.requests[0].message }}</div>
     </q-card-section>
@@ -52,7 +55,7 @@ export default {
     },
     countdown () {
       let now = new Date()
-      let created = new Date(this.item.created)
+      let created = new Date(this.item.date)
       let dif = now.getTime() - created.getTime()
       let duration = Math.abs(60 - dif / 1000)
       this.timerSeconds = parseInt(duration % 60, 10)
@@ -61,7 +64,6 @@ export default {
         seconds = parseInt(timer % 60, 10)
         seconds = seconds < 10 ? '0' + seconds : seconds
         this.timerSeconds = seconds
-
         if (--timer < 0) {
           clearInterval(this.intervalID)
           this.$q.notify({
@@ -165,6 +167,7 @@ export default {
     })
   },
   created () {
+    console.log(this.item)
     this.countdown()
   },
   mounted () {

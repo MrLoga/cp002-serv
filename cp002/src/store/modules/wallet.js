@@ -1,4 +1,5 @@
 import { Minter, SendTxParams, DelegateTxParams, SellTxParams, BuyTxParams } from 'minter-js-sdk'
+import { Loading } from 'quasar'
 
 const getDefaultState = () => {
   return {
@@ -43,6 +44,7 @@ const mutations = {
 
 const actions = {
   SENDER: (context, payload) => {
+    Loading.show()
     payload.privateKey = context.state.privateKey
     payload.chainId = 1
     let txParams = null
@@ -64,9 +66,11 @@ const actions = {
     }
     return new Promise((resolve, reject) => {
       context.state.minterGate.postTx(txParams).then((txHash) => {
-        // console.log(payload.txAction + ' created: ' + txHash)
+        console.log(payload.txAction + ' created: ' + txHash)
+        Loading.hide()
         resolve(txHash)
       }).catch((error) => {
+        Loading.hide()
         reject(error)
       })
     })

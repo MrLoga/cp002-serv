@@ -22,6 +22,13 @@ export function numberSpaces (x) {
   return parts.join('.')
 }
 
+export function prettyNumber (x, length) {
+  let num = parseFloat(parseFloat(x).toFixed(length))
+  let parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  return parts.join('.')
+}
+
 function hashCode (str) {
   var hash = 0
   for (var i = 0; i < str.length; i++) {

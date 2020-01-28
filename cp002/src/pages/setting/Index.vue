@@ -25,11 +25,11 @@
           </q-item-label>
         </q-item-section>
         <q-item-section avatar>
-          <q-avatar color="deep-purple" size="28px" text-color="white">En</q-avatar>
+          <q-avatar color="deep-purple" size="28px" text-color="white">{{ language.substr(0,2) }}</q-avatar>
         </q-item-section>
       </q-item>
       <q-dialog v-model="alertLang">
-        <q-card>
+        <q-card class="dialog-min300">
           <q-card-section>
             <div class="text-h6">{{ $t('Choose a language') }}</div>
           </q-card-section>
@@ -53,13 +53,38 @@
         </q-card>
       </q-dialog>
 
+      <q-item clickable v-ripple @click="sendWallet">
+        <q-item-section avatar>
+          <q-avatar color="teal" text-color="white" icon="phonelink_ring" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ $t('Share wallet') }}</q-item-label>
+          <q-item-label caption>
+            {{ $t('Send wallet as a link') }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <q-item v-ripple clickable @click="logout">
+        <q-item-section avatar>
+          <q-avatar color="teal" text-color="white" icon="exit_to_app" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ $t('Logout wallet') }}</q-item-label>
+          <q-item-label caption>
+            {{ $t('Data will be deleted') }}
+          </q-item-label>
+        </q-item-section>
+      </q-item>
     </q-list>
   </q-page>
 </template>
 
 <script>
-
+import { wordlists } from 'bip39'
 import { mapState } from 'vuex'
+import { copyToClipboard } from 'quasar'
+
 export default {
   name: 'Settings',
   data () {
@@ -77,10 +102,69 @@ export default {
       // languageTmp: 'en-us'
     }
   },
-  method: {},
+  methods: {
+    sendWallet () {
+      let mnemonicKey = this.mnemonic.split(' ').map(word => wordlists.english.indexOf(word)).join('.')
+      let linkWallet = location.origin + '/#/hello?key=' + mnemonicKey + '&action=wallet'
+      console.log(linkWallet)
+      copyToClipboard(linkWallet)
+      if (navigator.share) {
+        this.$q.dialog({
+          title: this.$t('Link to wallet is ready'),
+          message: this.$t('Link copied to your clipboard'),
+          html: true,
+          cancel: {
+            label: this.$t('Close'),
+            color: 'primary',
+            flat: true
+          },
+          ok: {
+            label: this.$t('Share'),
+            icon: 'share'
+          },
+          persistent: false
+        }).onOk(() => {
+          // console.log('>>>> OK')
+          navigator.share({
+            title: 'Wallet link',
+            text: 'Link to wallet cp002.cloudp.group',
+            url: linkWallet
+          })
+            .then(() => console.log('Successful share'))
+            .catch(error => console.log('Error sharing', error))
+          // this.$store.commit('REMOVE_CONTACT', contact.address)
+        }).onCancel(() => {
+          // console.log('>>>> Cancel')
+        })
+      } else {
+        this.$q.dialog({
+          title: this.$t('Link to wallet is ready'),
+          message: this.$t('Link copied to your clipboard'),
+          html: true,
+          cancel: {
+            label: this.$t('Close'),
+            color: 'primary',
+            flat: true
+          },
+          ok: false
+        })
+      }
+    },
+    logout () {
+      setTimeout(() => {
+        this.$store.commit('RESET_API')
+        this.$store.commit('RESET_APP')
+        this.$store.commit('RESET_WALLET')
+        this.$store.commit('RESET_REQUEST')
+        this.$store.commit('RESET_CONTACTS')
+
+        this.$router.push({ path: '/start' })
+      }, 150)
+    }
+  },
   computed: {
     ...mapState({
-      balancesSelect: state => state.api.balancesSelect
+      mnemonic: state => state.wallet.mnemonic
     }),
     language: {
       get () {

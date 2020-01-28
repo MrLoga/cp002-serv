@@ -5,18 +5,29 @@ const routes = [
     component: () => import('layouts/Start.vue')
   },
   {
+    path: '/hello',
+    component: () => import('layouts/Hello.vue'),
+    props: true
+    // children: [
+    //   { path: 'send', component: () => import('pages/Send.vue') }
+    //   { path: 'services', component: () => import('pages/services/index.vue') }
+    // ]
+  },
+  {
     path: '/',
     component: () => import('layouts/Main.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') },
-      { path: 'send', component: () => import('pages/Send.vue') },
+      { path: '', redirect: '/home' },
+      { path: 'home', component: () => import('pages/Index.vue') },
+      { path: 'send', name: 'send', component: () => import('pages/Send.vue'), props: true },
       { path: 'qr-code', component: () => import('pages/QRcode.vue') },
       { path: 'requests', component: () => import('pages/Requests.vue') },
       { path: 'convert', component: () => import('pages/Convert.vue') },
       { path: 'setting', component: () => import('pages/setting/Index.vue') },
       { path: 'setting/private', component: () => import('pages/setting/Private.vue') },
+      { path: 'services', component: () => import('pages/services/index.vue') },
       { path: 'authenticator', component: () => import('pages/Authenticator.vue') },
-      { path: 'contacts', component: () => import('pages/Soon.vue') },
+      { path: 'contacts', component: () => import('pages/ContactList.vue') },
       { path: 'wallet', component: () => import('pages/Wallet.vue') },
       { path: 'soon', component: () => import('pages/Soon.vue') }
     ]
@@ -27,7 +38,8 @@ const routes = [
 if (process.env.MODE !== 'ssr') {
   routes.push({
     path: '*',
-    component: () => import('pages/Error404.vue')
+    redirect: '/home'
+    // component: () => import('pages/Error404.vue')
   })
 }
 

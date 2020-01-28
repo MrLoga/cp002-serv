@@ -3,25 +3,35 @@ import jwt from 'jsonwebtoken'
 import cors from 'cors'
 import nacl from 'tweetnacl'
 import Wallet from '../models/wallet'
-import { asyncMiddleware, verifyToken } from '../utils';
+import { asyncMiddleware } from '../utils';
 import { createBox, openBox, getNewNonce, getHash } from '../utils/nacl'
 const router = Router()
 const WebSocketClient = require('websocket').client;
 
+var whitelist = ['http://example1.com', 'http://example2.com']
+
 const corsOptions = {
-  origin: '*',
-  methods: 'POST, GET, OPTIONS',
+  origin: function (origin, callback) {
+    callback(null, true)
+    // if (whitelist.indexOf(origin) !== -1) {
+    //   callback(null, true)
+    // } else {
+    //   callback(new Error('Not allowed by CORS'))
+    // }
+  },
+  methods: 'POST, GET, OPTIONS, HEAD',
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  credentials: true,
   preflightContinue: true,
   optionsSuccessStatus: 204
 }
 const cookieOptions = {
-  maxAge: 7*24*60*60*1000, // 7 day
+  maxAge: 30*24*60*60*1000, // 30 day
   httpOnly: true
 }
 router.options('*', cors(corsOptions))
 
-router.post('/:address', cors(corsOptions), (req, res) => {
+router.post('/', cors(corsOptions), (req, res) => {
   const appOrigin = req.get('origin')
   if (!appOrigin.length) {
     res.status(400).json({
@@ -30,7 +40,7 @@ router.post('/:address', cors(corsOptions), (req, res) => {
     })
   }
 
-  Wallet.findOne({ address: req.params.address }, 'key nonce address login').then(walletDoc => {
+  Wallet.findOne({ address: req.body.address }, 'key nonce address login').then(walletDoc => {
     if (!walletDoc) {
       return res.status(404).json({
         code: '404',
@@ -51,24 +61,26 @@ router.post('/:address', cors(corsOptions), (req, res) => {
         message: 'Blocked by user'
       })
     } else {
-      console.log(appOrigin + ' : ' + loginNonce)
+      console.log('login 1 | ' + appOrigin + ' : ' + loginNonce)
 
       let wsClient = new WebSocketClient()
       wsClient.on('connect', wsConnect => {
 
         let timerId = setTimeout(() => {
           wsConnect.close();
-          res.status(408).send(JSON.stringify({
+          res.status(408).json({
             code: '408',
             message: 'Request Timeout'
-          }))
+          })
         }, 60*1000); 
 
         wsConnect.on('message', (messageRaw) => {
           let msg = JSON.parse(messageRaw.utf8Data);
           clearTimeout(timerId);
           wsConnect.close();
-          // console.log(msg)
+          console.log('login 2 | ' + msg)
+          console.log(msg)
+          console.log('-- // login 2 | ' + msg)
           if (msg.response[0] && msg.response[0] === null) {
             res.status(500).json({
               code: '500',
@@ -91,7 +103,7 @@ router.post('/:address', cors(corsOptions), (req, res) => {
                   message: 'Blocked by wallet'
                 })
               }).catch(err => {
-                console.log(err)
+                console.log('login err 1 | ' + err)
                 res.status(500).send(err)
               })
             } else {
@@ -113,7 +125,7 @@ router.post('/:address', cors(corsOptions), (req, res) => {
                   })
                 })
               }).catch(err => {
-                console.log(err)
+                console.log('login err 2 | ' + err)
                 res.status(500).send(err)
               })
             }
@@ -144,7 +156,7 @@ router.post('/:address', cors(corsOptions), (req, res) => {
     }
 
   }).catch(err => {
-    console.log(err);
+    console.log('login err 3 | ' + err);
     res.status(500).send(err) 
   })
 })

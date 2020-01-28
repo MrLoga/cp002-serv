@@ -22,6 +22,17 @@ const getters = {
   findValidator: state => address => state.validatorsSelect.find(item => item.value === address),
   balanceSum: state => pretty(state.balances.available_balance_sum, 5),
   balanceCustom: state => pretty(state.balances.available_balance_sum - state.balancesJSON.BIP, 5),
+  getBalancesSelectItem: state => ticet => state.balances.balances.find(item => item.value === ticet),
+  balancesSelect: state => {
+    let tmpArr = []
+    state.balances.balances.forEach(item => {
+      item.label = item.coin
+      item.value = item.coin
+      item.amountPretty = numberSpaces(pretty(item.amount, 5))
+      tmpArr.push(item)
+    })
+    return tmpArr
+  },
   delegationsSum: state => {
     let sum = state.delegations.reduce((prev, curr) => ({
       bip_value: parseInt(prev.bip_value) + parseInt(curr.bip_value)
@@ -39,14 +50,6 @@ const mutations = {
     payload.balances.forEach((item) => {
       tmpJson[item.coin] = pretty(item.amount, 5)
     })
-    let tmpArr = []
-    payload.balances.forEach(item => {
-      item.label = item.coin
-      item.value = item.coin
-      item.amountPretty = numberSpaces(pretty(item.amount, 5))
-      tmpArr.push(item)
-    })
-    state.balancesSelect = tmpArr
     state.balancesJSON = tmpJson
     state.balances = payload
   },
@@ -103,6 +106,10 @@ const mutations = {
 }
 
 const actions = {
+  FETCH_BALANCE_ADDRESS: async (context, payload) => {
+    let { data } = await axios.get(`${ state.explorerApi }addresses/${ payload }?withSum=true`)
+    return data.data
+  },
   FETCH_BALANCE: async (context, payload) => {
     let { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }?withSum=true`)
     context.commit('SET_BALANCE', data.data)

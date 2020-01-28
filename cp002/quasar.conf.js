@@ -26,7 +26,7 @@ module.exports = function (ctx) {
       // 'themify',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
+      // 'roboto-font', // optional, you are not bound to it
       'material-icons' // optional, you are not bound to it
     ],
 
@@ -48,7 +48,12 @@ module.exports = function (ctx) {
       directives: [],
 
       // Quasar plugins
-      plugins: ['Notify']
+      plugins: [
+        'Dialog',
+        'Notify',
+        'Loading',
+        'LoadingBar'
+      ]
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
@@ -111,11 +116,14 @@ module.exports = function (ctx) {
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
       // workboxPluginMode: 'InjectManifest',
-      // workboxOptions: {}, // only for NON InjectManifest
+      workboxOptions: {
+        skipWaiting: true,
+        clientsClaim: true
+      }, // only for NON InjectManifest
       manifest: {
-        // name: 'CP002 Wallet',
-        // short_name: 'CP002 Wallet',
-        // description: 'Minter Wallet by Cloud Projects',
+        name: 'CP002 Wallet',
+        short_name: 'CP002 Wallet',
+        description: 'Minter Wallet by Cloud Projects',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

@@ -8,6 +8,7 @@ import api from './modules/api'
 import wallet from './modules/wallet'
 import auth from './modules/auth'
 import request from './modules/request'
+import contacts from './modules/contacts'
 import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
@@ -24,7 +25,8 @@ export default function (/* { ssrContext } */) {
       api,
       wallet,
       auth,
-      request
+      request,
+      contacts
     },
     plugins: [createPersistedState()],
 

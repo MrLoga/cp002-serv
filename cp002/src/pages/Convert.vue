@@ -43,13 +43,16 @@
           </q-select>
 
           <q-input
-            v-model.number="amount"
+            v-model="amountString"
+            type="number"
+            step="any"
             outlined
+            clearable
             debounce="250"
             :label="$t('Amount')"
             :rules="[
-              val => !!val.toString().length || 'Field is required',
-              val => coinSymbol.amount >= val || 'Not enough ' + coinSymbol.value
+              val => (val && !!val.toString().length) || $t('Field is required'),
+              val => Big(Big(coinSymbol.amount).minus(this.feeSellBase)).gte(Big(val.toString().replace(',', '.'))) || $t('Not enough') + ' ' + coinSymbol.value
             ]"
           >
             <template v-slot:after>
@@ -157,13 +160,11 @@
           </q-select>
 
           <q-input
-            v-model.number="amount"
+            v-model.number="amountString"
+            type="number"
             outlined
             debounce="250"
             :label="$t('Amount')"
-            :rules="[
-              val => !!val.toString().length || 'Field is required'
-            ]"
           >
           </q-input>
 
@@ -223,7 +224,7 @@
     <q-dialog v-if="txReady" v-model="confirmConvert" persistent full-width transition-show="scale" transition-hide="scale">
       <q-card>
         <q-card-section style="text-align: center;">
-          <div class="text-h5 text-grey-7">{{ $t('You\'re Exchange') }}</div>
+          <div class="text-h5 text-grey-7">{{ $t('Youre Exchange') }}</div>
           <div class="text-h5">{{ numberSpaces(pretty(amount, 3)) }} <span class="text-h6">{{ coinSymbol.value }}</span></div>
           <div class="text-grey-7">{{ $t('to') }}</div>
           <div class="text-h5">{{ numberSpaces(pretty(convertTab === 'SellTxParams' ? resultSell : resultBuy, 3)) }} <span class="text-h6">{{ coinSymbolTo.value }}</span></div>
@@ -256,7 +257,8 @@ export default {
       convertTab: 'SellTxParams',
       coinSymbol: null,
       coinSymbolTo: null,
-      amount: 0,
+      amountString: null,
+      amount: null,
       options: [],
       confirmConvert: false,
       txReady: false,
@@ -271,17 +273,18 @@ export default {
   },
   computed: {
     ...mapState({
-      balancesSelect: state => state.api.balancesSelect,
+      // balancesSelect: state => state.api.balancesSelect,
       coinsSelect: state => state.api.coinsSelect,
       coinsJSON: state => state.api.coinsJSON,
       minterGate: state => state.wallet.minterGate
     }),
     ...mapGetters([
-      // 'getAuthorized',
+      'balancesSelect'
       // 'getBlocked'
     ])
   },
   methods: {
+    Big (val) { return Big(val) },
     pretty (val, l) { return pretty(val, l) },
     numberSpaces (val) { return numberSpaces(val) },
     stringToHSL: (str) => stringToHSL(str),
@@ -305,6 +308,7 @@ export default {
       } else {
         this.amount = new Big(this.coinSymbol.amount.replace(',', '.'))
       }
+      this.amountString = this.amount.toString()
     },
     senderConvert () {
       let txData = {
@@ -315,9 +319,9 @@ export default {
         message: ''
       }
       if (this.convertTab === 'BuyTxParams') {
-        txData.buyAmount = this.amount
+        txData.buyAmount = this.amount.toString()
       } else if (this.convertTab === 'SellTxParams') {
-        txData.sellAmount = this.amount
+        txData.sellAmount = this.amount.toString()
       }
       this.$store.dispatch('SENDER', txData).then(txHash => {
         this.$q.notify({
@@ -338,7 +342,8 @@ export default {
     clearAll () {
       this.coinSymbol = null
       this.coinSymbolTo = null
-      this.amount = 0
+      this.amount = null
+      this.amountString = null
       this.options = []
       this.confirmConvert = false
       this.resultBuy = 0
@@ -348,13 +353,15 @@ export default {
     },
     calcBuy () {
       this.txReady = false
-      this.txError = ``
+      this.txError = ''
       this.resultBuy = 0
       this.resultSell = 0
+      let amountTmp = this.amountString
+      this.amount = Big(amountTmp ? amountTmp.toString().replace(',', '.') : 0)
       if (this.coinSymbol && this.coinSymbolTo && this.coinSymbol.value === this.coinSymbolTo.value) {
         this.txReady = false
-        this.txError = `Сhoose different coins`
-      } else if (this.amount && this.amount > 0 && this.coinSymbol && this.coinSymbol.value && this.coinSymbolTo) {
+        this.txError = this.$t('Сhoose different coins')
+      } else if (this.amount && this.amount.gt(0) && this.coinSymbol && this.coinSymbol.value && this.coinSymbolTo) {
         let estimateTxAction = this.convertTab === 'BuyTxParams' ? 'estimateCoinBuy' : 'estimateCoinSell'
         let estimateTx = {
           coinToSell: this.coinSymbol.value,
@@ -371,11 +378,11 @@ export default {
           this.resultBuy = result.will_pay
           this.txReady = true
           if (this.convertTab === 'BuyTxParams') {
-            if (Big(this.resultBuy).lte(Big(this.coinSymbol.amount))) {
+            if (Big(this.resultBuy).lte(this.coinSymbol.amount)) {
               this.txReady = true
             } else {
               this.txReady = false
-              this.txError = `Not enough ${this.pretty(Big(this.resultBuy).minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
+              this.txError = this.$t('Not enough') + ` ${this.pretty(Big(this.resultBuy).minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
             }
           }
         }).catch((error) => {
@@ -390,7 +397,7 @@ export default {
   created () {
   },
   watch: {
-    amount () {
+    amountString (newVal) {
       this.calcBuy()
     },
     coinSymbol () {

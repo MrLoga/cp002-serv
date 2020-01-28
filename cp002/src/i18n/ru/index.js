@@ -7,10 +7,12 @@ export default {
   'Convert coins': 'Конвертация',
   'Available balance': 'Доступный баланс',
   'Copy address': 'Скопировать адрес',
+  'Address copied': 'Адрес скопирован',
   'Show QR': 'Показать QR',
+  'Send to people': 'Отправить людям',
 
   // HeaderApp
-  'Home': 'Home',
+  'Home': 'Главная',
   'My Wallet': 'Кошелек',
   'Send': 'Отправка',
   'Request': 'Запросы',
@@ -21,15 +23,25 @@ export default {
   'Settings': 'Настройки',
   'Exit': 'Выход',
 
+  // QR Code
+  'Scan QR Code': 'Сканировать QR Code',
+
   // Wallet
   'Balance': 'Баланс',
   'Delegations': 'Делегировано',
   'No delegations': 'Нет делегирований',
+  'Logout wallet': 'Выйти из кошелька',
+  'Data will be deleted': 'Все данные будут удалены',
 
   // Forms
   'Address': 'Адреса',
+  'Name': 'Имя',
+  'Mx address or Mp public key': 'Mx адрес или Mp публичный ключ',
+  'Mx address': 'Mx адрес',
   'Validators': 'Валидаторы',
   'Delegate': 'Делегировать',
+  'Delegate dialog': 'делегируете',
+  'Send dialog': 'отправляете',
   'formSend': 'Отправить',
   'Exchange': 'Обменять',
   'Get': 'Получить',
@@ -37,13 +49,18 @@ export default {
   'Amount': 'Количество',
   'Coin you have': 'Монета у вас',
   'Coin you want': 'Желаемая монета',
+  'Not enough': 'Недостаточно',
   'Transaction fee': 'Комиссия сети',
   'Transaction successful': 'Транзакция успешна',
   'You will pay': 'Вы должны заплатить',
   'You will get': 'Вы получите',
+  'Youre Exchange': 'Вы меняете',
+  'You are': 'Вы',
   'to': 'на',
   'Cancel': 'Отменить',
   'Accept': 'Подтвердить',
+  'Field is required': 'Поле обязательно',
+  'Сhoose different coins': 'Выберите разные монеты',
 
   // Settings
   'General': 'Основные',
@@ -54,13 +71,48 @@ export default {
   'Choose a language': 'Выберите язык',
   'Copy phrase': 'Скопировать фразу',
   'Save seed phrase text': 'Сохраните эту фразу на случай, если вы планируете использовать этот адрес в будущем.',
-  'Seed phrase copied': 'Скопировать сид фразу',
+  'Seed phrase copied': 'Cид фраза скопирована',
+  'Share wallet': 'Поделиться кошельком',
+  'Share': 'Поделиться',
+  'Send wallet as a link': 'Отправить кошелек как ссылку',
+  'Link to wallet is ready': 'Ссылка на кошелек готова',
+  'Link copied to your clipboard': 'Ссылка скопирована в ваш буфер обмена',
 
   //
   'You are not registered in the CP002': 'Вы не зарегистрированы в CP002',
   'CP002 Registration text': 'Регистрация бесплатна, но вы должны иметь на своем балансе не менее 0,01 bip для оплаты комиссии сети',
   'Sign in': 'Зарегистрироваться',
   'No requests': 'Нет запросов',
+
+  // Apps
+  'Apps': 'Приложения',
+  'Services': 'Сервисы',
+
+  // Contacts
+  'Contacts': 'Контакты',
+  'Search': 'Поиск',
+  'Add new contact': 'Добавить новый контакт',
+  'New contact': 'Новый контакт',
+  'Add first contact': 'Добавить первый контакт',
+  'Contact added': 'Контакт добавлен',
+  'You dont have any saved contacts': 'У вас не сохранено ни одного контакта',
+  'This contact already exists': 'Этот контакт уже есть',
+  'Remove contact': 'Удалить контакт',
+  'Remove': 'Удалить',
+  'Close': 'Закрыть',
+  'Copy': 'Скопировать',
+  'Would you like to remove': 'Вы хотите удалить',
+  'from your contact list?': 'из вашего списка контактов?',
+
+  // Hello
+  'Hello': 'Привет',
+  'lucky': 'счастливчик',
+  'Your friend': 'Твой друг',
+  'sent you': 'отправил тебе',
+  'What is it': 'Что это',
+  'With this you can': 'С помощью этого ты можешь',
+  'or send to someone else': 'или отправить кому-то еще',
+
   //
-  'Soon': 'Soon'
+  'Soon': 'Скоро'
 }

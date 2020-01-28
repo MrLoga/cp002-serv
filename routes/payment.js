@@ -8,18 +8,29 @@ import { createBox, openBox, getNewNonce, getHash } from '../utils/nacl'
 const router = Router()
 const WebSocketClient = require('websocket').client;
 
+var whitelist = ['http://example1.com', 'http://example2.com']
+
 const corsOptions = {
-  origin: '*',
-  methods: 'POST, GET, OPTIONS',
+  origin: function (origin, callback) {
+    callback(null, true)
+    // if (whitelist.indexOf(origin) !== -1) {
+    //   callback(null, true)
+    // } else {
+    //   callback(new Error('Not allowed by CORS'))
+    // }
+  },
+  methods: 'POST, GET, OPTIONS, HEAD',
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  credentials: true,
   preflightContinue: true,
   optionsSuccessStatus: 204
 }
 
-router.options('*', verifyToken, cors(corsOptions))
+router.options('*', cors(corsOptions))
 
-router.post('/', verifyToken, cors(corsOptions), (req, res) => {
+router.post('/', cors(corsOptions), verifyToken, (req, res) => {
   const appOrigin = req.get('origin')
+  console.log('appOrigin = ' + appOrigin)
   if (!appOrigin.length) {
     res.status(406).json({
       code: '406',
@@ -27,10 +38,10 @@ router.post('/', verifyToken, cors(corsOptions), (req, res) => {
     })
   }
   let txData = []
-  if (Array.isArray(req.body)) {
-    txData = req.body
-  } else if (typeof txData === 'object') {
-    txData.push(req.body)
+  if (Array.isArray(req.body.data)) {
+    txData = req.body.data
+  } else if (typeof req.body.data === 'object') {
+    txData.push(req.body.data)
   }
   if (txData.length === 0) {
     res.status(406).json({
@@ -38,14 +49,16 @@ router.post('/', verifyToken, cors(corsOptions), (req, res) => {
       message: 'Not Acceptable, body is empty'
     })
   }
-  for (let item of txData) {
-    if (!item.txAction && typeof item.txAction !== 'string'){
-      res.status(406).json({
-        code: '406',
-        message: 'Not Acceptable, txAction error'
-      })
-    }
-  }
+
+  console.log(txData)
+  // for (let item of txData) {
+  //   if (!item || typeof item !== 'string'){
+  //     res.status(406).json({
+  //       code: '406',
+  //       message: 'Not Acceptable, data error'
+  //     })
+  //   }
+  // }
 
   Wallet.findById(req.tokenData.w, 'key nonce address login').then(walletDoc => {
     let appNonce = 'none'
@@ -65,7 +78,7 @@ router.post('/', verifyToken, cors(corsOptions), (req, res) => {
         message: 'Blocked by user'
       })
     } else {
-      console.log(appOrigin + ' : ' + appNonce)
+      console.log('payment 1 | ' + appOrigin + ' : ' + appNonce)
 
       let wsClient = new WebSocketClient()
       wsClient.on('connect', wsConnect => {
@@ -127,7 +140,7 @@ router.post('/', verifyToken, cors(corsOptions), (req, res) => {
     }
 
   }).catch(err => {
-    console.log(err);
+    console.log('err payment 1 | ' + err);
     res.status(500).send(err) 
   })
 })

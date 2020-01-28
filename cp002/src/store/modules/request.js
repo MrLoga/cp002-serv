@@ -8,7 +8,8 @@ const state = {
   wsStatus: false,
   wssApi: 'wss://cp002.cloudp.group/api/ws',
   httpApi: 'https://cp002.cloudp.group/api/',
-  requests: []
+  requests: [],
+  currency: {}
 }
 
 const getters = {
@@ -52,10 +53,22 @@ const mutations = {
   REMOVE_REQUEST: (state, payload) => {
     let itemId = state.requests.findIndex(item => item.id === payload)
     state.requests.splice(itemId, 1)
+  },
+  SET_CURRENCY: (state, payload) => {
+    let currencyTmp = {}
+    payload.forEach(item => {
+      currencyTmp[item.pair] = item.value
+    })
+    state.currency = currencyTmp
   }
 }
 
 const actions = {
+  FETCH_CURRENCY: context => {
+    axios.get(`${context.state.httpApi}currency`).then(data => {
+      context.commit('SET_CURRENCY', data.data)
+    })
+  },
   NEW_WS: (context, payload) => {
     context.commit('CLEAR_ALL_REQUESTS')
     let ws = new WebSocket(context.state.wssApi)
@@ -104,11 +117,11 @@ const actions = {
     context.commit('REMOVE_REQUEST', payload.to)
     context.state.wsRequest.send(JSON.stringify(payload))
   },
-  GET_ADDRESS: async (context) => {
-    axios.get(`${context.state.httpApi}reg/address/${context.rootState.wallet.address}`).then(data => {
-      // console.log(data.data)
-    })
-  },
+  // GET_ADDRESS: async (context) => {
+  //   axios.get(`${context.state.httpApi}reg/address/${context.rootState.wallet.address}`).then(data => {
+  //     // console.log(data.data)
+  //   })
+  // },
   REGISTER_ADDRESS: async (context, payload) => {
     const userKey = nacl.randomBytes(nacl.secretbox.keyLength)
     const userNonce = nacl.randomBytes(nacl.secretbox.nonceLength)

@@ -18,12 +18,6 @@
           <q-item-label>{{ link.text }}</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item v-ripple clickable @click="logout">
-        <q-item-section avatar>
-          <q-icon name="exit_to_app" />
-        </q-item-section>
-        <q-item-section>{{ $t('Exit') }}</q-item-section>
-      </q-item>
     </q-list>
   </q-drawer>
 </template>
@@ -59,18 +53,7 @@ export default {
       }
     }
   },
-  methods: {
-    logout () {
-      setTimeout(() => {
-        this.$store.commit('RESET_API')
-        this.$store.commit('RESET_APP')
-        this.$store.commit('RESET_WALLET')
-        this.$store.commit('RESET_REQUEST')
-
-        this.$router.push({ path: '/start' })
-      }, 150)
-    }
-  },
+  methods: {},
   created () {
   }
 }

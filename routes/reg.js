@@ -8,10 +8,22 @@ import nacl from 'tweetnacl'
 nacl.util = require('tweetnacl-util')
 
 const router = Router()
+
+var whitelist = ['http://localhost:8080/', 'http://localhost:3000']
+
 const corsOptions = {
-  // origin: '*',
-  // origin: 'https://cp002.na4u.ru/',
-  origin: process.env.LOCAL_URL,
+  origin: function (origin, callback) {
+    callback(null, true)
+    // if (whitelist.indexOf(origin) !== -1) {
+    //   callback(null, true)
+    // } else {
+    //   callback(new Error('Not allowed by CORS'))
+    // }
+  },
+// const corsOptions = {
+//   // origin: '*',
+//   // origin: 'https://cp002.na4u.ru/',
+//   origin: process.env.LOCAL_URL,
   methods: 'POST, GET, OPTIONS',
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   preflightContinue: true,

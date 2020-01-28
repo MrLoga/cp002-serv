@@ -3,8 +3,18 @@
     <div class="q-gutter-md">
       <q-card flat bordered>
         <q-card-section>
-          <div class="text-h6">{{ $t('My Address') }} <span class="text-grey-7">({{ address.substr(0,4) + "..." + address.substr(-4) }})</span></div>
-          <div v-if="balances && balances.available_balance_sum" class="text-subtitle1">{{ $t('Available balance') }} {{ numberSpaces(pretty(balances.available_balance_sum, 3)) }} BIP</div>
+          <div class="text-h6">
+            {{ $t('My Address') }} <span class="text-grey-7">({{ address.substr(0,4) + "..." + address.substr(-4) }})</span>
+          </div>
+          <div v-if="balances && balances.available_balance_sum" class="text-subtitle1">
+            {{ $t('Available balance') }} {{ prettyNumber(balances.available_balance_sum, 3) }} BIP
+            <span class="text-grey-7" v-if="balances && balances.available_balance_sum_usd && language === 'ru'">
+              (~ {{ prettyNumber(balances.available_balance_sum_usd * currency['USDRUB'], 2) }} руб)
+            </span>
+            <span class="text-grey-7" v-if="balances && balances.available_balance_sum_usd && language === 'en-us'">
+              (~ {{ prettyNumber(balances.available_balance_sum_usd, 2) }} usd)
+            </span>
+          </div>
         </q-card-section>
 
         <q-separator inset />
@@ -14,23 +24,30 @@
           <q-btn @click="qrAddress = true" flat>{{ $t('Show QR') }}</q-btn>
         </q-card-actions>
       </q-card>
+      <div v-if="false">
+        <q-card v-if="!isRegistered">
+          <q-card-section class="bg-purple text-white">
+            <div class="text-h6">{{ $t('You are not registered in the CP002') }}</div>
+            <div>{{ $t('CP002 Registration text') }}</div>
+          </q-card-section>
 
-      <q-card v-if="!isRegistered">
-        <q-card-section class="bg-purple text-white">
-          <div class="text-h6">{{ $t('You are not registered in the CP002') }}</div>
-          <div>{{ $t('CP002 Registration text') }}</div>
-        </q-card-section>
-
-        <q-card-actions align="around">
-          <q-btn :disabled="balancesJSON['BIP'] <= signFee" @click="registerAddress" flat>{{ $t('Sign in') }}</q-btn>
-        </q-card-actions>
-      </q-card>
+          <q-card-actions align="around">
+            <q-btn :disabled="balancesJSON['BIP'] <= signFee" @click="registerAddress" flat>{{ $t('Sign in') }}</q-btn>
+          </q-card-actions>
+        </q-card>
+      </div>
 
       <q-list>
         <q-item-label header>{{ $t('Coins') }}</q-item-label>
 
         <q-item to="/convert" clickable v-ripple>
           <q-btn size="16px" icon="compare_arrows" class="bg-secondary text-white full-width" flat :label="$t('Convert coins')" />
+        </q-item>
+        <q-item to="/contacts" clickable v-ripple>
+          <q-btn size="16px" icon="supervisor_account" class="bg-secondary text-white full-width" flat :label="$t('Send to people')" />
+        </q-item>
+        <q-item to="/services" clickable v-ripple>
+          <q-btn size="16px" icon="star" class="bg-secondary text-white full-width" flat :label="$t('Services')" />
         </q-item>
       </q-list>
     </div>
@@ -50,7 +67,7 @@ import nacl from 'tweetnacl'
 import QRCode from 'qrcode'
 import { getFeeValue } from 'minterjs-util'
 import { TX_TYPE_SEND } from 'minterjs-tx'
-import { pretty, numberSpaces } from '../utils'
+import { prettyNumber } from '../utils'
 nacl.util = require('tweetnacl-util')
 
 export default {
@@ -59,6 +76,7 @@ export default {
   },
   data () {
     return {
+      language: this.$i18n.locale,
       qrAddress: false,
       qrImg: ''
     }
@@ -69,6 +87,7 @@ export default {
       address: state => state.wallet.address,
       key: state => state.wallet.key,
       nonce: state => state.wallet.nonce,
+      currency: state => state.request.currency,
       balances: state => state.api.balances,
       balancesJSON: state => state.api.balancesJSON,
       delegations: state => state.api.delegations
@@ -88,8 +107,7 @@ export default {
     getAddress () {
       this.$store.dispatch('GET_ADDRESS')
     },
-    pretty (val, l) { return pretty(val, l) },
-    numberSpaces (val) { return numberSpaces(val) },
+    prettyNumber (val, l) { return prettyNumber(val, l) },
     createQR () {
       const opts = {
         errorCorrectionLevel: 'H',
@@ -111,8 +129,10 @@ export default {
     copyAddress () {
       navigator.clipboard.writeText(this.address).then(() => {
         this.$q.notify({
-          message: 'Address copied',
-          color: 'purple'
+          message: this.$t('Address copied'),
+          color: 'purple',
+          position: 'bottom',
+          timeout: 300
         })
       }).catch(() => {})
     },
