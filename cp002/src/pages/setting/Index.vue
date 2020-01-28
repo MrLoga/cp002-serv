@@ -106,7 +106,6 @@ export default {
     sendWallet () {
       let mnemonicKey = this.mnemonic.split(' ').map(word => wordlists.english.indexOf(word)).join('.')
       let linkWallet = location.origin + '/#/hello?key=' + mnemonicKey + '&action=wallet'
-      console.log(linkWallet)
       copyToClipboard(linkWallet)
       if (navigator.share) {
         this.$q.dialog({
