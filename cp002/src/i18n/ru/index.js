@@ -27,6 +27,8 @@ export default {
   'Scan QR Code': 'Сканировать QR Code',
 
   // Wallet
+  'Start using': 'Начать пользоваться',
+  'Now this is your new wallet': 'Теперь это ваш новый кошелек',
   'Balance': 'Баланс',
   'Delegations': 'Делегировано',
   'No delegations': 'Нет делегирований',

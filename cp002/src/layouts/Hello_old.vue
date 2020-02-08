@@ -3,7 +3,7 @@
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
         <q-toolbar-title class="text-center">
-          CP002 Wallet β
+          {{ `${ $t('Hello') }, ${ username }` }}
         </q-toolbar-title>
 
         <q-btn round color="secondary" :label="language.substr(0,2)" @click="alertLang = true"></q-btn>
@@ -35,28 +35,52 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
-      <div class="text-center">
-        <div class="text-h4 q-mt-lg q-mb-lg q-pt-lg">{{ $t('Now this is your new wallet') }}</div>
-        <q-btn @click="authSeed" color="primary" size="1.2em" :label="$t('Start using')" />
-        <div>
-          <q-icon name="card_giftcard" class="q-mt-lg" size="48px" color="positive"></q-icon>
-        </div>
+
+      <div class="text-center q-pb-lg q-pt-lg"  v-if="total_balance_sum">
+        <q-icon name="card_giftcard" size="48px" color="red"></q-icon>
+        <p class="text-h5 q-pt-sm">{{ from }} {{ $t('sent you') }}</p>
+        <div class="text-h4"><b>{{ total_balance_sum }} BIP</b></div>
+        <div class="text-h5 text-grey-6" v-if="language === 'en-us'">~ {{ total_balance_sum_usd }} usd</div>
+        <div class="text-h5 text-grey-6" v-if="language === 'ru'">~ {{ total_balance_sum_rub }} rub</div>
+        <div class="q-pt-sm"><a href="https://www.minter.network/ru" target="_blank">{{ $t('What is it') }}?</a></div>
+      </div>
+
+      <div class="text-center text-h5 q-pb-sm">{{ $t('With this you can') }}</div>
+      <services-list></services-list>
+      <div class="text-center text-h5 q-pt-lg q-pb-xs">{{ $t('or send to someone else') }}</div>
+      <div v-if="balances">
+        <send></send>
       </div>
     </q-page>
+    <!-- <router-view></router-view> -->
     </q-page-container>
   </q-layout>
 </template>
 
+<style>
+  .fast {
+    animation-duration : 0.15s;
+  }
+</style>
+
 <script>
+import ServicesList from '../components/ServicesList.vue'
+import Send from '../pages/Send.vue'
 import { mapState } from 'vuex'
 import { wordlists } from 'bip39'
 import { isValidMnemonic, walletFromMnemonic } from 'minterjs-wallet'
 import { prettyNumber } from '../utils'
+// import Big from 'big.js'
 
 export default {
   name: 'Hello',
+  components: {
+    'services-list': ServicesList,
+    'send': Send
+  },
   data () {
     return {
+      username: this.$t('lucky'),
       key: '',
       alertLang: false,
       languageList: [
@@ -68,7 +92,9 @@ export default {
           value: 'ru'
         }
       ],
+      // language: this.$i18n.locale,
       mnemonic: '',
+      action: 'sent',
       wallet: null,
       total_balance_sum: null,
       total_balance_sum_usd: null,
@@ -78,26 +104,15 @@ export default {
   methods: {
     prettyNumber (x, l) {
       return prettyNumber(x, l)
-    },
-    authSeed () {
-      this.walletLogin()
-      this.$router.push({ path: '/' })
-    },
-    walletLogin: function () {
-      let walletData = {
-        address: this.wallet.getAddressString(),
-        publicKey: this.wallet.getPublicKeyString(),
-        privateKey: this.wallet.getPrivateKeyString(),
-        mnemonic: this.wallet.getMnemonic()
-      }
-      this.$store.commit('SAVE_WALLET', walletData)
-      this.$store.dispatch('FETCH_BALANCE')
-      this.$store.dispatch('FETCH_COINS')
-      this.$store.dispatch('FETCH_VALIDATORS')
-      this.$store.dispatch('FETCH_DELEGATION')
     }
   },
   created () {
+    if (this.$route.query.username && this.$route.query.username !== '') this.username = this.$route.query.username
+    if (this.$route.query.from && this.$route.query.from !== '') this.from = this.$route.query.from
+    if (this.$route.query.action && this.$route.query.action !== '') this.action = this.$route.query.action
+    if (this.username === '' || this.username === undefined) this.username = this.$t('lucky')
+    if (this.from === '' || this.from === undefined) this.from = this.$t('Your friend')
+
     if (this.$route.query.key && this.$route.query.key !== '') {
       this.mnemonic = this.$route.query.key.split('.').map(n => wordlists.english[n]).join(' ')
       console.log(isValidMnemonic(this.mnemonic))

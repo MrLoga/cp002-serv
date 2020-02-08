@@ -7,7 +7,7 @@
             {{ $t('My Address') }} <span class="text-grey-7">({{ address.substr(0,4) + "..." + address.substr(-4) }})</span>
           </div>
           <div v-if="balances && balances.available_balance_sum" class="text-subtitle1">
-            {{ $t('Available balance') }} {{ prettyNumber(balances.available_balance_sum, 3) }} BIP
+            <div>{{ $t('Available balance') }} {{ prettyNumber(balances.available_balance_sum, 3) }} BIP</div>
             <span class="text-grey-7" v-if="balances && balances.available_balance_sum_usd && language === 'ru'">
               (~ {{ prettyNumber(balances.available_balance_sum_usd * currency['USDRUB'], 2) }} руб)
             </span>
@@ -24,6 +24,7 @@
           <q-btn @click="qrAddress = true" flat>{{ $t('Show QR') }}</q-btn>
         </q-card-actions>
       </q-card>
+
       <div v-if="false">
         <q-card v-if="!isRegistered">
           <q-card-section class="bg-purple text-white">

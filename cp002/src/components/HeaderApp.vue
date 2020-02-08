@@ -8,7 +8,7 @@
       <q-btn dense size="lg" v-ripple flat round icon="menu" @click="toggleMenu" />
     </q-toolbar>
 
-    <q-tabs align="left" v-model="tab">
+    <q-tabs class="headerMenu" dense align="left" v-model="tab">
       <q-route-tab to="/home" :label="$t('Home')" icon="home" />
       <q-route-tab to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
       <q-route-tab to="/send" :label="$t('Send')" icon="send" />
@@ -54,3 +54,15 @@ export default {
   }
 }
 </script>
+<style>
+  @media screen and (max-width: 410px) {
+    .headerMenu .q-tab__label {
+      font-size: 0;
+      transition: font-size 0.3s;
+    }
+    .headerMenu .q-tab--active .q-tab__label {
+      transition: font-size 0.3s;
+      font-size: 14px;
+    }
+  }
+</style>

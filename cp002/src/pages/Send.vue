@@ -54,7 +54,7 @@
                 </q-virtual-scroll>
                 <div v-else class="flex flex-center">
                   <div class="self-center text-h5 text-center">
-                    {{ $t('You dont have any saved contacts') }}
+                    {{ $t('You dont have any saved contacts') }}<br>
                     <q-btn class="q-mt-lg" to="/contacts" color="primary" :label="$t('Add first contact')" />
                   </div>
                 </div>
@@ -98,7 +98,7 @@
           behavior="dialog"
           :display-value="coinSymbol && coinSymbol.coin ? `<b>${coinSymbol.coin}</b> (${coinSymbol.amountPretty})` : ''"
           :options="!isHello ? balancesSelect : pushBalancesSelect"
-          :hint="coinSymbol && coinSymbol.coin ? coinsJSON[coinSymbol.coin].name : ''"
+          :hint="coinSymbol ? coinsJSON[coinSymbol.coin].name : ''"
         >
           <template v-slot:option="scope">
             <q-item
@@ -206,6 +206,7 @@ export default {
   },
   data () {
     return {
+      formValid: false,
       isHello: false,
       confirmSend: false,
       popupAddressTab: 'addressSelectTab',
@@ -336,14 +337,10 @@ export default {
       this.txReady = false
       this.txError = ''
       this.updateFee()
-      try {
-        this.$refs.sendForm.submit()
-      } catch (error) {
-        console.log(error)
+      if (this.amountString) {
+        this.amount = Big(this.amountString ? this.amountString.toString().replace(',', '.') : 0)
       }
-      // this.$refs.amountStringEl.validate()
-      this.amount = Big(this.amountString ? this.amountString.toString().replace(',', '.') : 0)
-      if (this.coinSymbol && this.coinSymbol.value && this.amountString && this.addressTo) {
+      if (this.coinSymbol && this.coinSymbol.value && this.amount && this.amountString && this.addressTo) {
         if (this.checkBalance(this.amountString)) this.txReady = true
       }
       if (this.amount && this.amount.gte(this.coinSymbol.amount)) {
@@ -388,7 +385,6 @@ export default {
       }
       this.calcSend()
     }
-    console.log('Length = ' + this.pushBalancesSelect.length)
     if (!this.coinSymbol && !this.isHello && this.balancesSelect.length === 1) {
       this.coinSymbol = this.balancesSelect[0]
     }
@@ -399,18 +395,13 @@ export default {
   mounted () {},
   watch: {
     txAction () { this.calcSend() },
-    coinSymbol (val) {
-      this.calcSend()
-    },
-    addressTo (newVal, oldVal) {
+    coinSymbol () { this.calcSend() },
+    addressTo (newVal) {
       if (newVal === null) this.addressHint = ''
       else this.findAdress(this.addressTo)
       this.calcSend()
     },
-    amountString (newVal) {
-      this.calcSend()
-    },
-
+    amountString () { this.calcSend() },
     message () { this.calcSend() }
   }
 }

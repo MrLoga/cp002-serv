@@ -115,11 +115,8 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      // workboxPluginMode: 'InjectManifest',
-      workboxOptions: {
-        skipWaiting: true,
-        clientsClaim: true
-      }, // only for NON InjectManifest
+      workboxPluginMode: 'GenerateSW',// workboxPluginMode: 'InjectManifest',
+      workboxOptions: {}, // only for NON InjectManifest
       manifest: {
         name: 'CP002 Wallet',
         short_name: 'CP002 Wallet',

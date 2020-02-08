@@ -27,6 +27,8 @@ export default {
   'Scan QR Code': 'Scan QR Code',
 
   // Wallet
+  'Start using': 'Start using',
+  'Now this is your new wallet': 'Now this is your new wallet',
   'Balance': 'Balance',
   'Delegations': 'Delegations',
   'No delegations': 'No delegations',

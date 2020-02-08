@@ -1,6 +1,16 @@
 <template>
   <div id="q-app">
     <router-view />
+    <div v-if="false">
+      <q-dialog v-model="hasRequest" size="md" position="bottom">
+        <q-card class="dialog-min300">
+          <q-card-section class="row items-center">
+            <q-spinner-facebook />
+            <div class="text-h6 text-center q-pl-md">{{ $t('Sending') }}</div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+    </div>
   </div>
 </template>
 
@@ -15,6 +25,8 @@ export default {
   computed: {
     ...mapState({
       language: state => state.app.language,
+      hasRequest: state => state.request.hasRequest,
+      requests: state => state.request.requests,
       coinsJSON: state => state.api.coinsJSON,
       validators: state => state.api.validators
     }),

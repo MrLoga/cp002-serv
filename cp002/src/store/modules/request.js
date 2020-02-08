@@ -9,7 +9,8 @@ const state = {
   wssApi: 'wss://cp002.cloudp.group/api/ws',
   httpApi: 'https://cp002.cloudp.group/api/',
   requests: [],
-  currency: {}
+  currency: {},
+  hasRequest: false
 }
 
 const getters = {
@@ -40,11 +41,11 @@ const mutations = {
     state.requests.length = 0
     state.wsStatus = false
   },
-  NEW_PAYMENT: (state, payload) => {
-    state.requests.push(payload)
-  },
   WS_STATUS: (state, payload) => {
     state.wsStatus = payload
+  },
+  NEW_PAYMENT: (state, payload) => {
+    state.requests.push(payload)
   },
   NEW_LOGIN: (state, payload) => {
     payload.created = new Date()

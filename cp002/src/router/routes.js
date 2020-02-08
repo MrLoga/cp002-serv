@@ -2,16 +2,13 @@
 const routes = [
   {
     path: '/start',
-    component: () => import('layouts/Start.vue')
+    component: () => import('layouts/Start.vue'),
+    props: true
   },
   {
     path: '/hello',
     component: () => import('layouts/Hello.vue'),
     props: true
-    // children: [
-    //   { path: 'send', component: () => import('pages/Send.vue') }
-    //   { path: 'services', component: () => import('pages/services/index.vue') }
-    // ]
   },
   {
     path: '/',
