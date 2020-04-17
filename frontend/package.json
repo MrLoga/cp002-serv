@@ -1,9 +1,8 @@
 {
-  "name": "cp002",
-  "version": "0.0.1",
-  "description": "Minter Wallet by Cloud Projects",
-  "productName": "CP002 Wallet",
-  "cordovaId": "org.cordova.quasar.app",
+  "name": "reef_wallet",
+  "version": "0.0.2",
+  "description": "Minter Wallet by Reef",
+  "productName": "REEF Wallet",
   "capacitorId": "",
   "author": "Andrew L. <mrlogaz@gmail.com>",
   "private": true,

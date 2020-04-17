@@ -14,10 +14,10 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.f1c07346ac33b6871834713d304098d0.js"
+  "precache-manifest.8b93a451cff2c0bfc1b5ab27e3a85e1e.js"
 );
 
-workbox.core.setCacheNameDetails({prefix: "cp002"});
+workbox.core.setCacheNameDetails({prefix: "reef_wallet"});
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {

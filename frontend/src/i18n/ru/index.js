@@ -40,6 +40,7 @@ export default {
   'Name': 'Имя',
   'Mx address or Mp public key': 'Mx адрес или Mp публичный ключ',
   'Mx address': 'Mx адрес',
+  'Address invalid': 'Адрес недействителен',
   'Validators': 'Валидаторы',
   'Delegate': 'Делегировать',
   'Delegate dialog': 'делегируете',
@@ -81,8 +82,8 @@ export default {
   'Link copied to your clipboard': 'Ссылка скопирована в ваш буфер обмена',
 
   //
-  'You are not registered in the CP002': 'Вы не зарегистрированы в CP002',
-  'CP002 Registration text': 'Регистрация бесплатна, но вы должны иметь на своем балансе не менее 0,01 bip для оплаты комиссии сети',
+  'You are not registered in the Authenticator': 'Вы не зарегистрированы в Authenticator',
+  'Authenticator Registration text': 'Регистрация бесплатна, но вы должны иметь на своем балансе не менее 0,01 bip для оплаты комиссии сети',
   'Sign in': 'Зарегистрироваться',
   'No requests': 'Нет запросов',
 
@@ -93,8 +94,9 @@ export default {
   // Contacts
   'Contacts': 'Контакты',
   'Search': 'Поиск',
-  'Add new contact': 'Добавить новый контакт',
   'New contact': 'Новый контакт',
+  'Add new contact': 'Добавить новый контакт',
+  'No contacts found': 'Контакты не найдены',
   'Add first contact': 'Добавить первый контакт',
   'Contact added': 'Контакт добавлен',
   'You dont have any saved contacts': 'У вас не сохранено ни одного контакта',

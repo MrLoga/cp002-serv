@@ -8,7 +8,6 @@
           clearable
           bottom-slots
           :label="$t('Mx address or Mp public key')"
-          :rules="[val => !!val || $t('Field is required')]"
         >
           <template v-slot:hint>
             <div class="text-overflow">{{ addressHint }}</div>
@@ -97,11 +96,15 @@
                 >
                   <template v-slot="{ item, index }">
                     <q-item :key="index" clickable v-ripple v-close-popup @click="addressTo = item.value">
-                      <q-item-section top avatar>
-                        <q-avatar v-if="item.icon">
-                          <img :src="item.icon">
+                      <q-item-section top avatar class="q-ml-none">
+                        <q-avatar text-color="primary">
+                          <q-img v-if="item.icon" :src="item.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
+                            <template v-slot:error>
+                              <div class="avatar__text text-white bg-primary">{{ item.label[0] }}</div>
+                            </template>
+                          </q-img>
+                          <div v-else class="avatar__text text-white bg-primary">{{ item.label[0] }}</div>
                         </q-avatar>
-                        <q-icon v-else style="color: #ccc;" size="xl" name="developer_board" />
                       </q-item-section>
 
                       <q-item-section>
@@ -157,10 +160,8 @@
           ref="amountStringEl"
           debounce="250"
           :label="$t('Amount')"
-          :rules="[
-            val => (val && !!val.toString().length) || $t('Field is required'),
-            val => checkBalance(val) || $t('Not enough') + ' ' + coinSymbol.value
-          ]"
+          :error="amountIsError"
+          :error-message="amountErrorMsg"
         >
           <template v-slot:after>
             <q-btn round no-caps flat label="Max" @click="maxAmountSend" />
@@ -172,7 +173,7 @@
             {{ txAction === 'delegate' ? $t('Delegate') : $t('formSend') }}
           </q-btn>
         </div>
-        <div class="text-negative" v-if="!txReady && txError">
+        <div class="text-negative" v-if="amountString && !txReady && txError">
           {{ txError }}
         </div>
         <div class="text-grey-7">
@@ -186,7 +187,6 @@
         <q-card-section style="text-align: center;">
           <div class="text-h5 text-grey-7">{{ $t('You are') }} {{ txAction === 'delegate' ? $t('Delegate dialog') : $t('Send dialog') }}</div>
           <div class="text-h6">{{ numberSpaces(pretty(amount, 3)) }} <b>{{ coinSymbol.coin }}</b></div>
-
         </q-card-section>
 
         <!-- <q-card-section v-if="profileTo && profileTo.title" class="row justify-center items-center q-pt-none"> -->
@@ -236,6 +236,8 @@ export default {
   },
   data () {
     return {
+      amountIsError: false,
+      amountErrorMsg: null,
       formValid: false,
       isHello: false,
       confirmSend: false,
@@ -298,12 +300,6 @@ export default {
       }
     },
     sender () {
-      // const txData = {
-      //   txAction: this.txAction,
-      //   coinSymbol: this.coinSymbol.coin,
-      //   feeCoinSymbol: 'BIP',
-      //   message: this.message
-      // }
       const txData = {
         type: this.txAction,
         data: {
@@ -375,18 +371,31 @@ export default {
     updateFee () {
       this.senderFee = getFeeValue(this.txAction === 'send' ? TX_TYPE_SEND : TX_TYPE_DELEGATE, { payload: this.message })
     },
+    checkAddress () {
+      if ((this.addressTo.substring(0, 2) === 'Mx' && this.addressTo.length === 42) || (this.addressTo.substring(0, 2) === 'Mp' && this.addressTo.length === 66)) {
+        return true
+      } else return false
+    },
     calcSend () {
       this.txReady = false
       this.txError = ''
+      this.amountIsError = false
+      this.amountErrorMsg = null
+
       this.updateFee()
-      if (this.amountString) {
+      if (this.amountString && this.amountString.length) {
         this.amount = Big(this.amountString ? this.amountString.toString().replace(',', '.') : 0)
+      } else {
+        // this.amountIsError = true
+        // this.amountErrorMsg = this.$t('Field is required')
       }
-      if (this.coinSymbol && this.coinSymbol.value && this.amount && this.amountString && this.addressTo) {
+      if (this.coinSymbol && this.coinSymbol.value && this.amount && this.amountString && this.checkAddress()) {
         if (this.checkBalance(this.amountString)) this.txReady = true
       }
       if (this.amount && this.coinSymbol && this.amount.gte(this.coinSymbol.amount)) {
-        this.txError = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
+        this.amountIsError = true
+        this.amountErrorMsg = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
+        // this.txError = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
       }
     }
   },
@@ -397,14 +406,17 @@ export default {
       balances: state => state.api.balances,
       pushBalances: state => state.push.balances,
       balancesJSON: state => state.api.balancesJSON,
+      validators: state => state.api.validators,
       validatorsSelect: state => state.api.validatorsSelect,
-      contacts: state => state.contacts.contacts
+      contacts: state => state.contacts.contacts,
+      profiles: state => state.contacts.profiles
     }),
     ...mapGetters([
       'isLogin',
       'findValidator',
       'filterContacts',
       'filterProfiles',
+      'filterValidator',
       'findContact',
       'findProfile',
       'balancesSelect',
@@ -430,10 +442,10 @@ export default {
       }
       this.calcSend()
     }
-    if (!this.coinSymbol && !this.isHello && this.balancesSelect.length === 1) {
+    if (!this.coinSymbol && !this.isHello) {
       this.coinSymbol = this.balancesSelect[0]
     }
-    if (!this.coinSymbol && this.isHello && this.pushBalancesSelect.length === 1) {
+    if (!this.coinSymbol && this.isHello) {
       this.coinSymbol = this.pushBalancesSelect[0]
     }
   },
@@ -447,9 +459,11 @@ export default {
       else if (newVal.substr(0, 2) === 'Mx' || newVal.substr(0, 2) === 'Mp') {
         this.findAddress(newVal)
       } else {
-        if (newVal.length > 2) {
-          this.contactsFilter = this.filterProfiles(newVal)
-          if (this.contactsFilter.length) {
+        if (newVal.length > 1) {
+          const filterTmp = this.filterContacts(newVal).concat(this.filterValidator(newVal)).concat(this.filterProfiles(newVal))
+          this.contactsFilter = filterTmp
+          // console.log(this.contactsFilter)
+          if (this.contactsFilter && this.contactsFilter.length) {
             this.addressProfilesShow = true
           } else {
             this.addressProfilesShow = false

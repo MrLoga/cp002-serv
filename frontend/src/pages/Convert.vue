@@ -50,10 +50,8 @@
             clearable
             debounce="250"
             :label="$t('Amount')"
-            :rules="[
-              val => (val && !!val.toString().length) || $t('Field is required'),
-              val => Big(Big(coinSymbol.amount).minus(this.feeSellBase)).gte(Big(val.toString().replace(',', '.'))) || $t('Not enough') + ' ' + coinSymbol.value
-            ]"
+            :error="amountIsError"
+            :error-message="amountErrorMsg"
           >
             <template v-slot:after>
               <q-btn round no-caps flat label="Max" @click="maxAmountSell" />
@@ -111,9 +109,6 @@
           <div class="text-negative" v-if="!txReady && txError">
             {{ txError }}
           </div>
-          <!-- <div v-if="feeSell && coinSymbol && coinSymbol.value != 'BIP'" class="text-grey-7 q-mt-none">
-            Transaction fee ~ {{ pretty(feeSell, 3) }} {{ coinSymbol.value.toUpperCase() }} ({{ feeSellBase }} BIP)
-          </div> -->
           <div :class="`text-grey-7 ${resultSell != 0 ? 'q-mt-none': ''}`">
             {{ $t('Transaction fee') }}: {{ feeSellBase }} BIP
           </div>
@@ -258,6 +253,8 @@ export default {
       coinSymbol: null,
       coinSymbolTo: null,
       amountString: null,
+      amountIsError: false,
+      amountErrorMsg: null,
       amount: null,
       options: [],
       confirmConvert: false,
@@ -352,14 +349,25 @@ export default {
       this.resultSell = 0
       this.txReady = false
       this.txError = ''
+      if (!this.coinSymbol) {
+        this.coinSymbol = this.balancesSelect[0]
+      }
     },
     calcBuy () {
       this.txReady = false
       this.txError = ''
+      this.amountIsError = false
+      this.amountErrorMsg = null
       this.resultBuy = 0
       this.resultSell = 0
       const amountTmp = this.amountString
       this.amount = Big(amountTmp ? amountTmp.toString().replace(',', '.') : 0)
+      if (this.convertTab === 'sell' && this.amount && this.coinSymbol && this.amount.gt(this.coinSymbol.amount)) {
+        this.txReady = false
+        this.amountIsError = true
+        this.amountErrorMsg = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
+        this.txError = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
+      }
       if (this.coinSymbol && this.coinSymbolTo && this.coinSymbol.value === this.coinSymbolTo.value) {
         this.txReady = false
         this.txError = this.$t('Сhoose different coins')
@@ -380,11 +388,13 @@ export default {
           this.resultBuy = result.will_pay
           this.txReady = true
           if (this.convertTab === 'buy') {
-            if (Big(this.resultBuy).lte(this.coinSymbol.amount)) {
+            if (Big(this.resultBuy).lt(this.coinSymbol.amount)) {
               this.txReady = true
             } else {
               this.txReady = false
               this.txError = this.$t('Not enough') + ` ${this.pretty(Big(this.resultBuy).minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
+              this.amountIsError = true
+              this.amountErrorMsg = this.$t('Not enough') + ` ${this.pretty(Big(this.resultBuy).minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
             }
           }
         }).catch((error) => {
@@ -397,6 +407,9 @@ export default {
     }
   },
   created () {
+    if (!this.coinSymbol) {
+      this.coinSymbol = this.balancesSelect[0]
+    }
   },
   watch: {
     amountString (newVal) {

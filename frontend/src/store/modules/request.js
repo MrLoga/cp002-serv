@@ -6,8 +6,8 @@ nacl.util = require('tweetnacl-util')
 const state = {
   wsRequest: null,
   wsStatus: false,
-  wssApi: 'wss://cp002.cloudp.group/api/ws',
-  httpApi: 'https://cp002.cloudp.group/api/',
+  wssApi: 'wss://wallet.reef.mn/api/ws',
+  httpApi: 'https://wallet.reef.mn/api/',
   requests: [],
   currency: {},
   hasRequest: false
@@ -24,8 +24,8 @@ const mutations = {
   RESET_REQUEST: state => {
     state.wsRequest = null
     state.wsStatus = false
-    state.wssApi = 'wss://cp002.cloudp.group/api/ws'
-    state.httpApi = 'https://cp002.cloudp.group/api/'
+    state.wssApi = 'wss://wallet.reef.mn/api/ws'
+    state.httpApi = 'https://wallet.reef.mn/api/'
     state.requests = []
   },
   SET_DEV: (state) => {

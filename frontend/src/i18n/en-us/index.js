@@ -40,6 +40,7 @@ export default {
   'Name': 'Name',
   'Mx address or Mp public key': 'Mx address or Mp public key',
   'Mx address': 'Mx address',
+  'Address invalid': 'Address invalid',
   'Validators': 'Validators',
   'Delegate': 'Delegate',
   'Delegate dialog': 'delegate',
@@ -81,8 +82,8 @@ export default {
   'Link copied to your clipboard': 'Link copied to your clipboard',
 
   //
-  'You are not registered in the CP002': 'You are not registered in the CP002',
-  'CP002 Registration text': 'Registration is free, but you must have at least 0.01 bip on your balance to pay network commission',
+  'You are not registered in the Authenticator': 'You are not registered in the Authenticator',
+  'Authenticator Registration text': 'Registration is free, but you must have at least 0.01 bip on your balance to pay network commission',
   'Sign in': 'Sign in',
   'No requests': 'No requests',
 
@@ -95,6 +96,7 @@ export default {
   'Search': 'Search',
   'New contact': 'New contact',
   'Add new contact': 'Add new contact',
+  'No contacts found': 'No contacts found',
   'Add first contact': 'Add first contact',
   'Contact added': 'Contact added',
   'You dont have any saved contacts': 'You don\'t have any saved contacts',

@@ -126,7 +126,7 @@ export default {
           // console.log('>>>> OK')
           navigator.share({
             title: 'Wallet link',
-            text: 'Link to wallet cp002.cloudp.group',
+            text: 'Link to wallet https://wallet.reef.mn/',
             url: linkWallet
           })
             .then(() => console.log('Successful share'))

@@ -118,9 +118,9 @@ module.exports = function (ctx) {
       workboxPluginMode: 'GenerateSW',// workboxPluginMode: 'InjectManifest',
       workboxOptions: {}, // only for NON InjectManifest
       manifest: {
-        name: 'CP002 Wallet',
-        short_name: 'CP002 Wallet',
-        description: 'Minter Wallet by Cloud Projects',
+        name: 'Wallet Reef',
+        short_name: 'Wallet Reef',
+        description: 'Minter Wallet',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -185,8 +185,6 @@ module.exports = function (ctx) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
-        // appId: 'cp002'
       }
     }
   }

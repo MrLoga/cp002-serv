@@ -3,7 +3,7 @@
     <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
         <q-toolbar-title class="text-center">
-          CP002 Wallet β
+          REEF Wallet β
         </q-toolbar-title>
 
         <q-btn round color="secondary" :label="language.substr(0,2)" @click="alertLang = true"></q-btn>

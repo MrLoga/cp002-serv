@@ -28,8 +28,8 @@
       <div v-if="false">
         <q-card v-if="!isRegistered">
           <q-card-section class="bg-purple text-white">
-            <div class="text-h6">{{ $t('You are not registered in the CP002') }}</div>
-            <div>{{ $t('CP002 Registration text') }}</div>
+            <div class="text-h6">{{ $t('You are not registered in the Authenticator') }}</div>
+            <div>{{ $t('Authenticator Registration text') }}</div>
           </q-card-section>
 
           <q-card-actions align="around">

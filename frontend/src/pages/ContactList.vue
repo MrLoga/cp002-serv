@@ -15,7 +15,7 @@
     </div>
     <q-dialog v-model="newContact" transition-show="scale" transition-hide="scale">
       <q-card class="dialog-min300">
-        <form @submit.prevent.stop="newContactForm" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+        <form @submit.prevent.stop="newContactValidate" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
           <q-card-section>
             <div class="text-h6">{{ $t('New contact') }}</div>
           </q-card-section>
@@ -26,7 +26,8 @@
               clearable
               bottom-slots
               :label="$t('Name')"
-              :rules="[val => !!val || $t('Field is required')]"
+              :error="newNameIsError"
+              :error-message="newNameErrorMsg"
             ></q-input>
             <q-input
               v-model="newAddress"
@@ -34,15 +35,13 @@
               clearable
               bottom-slots
               :label="$t('Mx address')"
-              :rules="[
-                val => !!val || $t('Field is required'),
-                val => (val.substring(0, 2) === 'Mx' && val.length === 42) || $t('Mx address invalid')
-              ]"
+              :error="newAddressIsError"
+              :error-message="newAddressErrorMsg"
             ></q-input>
+            <div>
+              <q-btn type="submit" class="full-width" :label="$t('Add new contact')" color="primary" />
+            </div>
           </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat type="submit" :label="$t('Add new contact')" color="primary" />
-          </q-card-actions>
         </form>
       </q-card>
     </q-dialog>
@@ -67,6 +66,11 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <div v-else-if="contacts && contacts.length" class="text-center">
+      <div class="text-h5 text-center">
+        <div>{{ $t('No contacts found') }}</div>
+      </div>
+    </div>
     <div v-else class="text-center">
       <div class="text-h5 text-center">
         <div>{{ $t('You dont have any saved contacts') }}</div>
@@ -98,7 +102,12 @@ export default {
       search: '',
       newContact: false,
       newName: '',
+      newNameIsError: false,
+      newNameErrorMsg: null,
       newAddress: '',
+      newAddressIsError: false,
+      newAddressErrorMsg: null,
+      contactForm: false,
       contactsFilter: []
     }
   },
@@ -114,35 +123,55 @@ export default {
   methods: {
     pretty (val, l) { return pretty(val, l) },
     numberSpaces (val) { return numberSpaces(val) },
-    newContactForm () {
-      if (this.newAddress !== '' && this.newName !== '') {
-        this.$store.dispatch('NEW_CONTACT', { title: this.newName, address: this.newAddress }).then(contact => {
-          // console.log(contact)
-          this.$store.commit('ADD_CONTACT', contact)
-          this.contactsFilter = this.contacts
-          this.$q.notify({
-            message: this.$t('Contact added'),
-            icon: 'tag_faces',
-            color: 'teal',
-            position: 'bottom'
-          })
-        }).catch(() => {
-          // console.log(error)
-          this.$q.notify({
-            message: this.$t('This contact already exists'),
-            icon: 'report_problem',
-            color: 'negative',
-            position: 'bottom'
-          })
+    newContactSave () {
+      this.$store.dispatch('NEW_CONTACT', { title: this.newName, address: this.newAddress }).then(contact => {
+        this.$store.commit('ADD_CONTACT', contact)
+        this.contactsFilter = this.contacts
+        this.$q.notify({
+          message: this.$t('Contact added'),
+          icon: 'tag_faces',
+          color: 'teal',
+          position: 'bottom'
         })
-        this.search = ''
-        this.newName = ''
-        this.newAddress = ''
-        this.newContact = false
+      }).catch(() => {
+        this.$q.notify({
+          message: this.$t('This contact already exists'),
+          icon: 'report_problem',
+          color: 'negative',
+          position: 'bottom'
+        })
+      })
+      this.search = ''
+      this.newName = ''
+      this.newAddress = ''
+      this.newContact = false
+    },
+    newContactValidate () {
+      this.newNameIsError = false
+      this.newNameErrorMsg = null
+      this.newAddressIsError = false
+      this.newAddressErrorMsg = null
+
+      if (!this.newName || this.newName.length === 0) {
+        this.newNameIsError = true
+        this.newNameErrorMsg = this.$t('Field is required')
+      }
+      if (this.newAddress && this.newAddress.length > 0) {
+        this.newAddressIsError = true
+        this.newAddressErrorMsg = this.$t('Address invalid')
+        if ((this.newAddress.substring(0, 2) === 'Mx' && this.newAddress.length === 42) || (this.newAddress.substring(0, 2) === 'Mp' && this.newAddress.length === 66)) {
+          this.newAddressIsError = false
+          this.newAddressErrorMsg = null
+        }
+      } else {
+        this.newAddressIsError = true
+        this.newAddressErrorMsg = this.$t('Field is required')
+      }
+      if (!this.newAddressIsError && !this.newNameIsError) {
+        this.newContactSave()
       }
     },
     openContactMenu (contact) {
-      // console.log(contact)
       this.$q.dialog({
         title: this.$t('Remove contact'),
         message: this.$t('Would you like to remove') + ` <b>${contact.title}</b> ` + this.$t('from your contact list?'),
@@ -168,6 +197,14 @@ export default {
     this.contactsFilter = this.contacts
   },
   watch: {
+    newAddress (newVal) {
+      this.newAddressIsError = false
+      this.newAddressErrorMsg = null
+    },
+    newName (newVal) {
+      this.newNameIsError = false
+      this.newNameErrorMsg = null
+    },
     search (newVal) {
       if (newVal === null || newVal === '') {
         this.contactsFilter = this.contacts

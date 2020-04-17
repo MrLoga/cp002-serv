@@ -18,6 +18,16 @@ const getDefaultState = () => {
 const state = getDefaultState()
 
 const getters = {
+  filterValidator: state => searchVal => {
+    const filterTmp = state.validators.filter(item => item.meta.name ? item.meta.name.toLowerCase().indexOf(searchVal.toLowerCase()) > -1 : false)
+    return filterTmp.map(item => {
+      return {
+        address: item.public_key,
+        icon: item.meta.icon_url,
+        title: item.meta.name
+      }
+    })
+  },
   findValidator: state => address => state.validatorsSelect.find(item => item.value === address),
   balanceSum: state => pretty(state.balances.available_balance_sum, 5),
   balanceCustom: state => pretty(state.balances.available_balance_sum - state.balancesJSON.BIP, 5),
