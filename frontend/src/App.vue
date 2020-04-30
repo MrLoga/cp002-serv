@@ -1,7 +1,7 @@
 <template>
   <div id="q-app">
-    <router-view />
-    <div v-if="false">
+    <router-view class="bg-grey-2" />
+    <!-- <div v-if="false">
       <q-dialog v-model="hasRequest" size="md" position="bottom">
         <q-card class="dialog-min300">
           <q-card-section class="row items-center">
@@ -10,7 +10,7 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -25,14 +25,12 @@ export default {
   computed: {
     ...mapState({
       language: state => state.app.language,
-      hasRequest: state => state.request.hasRequest,
-      requests: state => state.request.requests,
-      coinsJSON: state => state.api.coinsJSON,
+      coins: state => state.api.coins,
+      profiles: state => state.contacts.profiles,
       validators: state => state.api.validators
     }),
     ...mapGetters([
-      'isLogin',
-      'isRegistered'
+      'isLogin'
     ])
   },
   created () {
@@ -43,13 +41,12 @@ export default {
   },
   mounted () {
     this.$store.commit('SAVE_GATE')
-    this.$store.dispatch('FETCH_CURRENCY')
-    this.$store.dispatch('FETCH_COINS')
+    // this.$store.dispatch('FETCH_CURRENCY')
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')
       this.$store.dispatch('FETCH_DELEGATION')
 
-      if (this.coinsJSON && this.coinsJSON.BIP && this.coinsJSON.BIP.crr === 0) {
+      if (this.coins && this.coins.length) {
         // console.log('Coins was uploaded')
       } else {
         this.$store.dispatch('FETCH_COINS')
@@ -65,9 +62,9 @@ export default {
         this.$store.dispatch('FETCH_ALL_PROFILES')
       }
 
-      if (this.isRegistered) {
-        this.$store.dispatch('NEW_WS')
-      }
+      // if (this.isRegistered) {
+      //   this.$store.dispatch('NEW_WS')
+      // }
     } else {
       // this.$router.push({ path: '/start' })
     }

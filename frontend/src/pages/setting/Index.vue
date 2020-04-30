@@ -1,9 +1,7 @@
 <template>
   <q-page padding>
     <q-list>
-      <q-item-label header>{{ $t('General') }}</q-item-label>
-
-      <q-item to="/setting/private" clickable v-ripple>
+      <!-- <q-item to="/setting/private" clickable v-ripple>
         <q-item-section avatar>
           <q-avatar color="teal" text-color="white" icon="visibility" />
         </q-item-section>
@@ -13,7 +11,24 @@
             {{ $t('Keep it secret') }}
           </q-item-label>
         </q-item-section>
+      </q-item> -->
+      <q-item-label header>{{ $t('Interface') }}</q-item-label>
+      <q-item v-ripple clickable @click="changeMainMenu">
+        <q-item-section avatar>
+          <q-avatar color="teal" text-color="white" icon="swap_vert" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ $t('Move menu') }}</q-item-label>
+          <q-item-label caption>
+            {{ menu }}
+          </q-item-label>
+        </q-item-section>
       </q-item>
+
+      <q-separator inset class="q-mb-sm q-mt-sm" />
+
+      <q-item-label header>{{ $t('General') }}</q-item-label>
+
       <q-item clickable v-ripple @click="alertLang = true">
         <q-item-section avatar>
           <q-avatar color="teal" text-color="white" icon="language" />
@@ -53,7 +68,7 @@
         </q-card>
       </q-dialog>
 
-      <q-item clickable v-ripple @click="sendWallet">
+      <!-- <q-item clickable v-ripple @click="sendWallet">
         <q-item-section avatar>
           <q-avatar color="teal" text-color="white" icon="phonelink_ring" />
         </q-item-section>
@@ -63,19 +78,20 @@
             {{ $t('Send wallet as a link') }}
           </q-item-label>
         </q-item-section>
-      </q-item>
+      </q-item> -->
 
       <q-item v-ripple clickable @click="logout">
         <q-item-section avatar>
-          <q-avatar color="teal" text-color="white" icon="exit_to_app" />
+          <q-avatar color="teal" text-color="white" icon="power_settings_new" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ $t('Logout wallet') }}</q-item-label>
+          <q-item-label>{{ $t('Logout app') }}</q-item-label>
           <q-item-label caption>
-            {{ $t('Data will be deleted') }}
+            {{ $t('All data will be deleted from this device') }}
           </q-item-label>
         </q-item-section>
       </q-item>
+
     </q-list>
   </q-page>
 </template>
@@ -103,6 +119,9 @@ export default {
     }
   },
   methods: {
+    changeMainMenu () {
+      this.menu = this.menu === 'header' ? 'footer' : 'header'
+    },
     sendWallet () {
       const mnemonicKey = this.mnemonic.split(' ').map(word => wordlists.english.indexOf(word)).join('.')
       const linkWallet = location.origin + '/#/hello?key=' + mnemonicKey + '&action=wallet'
@@ -171,6 +190,14 @@ export default {
       },
       set (value) {
         this.$store.commit('SET_LANG', value)
+      }
+    },
+    menu: {
+      get () {
+        return this.$store.state.app.menu
+      },
+      set (value) {
+        this.$store.commit('SET_MAIN_MENU', value)
       }
     }
   }

@@ -5,7 +5,7 @@
       <q-page class="flex flex-center">
 
         <q-stepper v-model="step" ref="stepper" alternative-labels color="primary" animated style="width: 100%;">
-          <q-step :name="1" title="About" icon="settings" :done="step > 1" style="height: 250px;">
+          <!-- <q-step :name="1" title="About" icon="settings" :done="step > 1" style="height: 250px;">
             <p>Готово уже сейчас:</p>
             <ul style="padding: 0 14px;">
               <li>Авторизация в сервисах без сид фразы</li>
@@ -19,23 +19,34 @@
           <q-step :name="2" title="Secure" icon="settings" :done="step > 2" style="height: 250px;">
             <p>Безопасность кошелька находиться на уровне официального веб кошелька от команды минтер.</p>
             <p>Защита ваших данных будет повышаться с последующими обновлениями, это один из основных векторов разработки.</p>
+          </q-step> -->
+          <q-step :name="2" title="About" icon="settings" :done="step > 2" style="height: 250px;">
+            <div class="text-h5 text-center">WALLET.REEF.MN</div>
+            <div class="text-center q-mt-md">
+              <q-img src="statics/app-logo-128x128.png" height="128px" width="128px" />
+            </div>
           </q-step>
           <q-step :name="3" title="Login" icon="settings" :done="step > 3" style="height: 250px; text-align: center;">
-            <br>
-            <q-btn color="secondary" @click="generateWallet">Create new wallet</q-btn>
-            <br>
-            <br>
-            <p><b>Or</b></p>
-            <form @submit.prevent.stop="signIn" id="mnemonicLogin">
-              <q-input
-                v-model="mnemonic"
-                outlined
-                autogrow
-                label="Login by Seed phrase"
-                :rules="[val => !!val || 'Field is required',
-                        val => validateMnemonic(val) || 'Invalid seed phrase']"
+            <div v-if="!loadingWallet">
+              <q-btn color="secondary" class="q-mt-md" @click="generateWallet">Create new wallet</q-btn>
+              <div class="text-bold q-mt-md q-mb-md">Or</div>
+              <form @submit.prevent.stop="signIn" id="mnemonicLogin">
+                <q-input
+                  v-model="mnemonic"
+                  outlined
+                  autogrow
+                  label="Login by Seed phrase"
+                  :rules="[val => !!val || 'Field is required',
+                          val => validateMnemonic(val) || 'Invalid seed phrase']"
+                />
+              </form>
+            </div>
+            <div v-else class="text-center q-mt-lg">
+              <q-spinner-oval
+                color="primary"
+                size="8rem"
               />
-            </form>
+            </div>
           </q-step>
 
           <template v-slot:navigation>
@@ -44,7 +55,7 @@
                 <q-btn @click="$refs.stepper.next()" v-if="step < 3" color="primary" :label="'Continue'" />
                 <q-btn type="submit" :disabled="!validateMnemonic(mnemonic)" form="mnemonicLogin" v-if="step === 3" color="primary" label="Login" />
 
-                <q-btn @click="$refs.stepper.previous()" v-if="step > 1" flat color="primary" label="Back" />
+                <q-btn @click="$refs.stepper.previous()" v-if="step > 2" flat color="primary" label="Back" />
               </div>
             </q-stepper-navigation>
           </template>
@@ -63,7 +74,8 @@ export default {
   name: 'Login',
   data () {
     return {
-      step: 1,
+      step: 2,
+      loadingWallet: false,
       wallet: null,
       mnemonic: ''
     }
@@ -74,29 +86,37 @@ export default {
     },
     validateMnemonic: val => isValidMnemonic(val),
     authSeed () {
-      this.wallet = walletFromMnemonic(this.mnemonic)
-      this.walletLogin()
-      this.$router.push({ path: '/' })
+      this.loadingWallet = true
+      setTimeout(() => {
+        this.wallet = walletFromMnemonic(this.mnemonic)
+        this.walletLogin()
+      }, 100)
     },
     generateWallet () {
-      this.wallet = generateWallet()
-      this.walletLogin()
-      this.$router.push({ path: '/setting/private' })
+      this.loadingWallet = true
+      setTimeout(() => {
+        this.wallet = generateWallet()
+        this.walletLogin()
+      }, 100)
     },
     walletLogin: function () {
       const walletData = {
         address: this.wallet.getAddressString(),
-        publicKey: this.wallet.getPublicKeyString(),
         privateKey: this.wallet.getPrivateKeyString(),
         mnemonic: this.wallet.getMnemonic()
       }
-      this.$store.commit('SAVE_WALLET', walletData)
-      // this.$store.dispatch('SET_GATE').then((data) => {
-      // })
-      this.$store.dispatch('FETCH_BALANCE')
-      this.$store.dispatch('FETCH_COINS')
-      this.$store.dispatch('FETCH_VALIDATORS')
-      this.$store.dispatch('FETCH_DELEGATION')
+      this.$store.dispatch('GET_PROFILE', walletData.address).then(async profile => {
+        walletData.title = (profile && profile.title) ? profile.title : 'Main wallet'
+        walletData.icon = (profile && profile.icon) ? profile.icon : ''
+
+        this.$store.commit('SAVE_WALLET', walletData)
+        await this.$store.dispatch('FETCH_BALANCE')
+        await this.$store.dispatch('FETCH_COINS')
+        await this.$store.dispatch('FETCH_DELEGATION')
+        this.$router.push({ path: '/' })
+      })
+
+      // this.$store.dispatch('FETCH_VALIDATORS')
       // this.$store.dispatch('NEW_WS')
     }
   }

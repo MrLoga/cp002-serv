@@ -167,7 +167,6 @@ export default {
     })
   },
   created () {
-    console.log(this.item)
     this.countdown()
   },
   mounted () {

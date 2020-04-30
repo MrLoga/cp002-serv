@@ -1,7 +1,3 @@
-export function pretty (num, l) {
-  return parseFloat(parseFloat(num).toFixed(l))
-}
-
 export function btoaUTF16 (sString) {
   var aUTF16CodeUnits = new Uint16Array(sString.length)
   Array.prototype.forEach.call(aUTF16CodeUnits, function (el, idx, arr) { arr[idx] = sString.charCodeAt(idx) })
@@ -14,6 +10,10 @@ export function atobUTF16 (sBase64) {
     arr[idx] = sBinaryString.charCodeAt(idx)
   })
   return String.fromCharCode.apply(null, new Uint16Array(aBinaryView.buffer))
+}
+
+export function pretty (num, l) {
+  return parseFloat(parseFloat(num).toFixed(l))
 }
 
 export function numberSpaces (x) {
@@ -29,14 +29,21 @@ export function prettyNumber (x, length) {
   return parts.join('.')
 }
 
-function hashCode (str) {
+export const checkAddress = address => {
+  if (!address) return false
+  if (address.substring(0, 2) === 'Mx' && address.length === 42) return 'Mx'
+  if (address.substring(0, 2) === 'Mp' && address.length === 66) return 'Mp'
+  return false
+}
+
+const hashCode = str => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
   return hash
 }
-function intToRGB (i) {
+const intToRGB = i => {
   const c = (i & 0x00FFFFFF).toString(16).toUpperCase()
   return '00000'.substring(0, 6 - c.length) + c
 }
@@ -47,7 +54,7 @@ export function colorFromString (str) {
 
 const symbolsMap = {
   'A': 1,
-  'B': 2,
+  'B': 7,
   'C': 3,
   'D': 4,
   'E': 5,
@@ -74,6 +81,6 @@ const symbolsMap = {
   'Z': 8
 }
 export function stringToHSL (str) {
-  const num = str.replace(/./gi, $0 => symbolsMap[$0.toUpperCase()] || $0) * 0.255
-  return 'hsla(' + ~~num + ',50%,60%,1)'
+  const num = str.replace(/./gi, $0 => symbolsMap[$0.toUpperCase()] || $0) * 0.359
+  return 'hsla(' + ~~num + ',80%,45%,1)'
 }

@@ -5,6 +5,7 @@ export default {
   'My Address': 'My Address',
   'Coins': 'Coins',
   'Convert coins': 'Convert coins',
+  'Total balance': 'Total balance',
   'Available balance': 'Available balance',
   'Copy address': 'Copy address',
   'Address copied': 'Address copied',
@@ -27,17 +28,29 @@ export default {
   'Scan QR Code': 'Scan QR Code',
 
   // Wallet
+  'Add new wallet': 'Add new wallet',
+  'Current wallet': 'Current wallet',
+  'Сhoose active wallet': 'Сhoose active wallet',
+  'Wallet setting': 'Wallet setting',
   'Start using': 'Start using',
   'Now this is your new wallet': 'Now this is your new wallet',
+  'Mnemonic': 'Mnemonic',
   'Balance': 'Balance',
   'Delegations': 'Delegations',
   'No delegations': 'No delegations',
-  'Logout wallet': 'Logout wallet',
-  'Data will be deleted': 'Data will be deleted',
+  'Logout this wallet': 'Logout this wallet',
+  'Data about wallet will be deleted': 'Data about wallet will be deleted',
+  'This wallet already exists': 'This wallet already exists',
+  'Remove wallet text': 'If you delete your wallet, you will lose access to it. Be sure to save the seed phrase to restore access',
+  'Remove wallet': 'Remove wallet',
+  'Attention': 'Attention',
 
   // Forms
+  'No results': 'No results',
+  'Optional': 'Optional',
   'Address': 'Address',
   'Name': 'Name',
+  'Title': 'Title',
   'Mx address or Mp public key': 'Mx address or Mp public key',
   'Mx address': 'Mx address',
   'Address invalid': 'Address invalid',
@@ -45,7 +58,7 @@ export default {
   'Delegate': 'Delegate',
   'Delegate dialog': 'delegate',
   'Send dialog': 'send',
-  'formSend': 'Send',
+  // 'Send': 'Send',
   'Exchange': 'Exchange',
   'Get': 'Get',
   'Сhoose coin': 'Сhoose coin',
@@ -67,6 +80,7 @@ export default {
 
   // Settings
   'General': 'General',
+  'Interface': 'Interface',
   'Show seed phrase': 'Show seed phrase',
   'Keep it secret': 'Keep it secret',
   'Change language': 'Change language',
@@ -80,6 +94,9 @@ export default {
   'Send wallet as a link': 'Send wallet as a link',
   'Link to wallet is ready': 'Link to wallet is ready',
   'Link copied to your clipboard': 'Link copied to your clipboard',
+  'Move menu': 'Move menu',
+  'Logout app': 'Logout app',
+  'All data will be deleted from this device': 'All data will be deleted from this device',
 
   //
   'You are not registered in the Authenticator': 'You are not registered in the Authenticator',

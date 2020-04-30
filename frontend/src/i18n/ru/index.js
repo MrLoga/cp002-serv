@@ -5,6 +5,7 @@ export default {
   'My Address': 'Мой адрес',
   'Coins': 'Монеты',
   'Convert coins': 'Конвертация',
+  'Total balance': 'Общий баланс',
   'Available balance': 'Доступный баланс',
   'Copy address': 'Скопировать адрес',
   'Address copied': 'Адрес скопирован',
@@ -14,7 +15,7 @@ export default {
   // HeaderApp
   'Home': 'Главная',
   'My Wallet': 'Кошелек',
-  'Send': 'Отправка',
+  'Send': 'Отправить',
   'Request': 'Запросы',
 
   // MainMenu
@@ -27,17 +28,29 @@ export default {
   'Scan QR Code': 'Сканировать QR Code',
 
   // Wallet
+  'Add new wallet': 'Добавить кошелек',
+  'Current wallet': 'Текущий кошелек',
+  'Сhoose active wallet': 'Выберите активный кошелек',
+  'Wallet setting': 'Настройки кошелька',
   'Start using': 'Начать пользоваться',
   'Now this is your new wallet': 'Теперь это ваш новый кошелек',
+  'Mnemonic': 'Мнемоник',
   'Balance': 'Баланс',
   'Delegations': 'Делегировано',
   'No delegations': 'Нет делегирований',
-  'Logout wallet': 'Выйти из кошелька',
-  'Data will be deleted': 'Все данные будут удалены',
+  'Logout this wallet': 'Выйти из этого кошелька',
+  'Data about wallet will be deleted': 'Все данные о кошельке будут удалены',
+  'This wallet already exists': 'Этот кошелек уже есть',
+  'Remove wallet text': 'Удалив кошелек, вы потеряете доступ к нему. Убедитесь что сохранили сид фразу для восстановления доступа',
+  'Remove wallet': 'Удалить кошелек',
+  'Attention': 'Внимание',
 
   // Forms
+  'No results': 'Нет результатов',
+  'Optional': 'Не обязательно',
   'Address': 'Адреса',
   'Name': 'Имя',
+  'Title': 'Название',
   'Mx address or Mp public key': 'Mx адрес или Mp публичный ключ',
   'Mx address': 'Mx адрес',
   'Address invalid': 'Адрес недействителен',
@@ -45,7 +58,7 @@ export default {
   'Delegate': 'Делегировать',
   'Delegate dialog': 'делегируете',
   'Send dialog': 'отправляете',
-  'formSend': 'Отправить',
+  // 'Send': 'Отправить',
   'Exchange': 'Обменять',
   'Get': 'Получить',
   'Сhoose coin': 'Выбрать монету',
@@ -67,6 +80,7 @@ export default {
 
   // Settings
   'General': 'Основные',
+  'Interface': 'Интерфейс',
   'Show seed phrase': 'Показать сид фразу',
   'Keep it secret': 'Сохраните это в секрете',
   'Change language': 'Сменить язык',
@@ -80,6 +94,9 @@ export default {
   'Send wallet as a link': 'Отправить кошелек как ссылку',
   'Link to wallet is ready': 'Ссылка на кошелек готова',
   'Link copied to your clipboard': 'Ссылка скопирована в ваш буфер обмена',
+  'Move menu': 'Переместить меню',
+  'Logout app': 'Выйти из приложения',
+  'All data will be deleted from this device': 'Все данные будут удалены с этого устройства',
 
   //
   'You are not registered in the Authenticator': 'Вы не зарегистрированы в Authenticator',

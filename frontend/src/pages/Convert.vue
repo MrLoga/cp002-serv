@@ -10,219 +10,104 @@
       <q-tab name="sell" :label="$t('Exchange')" />
       <q-tab name="buy" :label="$t('Get')" />
     </q-tabs>
-
-    <q-tab-panels v-model="convertTab" animated>
+    <q-tab-panels v-model="convertTab" animated class="bg-grey-2">
       <q-tab-panel name="sell">
         <form @submit.prevent.stop="confirmConvert = true" class="q-gutter-md">
-          <q-select
-            outlined
-            v-model="coinSymbol"
-            :label="$t('Coin you have')"
-            bottom-slots
-            behavior="dialog"
-            :display-value="coinSymbol && coinSymbol.coin ? `<b>${coinSymbol.coin}</b> (${coinSymbol.amountPretty})` : ''"
-            :options="balancesSelect"
-            :hint="coinSymbol && coinSymbol.coin ? coinsJSON[coinSymbol.coin].name : ''"
-          >
-            <template v-slot:option="scope">
-              <q-item
-                v-bind="scope.itemProps"
-                v-on="scope.itemEvents"
-              >
-                <q-item-section avatar>
-                   <q-avatar :style="`background-color: ${stringToHSL(scope.opt.coin)}`" class="balance__coin-avatar" text-color="white">
-                    {{ scope.opt.coin.charAt(0).toUpperCase() }}
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label><b>{{ scope.opt.coin }}</b> ({{ scope.opt.amountPretty }})</q-item-label>
-                  <q-item-label class="one-line" caption>{{ coinsJSON[scope.opt.coin].name }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
+
+          <BalanceSelect v-model="coin" />
 
           <q-input
-            v-model="amountString"
+            v-model="amount"
             type="number"
             step="any"
             outlined
             clearable
             debounce="250"
+            bg-color="white"
             :label="$t('Amount')"
             :error="amountIsError"
             :error-message="amountErrorMsg"
           >
             <template v-slot:after>
-              <q-btn round no-caps flat label="Max" @click="maxAmountSell" />
+              <q-btn round no-caps flat label="Max" @click="maxAmount" />
             </template>
           </q-input>
 
-          <div style="text-align: center;" class="q-mt-none">
-            <q-icon name="arrow_downward" size="md"></q-icon>
+          <div class="text-center q-mt-none">
+            <q-icon name="arrow_downward" color="text-grey-7" size="md" />
           </div>
 
-          <q-select
-            outlined
-            v-model="coinSymbolTo"
-            :label="$t('Coin you want')"
-            use-input
-            input-debounce="250"
-            behavior="dialog"
-            @filter="filterFn"
-            :display-value="coinSymbolTo && coinSymbolTo.value ? `<b>${coinSymbolTo.value}</b> (crr: ${coinSymbolTo.crr})` : ''"
-            :options="options"
-            :hint="coinSymbolTo && coinSymbolTo.value ? coinSymbolTo.name : ''"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">
-                  {{ $t('No results') }}
-                </q-item-section>
-              </q-item>
-            </template>
-            <template v-slot:option="scope">
-              <q-item
-                v-bind="scope.itemProps"
-                v-on="scope.itemEvents"
-              >
-                <q-item-section avatar>
-                   <q-avatar :style="`background-color: ${stringToHSL(scope.opt.symbol)}`" class="balance__coin-avatar" text-color="white">
-                    {{ scope.opt.symbol.charAt(0).toUpperCase() }}
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label><b>{{ scope.opt.symbol }}</b> (crr: {{ scope.opt.crr }})</q-item-label>
-                  <q-item-label class="one-line" caption>{{ scope.opt.name }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-          <div>
-            <q-btn type="submit" color="teal" size="16px"  icon="compare_arrows" class="full-width" :disabled="!txReady" :label="$t('Exchange')" />
+          <CoinsSelect v-model="coinTo" />
+
+          <div class="q-mt-md">
+            <q-btn type="submit" color="teal" size="16px"  icon="compare_arrows" class="full-width" :disabled="!validate" :label="$t('Exchange')" />
           </div>
-          <div v-if="resultSell != 0">
+
+          <div v-if="validate && resultSell != 0">
             <span class="text-subtitle1">{{ $t('You will get') }}</span>&nbsp;
-            <span class="text-h6">{{ pretty(resultSell, 3) }}</span>&nbsp;
-            <span class="text-subtitle1">{{ coinSymbolTo.value.toUpperCase() }}</span>
+            <span class="text-h6">{{ prettyNumber(resultSell, 3) }}</span>&nbsp;
+            <span class="text-subtitle1">{{ coinTo.value.toUpperCase() }}</span>
           </div>
-          <div class="text-negative" v-if="!txReady && txError">
-            {{ txError }}
-          </div>
-          <div :class="`text-grey-7 ${resultSell != 0 ? 'q-mt-none': ''}`">
-            {{ $t('Transaction fee') }}: {{ feeSellBase }} BIP
+          <div class="text-negative" v-if="!validate">{{ validateError }}</div>
+          <div class="text-grey-7 q-mt-none">
+            {{ $t('Transaction fee') }}: {{ prettyNumber(commission, 5) }} {{ commissionCoin }}
           </div>
         </form>
       </q-tab-panel>
 
       <q-tab-panel name="buy">
         <form @submit.prevent.stop="confirmConvert = true" class="q-gutter-md">
-          <q-select
-            outlined
-            v-model="coinSymbolTo"
-            :label="$t('Coin you want')"
-            use-input
-            input-debounce="250"
-            behavior="dialog"
-            @filter="filterFn"
-            :display-value="coinSymbolTo && coinSymbolTo.value ? `<b>${coinSymbolTo.value}</b> (crr: ${coinSymbolTo.crr})` : ''"
-            :options="options"
-            :hint="coinSymbolTo && coinSymbolTo.value ? coinSymbolTo.name : ''"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">
-                  {{ $t('No results') }}
-                </q-item-section>
-              </q-item>
-            </template>
-            <template v-slot:option="scope">
-              <q-item
-                v-bind="scope.itemProps"
-                v-on="scope.itemEvents"
-              >
-                <q-item-section avatar>
-                   <q-avatar :style="`background-color: ${stringToHSL(scope.opt.symbol)}`" class="balance__coin-avatar" text-color="white">
-                    {{ scope.opt.symbol.charAt(0).toUpperCase() }}
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label><b>{{ scope.opt.symbol }}</b> (crr: {{ scope.opt.crr }})</q-item-label>
-                  <q-item-label class="one-line" caption>{{ scope.opt.name }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
+
+          <CoinsSelect v-model="coinTo" />
 
           <q-input
-            v-model.number="amountString"
+            v-model="amount"
             type="number"
+            step="any"
             outlined
+            clearable
             debounce="250"
+            bg-color="white"
             :label="$t('Amount')"
-          >
-          </q-input>
+            :error="amountIsError"
+            :error-message="amountErrorMsg"
+          />
 
-          <div style="text-align: center;" class="q-mt-none">
-            <q-icon name="arrow_upward" size="md"></q-icon>
+          <div class="text-center q-mt-none">
+            <q-icon name="arrow_upward" color="text-grey-7" size="md" />
           </div>
 
-          <q-select
-            outlined
-            v-model="coinSymbol"
-            :label="$t('Coin you have')"
-            bottom-slots
-            behavior="dialog"
-            :display-value="coinSymbol && coinSymbol.coin ? `<b>${coinSymbol.coin}</b> (${coinSymbol.amountPretty})` : ''"
-            :options="balancesSelect"
-            :hint="coinSymbol && coinSymbol.coin ? coinsJSON[coinSymbol.coin].name : ''"
-          >
-            <template v-slot:option="scope">
-              <q-item
-                v-bind="scope.itemProps"
-                v-on="scope.itemEvents"
-              >
-                <q-item-section avatar>
-                   <q-avatar :style="`background-color: ${stringToHSL(scope.opt.coin)}`" class="balance__coin-avatar" text-color="white">
-                    {{ scope.opt.coin.charAt(0).toUpperCase() }}
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label><b>{{ scope.opt.coin }}</b> ({{ scope.opt.amountPretty }})</q-item-label>
-                  <q-item-label class="one-line" caption>{{ coinsJSON[scope.opt.coin].name }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
+          <BalanceSelect v-model="coin" />
 
           <div>
-            <q-btn type="submit" color="teal" size="16px"  icon="compare_arrows" class="full-width" :disabled="!txReady" :label="$t('Exchange')" />
+            <q-btn type="submit" color="teal" size="16px" icon="compare_arrows" class="full-width" :disabled="!validate" :label="$t('Exchange')" />
           </div>
-          <div v-if="resultBuy != 0">
+          <div v-if="validate && resultBuy != 0">
             <span class="text-subtitle1">{{ $t('You will pay') }}</span>&nbsp;
-            <span class="text-h6">{{ pretty(resultBuy, 3) }}</span>&nbsp;
-            <span class="text-subtitle1">{{ coinSymbol.value.toUpperCase() }}</span>
+            <span class="text-h6">{{ prettyNumber(resultBuy, 5) }}</span>&nbsp;
+            <span class="text-subtitle1">{{ coin.value.toUpperCase() }}</span>
           </div>
-          <div class="text-negative" v-if="!txReady && txError">
-            {{ txError }}
-          </div>
-          <!-- <div v-if="feeSell && coinSymbol && coinSymbol.value != 'BIP'" class="text-grey-7 q-mt-none">
-            Transaction fee ~ {{ pretty(feeSell, 3) }} {{ coinSymbol.value.toUpperCase() }} ({{ feeBuyBase }} BIP)
-          </div> -->
-          <div :class="`text-grey-7 ${resultBuy != 0 ? 'q-mt-none': ''}`">
-            Transaction fee: {{ feeBuyBase }} BIP
+          <div class="text-negative" v-if="!validate">{{ validateError }}</div>
+          <div class="text-grey-7 q-mt-none">
+            {{ $t('Transaction fee') }}: {{ prettyNumber(commission, 5) }} {{ commissionCoin }}
           </div>
         </form>
       </q-tab-panel>
     </q-tab-panels>
-    <!-- Result dialog for sell -->
-    <q-dialog v-if="txReady" v-model="confirmConvert" persistent full-width transition-show="scale" transition-hide="scale">
+
+    <q-dialog v-if="validate" v-model="confirmConvert" persistent full-width transition-show="scale" transition-hide="scale">
       <q-card>
-        <q-card-section style="text-align: center;">
-          <div class="text-h5 text-grey-7">{{ $t('Youre Exchange') }}</div>
-          <div class="text-h5">{{ numberSpaces(pretty(amount, 3)) }} <span class="text-h6">{{ coinSymbol.value }}</span></div>
+        <q-card-section class="text-center" v-if="convertTab === 'sell'">
+          <div class="text-h5 text-grey-7 q-mb-md">{{ $t('Youre Exchange') }}</div>
+          <div class="text-h5">{{ prettyNumber(amountBig.toString(), 3) }} <span class="text-h6">{{ coin.value }}</span></div>
           <div class="text-grey-7">{{ $t('to') }}</div>
-          <div class="text-h5">{{ numberSpaces(pretty(convertTab === 'sell' ? resultSell : resultBuy, 3)) }} <span class="text-h6">{{ coinSymbolTo.value }}</span></div>
+          <div class="text-h5">{{ prettyNumber(resultSell, 3) }} <span class="text-h6">{{ coinTo.value }}</span></div>
+        </q-card-section>
+        <q-card-section class="text-center" v-else>
+          <div class="text-h5 text-grey-7 q-mb-md">{{ $t('Youre Exchange') }}</div>
+          <div class="text-h5">{{ prettyNumber(resultBuy, 3) }} <span class="text-h6">{{ coin.value }}</span></div>
+          <div class="text-grey-7">{{ $t('to') }}</div>
+          <div class="text-h5">{{ prettyNumber(amount, 3) }} <span class="text-h6">{{ coinTo.value }}</span></div>
         </q-card-section>
 
         <q-separator inset />
@@ -238,192 +123,183 @@
 <script>
 
 import { getFeeValue } from 'minterjs-util'
-import { TX_TYPE_BUY, TX_TYPE_SELL } from 'minterjs-tx'
+import { TX_TYPE } from 'minter-js-sdk'
 import { mapGetters, mapState } from 'vuex'
-import { stringToHSL, pretty, numberSpaces } from '../utils'
+import { prettyNumber } from '../utils'
 import Big from 'big.js'
+import BalanceSelect from '../components/BalanceSelect.vue'
+import CoinsSelect from '../components/CoinsSelect.vue'
 
 export default {
   name: 'Convert',
   components: {
+    BalanceSelect,
+    CoinsSelect
   },
   data () {
     return {
       convertTab: 'sell',
-      coinSymbol: null,
-      coinSymbolTo: null,
-      amountString: null,
+      txType: 'SELL',
+      coin: null,
+      coinTo: null,
+
+      amount: null,
+      amountBig: null,
       amountIsError: false,
       amountErrorMsg: null,
-      amount: null,
-      options: [],
+
+      validate: false,
+      validateError: null,
+
+      commission: getFeeValue(TX_TYPE.SELL),
+      commissionCoin: 'BIP',
+
       confirmConvert: false,
-      txReady: false,
-      txError: '',
       resultBuy: 0,
-      resultSell: 0,
-      feeBuy: getFeeValue(TX_TYPE_BUY),
-      feeBuyBase: getFeeValue(TX_TYPE_BUY),
-      feeSell: getFeeValue(TX_TYPE_SELL),
-      feeSellBase: getFeeValue(TX_TYPE_SELL)
+      resultSell: 0
     }
   },
-  computed: {
-    ...mapState({
-      // balancesSelect: state => state.api.balancesSelect,
-      coinsSelect: state => state.api.coinsSelect,
-      coinsJSON: state => state.api.coinsJSON,
-      minterGate: state => state.wallet.minterGate
-    }),
-    ...mapGetters([
-      'balancesSelect'
-      // 'getBlocked'
-    ])
+  mounted () {
+    this.setDefaultCoin()
   },
   methods: {
-    Big (val) { return Big(val) },
-    pretty (val, l) { return pretty(val, l) },
-    numberSpaces (val) { return numberSpaces(val) },
-    stringToHSL: (str) => stringToHSL(str),
-    filterFn (val, update) {
-      if (val === '') {
-        update(() => {
-          this.options = this.coinsSelect
-        })
-        return
-      }
-      update(() => {
-        const needle = val.toLowerCase()
-        this.options = this.coinsSelect.filter(v => v.symbol.toLowerCase().indexOf(needle) > -1)
-      })
-    },
-    maxAmountSell () {
-      if (!this.coinSymbol || !this.coinSymbol.value) return false
-      this.amount = new Big(this.coinSymbol.amount.replace(',', '.'))
-      if (this.coinSymbol.value === 'BIP') {
-        this.amount = new Big(this.coinSymbol.amount.replace(',', '.')).minus(this.feeSellBase)
+    prettyNumber: (val, l) => prettyNumber(val, l),
+    setDefaultCoin () {
+      if (Big(this.balanceSelect[0].amount).gt(0)) {
+        this.coin = this.balanceSelect[0]
       } else {
-        this.amount = new Big(this.coinSymbol.amount.replace(',', '.'))
+        this.coin = this.balanceSelect[1] ? this.balanceSelect[1] : this.balanceSelect[0]
       }
-      this.amountString = this.amount.toString()
     },
-    senderConvert () {
+    maxAmount () {
+      this.amount = this.coin ? Big(this.coin.amount).toString() : null
+    },
+    clearAll () {
+      this.coin = null
+      this.coinTo = null
+      this.amount = null
+      this.amountBig = null
+      this.confirmConvert = false
+      this.resultBuy = 0
+      this.resultSell = 0
+      this.validate = false
+      this.txError = ''
+
+      this.txType = this.convertTab.toUpperCase()
+      this.setDefaultCoin()
+    },
+    makeTxData () {
       const txData = {
-        type: this.convertTab,
+        type: this.txType,
         data: {
-          coinToSell: this.coinSymbol.value,
-          coinToBuy: this.coinSymbolTo.value
+          coinToSell: this.coin.value,
+          coinToBuy: this.coinTo.value
         },
-        feeCoinSymbol: 'BIP',
-        message: ''
+        gasCoin: this.commissionCoin
       }
-      if (this.convertTab === 'buy') {
-        txData.data.valueToBuy = this.amount.toString()
-      } else if (this.convertTab === 'sell') {
-        txData.data.valueToSell = this.amount.toString()
+      if (this.txType === 'SELL') {
+        if (Big(this.amount).eq(this.coin.amount) || Big(this.coin.amount).lt(this.amountBig.plus(this.commission))) {
+          txData.type = 'SELL_ALL'
+        } else {
+          txData.data.valueToSell = this.amountBig.toString()
+        }
+      } else if (this.txType === 'BUY') {
+        txData.data.valueToBuy = this.amountBig.toString()
       }
+      return txData
+    },
+    async estimateTx () {
+      const estimateTxAction = this.txType === 'BUY' ? 'estimateCoinBuy' : 'estimateCoinSell'
+      const estimateTx = {
+        coinToSell: this.coin.value,
+        coinToBuy: this.coinTo.value
+      }
+      if (estimateTxAction === 'estimateCoinBuy') {
+        estimateTx.valueToBuy = this.amountBig.toString()
+      } else if (estimateTxAction === 'estimateCoinSell') {
+        estimateTx.valueToSell = this.amountBig.toString()
+      }
+      try {
+        const result = await this.minterGate[estimateTxAction](estimateTx)
+        this.commissionCoin = this.coin.value
+        this.commission = result.commission
+        this.resultSell = result.will_get
+        this.resultBuy = result.will_pay
+
+        if (result.will_pay && Big(result.will_pay).gt(Big(this.coin.amount))) {
+          this.validate = false
+          this.amountIsError = true
+          this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(result.will_pay).minus(this.coin.amount).plus(result.commission).round(3, 0).toString() } ${this.coin.value }`
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    valifateForm () {
+      this.amountIsError = false
+      this.amountErrorMsg = null
+      this.validate = true
+      this.validateError = null
+      this.amountBig = this.amount ? Big(this.amount.replace(',', '.')) : Big(0)
+
+      if (this.coin && this.coinTo && this.coin.value === this.coinTo.value) {
+        this.validate = false
+        this.txError = this.$t('Сhoose different coins')
+      }
+      if (this.coin && Big(this.amountBig).gt(Big(this.coin.amount))) {
+        this.validate = false
+        this.amountIsError = true
+        this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(this.amountBig).minus(this.coin.amount).round(3, 0).toString() } ${this.coin.value }`
+      }
+      if (!this.amount || !this.amount.length) this.validate = false
+      if (this.amountBig.lte(0)) this.validate = false
+      if (!this.coin || !this.coinTo) this.validate = false
+      if (this.validate) {
+        this.estimateTx()
+      }
+    },
+
+    senderConvert () {
+      const txData = this.makeTxData()
+      console.log(txData)
       this.$store.dispatch('SENDER', txData).then(txHash => {
         this.$q.notify({
           message: this.$t('Transaction successful'),
           icon: 'tag_faces',
           color: 'teal'
         })
-        this.$store.dispatch('FETCH_BALANCE')
         this.clearAll()
+        setTimeout(() => {
+          this.$store.dispatch('FETCH_BALANCE').then(data => {
+            this.setDefaultCoin()
+          })
+        }, 2000)
       }).catch(error => {
+        console.log(error.error)
         this.$q.notify({
-          message: error,
+          message: error.error.message,
           icon: 'report_problem',
           color: 'negative'
         })
       })
-    },
-    clearAll () {
-      this.coinSymbol = null
-      this.coinSymbolTo = null
-      this.amount = null
-      this.amountString = null
-      this.options = []
-      this.confirmConvert = false
-      this.resultBuy = 0
-      this.resultSell = 0
-      this.txReady = false
-      this.txError = ''
-      if (!this.coinSymbol) {
-        this.coinSymbol = this.balancesSelect[0]
-      }
-    },
-    calcBuy () {
-      this.txReady = false
-      this.txError = ''
-      this.amountIsError = false
-      this.amountErrorMsg = null
-      this.resultBuy = 0
-      this.resultSell = 0
-      const amountTmp = this.amountString
-      this.amount = Big(amountTmp ? amountTmp.toString().replace(',', '.') : 0)
-      if (this.convertTab === 'sell' && this.amount && this.coinSymbol && this.amount.gt(this.coinSymbol.amount)) {
-        this.txReady = false
-        this.amountIsError = true
-        this.amountErrorMsg = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
-        this.txError = this.$t('Not enough') + ` ${this.pretty(this.amount.minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
-      }
-      if (this.coinSymbol && this.coinSymbolTo && this.coinSymbol.value === this.coinSymbolTo.value) {
-        this.txReady = false
-        this.txError = this.$t('Сhoose different coins')
-      } else if (this.amount && this.amount.gt(0) && this.coinSymbol && this.coinSymbol.value && this.coinSymbolTo) {
-        const estimateTxAction = this.convertTab === 'buy' ? 'estimateCoinBuy' : 'estimateCoinSell'
-        const estimateTx = {
-          coinToSell: this.coinSymbol.value,
-          coinToBuy: this.coinSymbolTo.value
-        }
-        if (this.convertTab === 'buy') {
-          estimateTx.valueToBuy = this.amount
-        } else if (this.convertTab === 'sell') {
-          estimateTx.valueToSell = this.amount
-        }
-        this.minterGate[estimateTxAction](estimateTx).then((result) => {
-          this.feeSell = result.commission
-          this.resultSell = result.will_get
-          this.resultBuy = result.will_pay
-          this.txReady = true
-          if (this.convertTab === 'buy') {
-            if (Big(this.resultBuy).lt(this.coinSymbol.amount)) {
-              this.txReady = true
-            } else {
-              this.txReady = false
-              this.txError = this.$t('Not enough') + ` ${this.pretty(Big(this.resultBuy).minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
-              this.amountIsError = true
-              this.amountErrorMsg = this.$t('Not enough') + ` ${this.pretty(Big(this.resultBuy).minus(this.coinSymbol.amount), 3)} ${this.coinSymbol.value }`
-            }
-          }
-        }).catch((error) => {
-          this.txReady = false
-          this.txError = error.log
-        })
-      } else {
-        this.txReady = false
-      }
     }
   },
-  created () {
-    if (!this.coinSymbol) {
-      this.coinSymbol = this.balancesSelect[0]
-    }
+  computed: {
+    ...mapState({
+      minterGate: state => state.wallet.minterGate
+    }),
+    ...mapGetters([
+      'balanceSelect',
+      'coinsSelect',
+      'balanceObj',
+      'coinsInfo'
+    ])
   },
   watch: {
-    amountString (newVal) {
-      this.calcBuy()
-    },
-    coinSymbol () {
-      this.calcBuy()
-    },
-    coinSymbolTo () {
-      this.calcBuy()
-    },
-    convertTab () {
-      this.clearAll()
-    }
+    amount () { this.valifateForm() },
+    coin () { this.valifateForm() },
+    coinTo () { this.valifateForm() },
+    convertTab () { this.clearAll() }
   }
 }
 </script>

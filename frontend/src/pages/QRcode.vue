@@ -21,6 +21,7 @@
 
 import { QrcodeStream } from 'vue-qrcode-reader'
 import { decodeLink } from 'minter-js-sdk'
+import { checkAddress } from '../utils'
 export default {
   name: 'QRcode',
   components: { QrcodeStream },
@@ -32,6 +33,7 @@ export default {
       showCamera: true
     }
   },
+  created () {},
   methods: {
     repaint (location, ctx) {
       const {
@@ -57,11 +59,8 @@ export default {
       ctx.stroke()
     },
     async onInit (promise) {
-      // show loading indicator
-
       try {
         await promise
-
         // successfully initialized
       } catch (error) {
         if (error.name === 'NotAllowedError') {
@@ -84,12 +83,17 @@ export default {
     async onDecode (content) {
       this.result = content
       this.turnCameraOff()
-      try {
-        const decodeLinkResult = decodeLink(content)
-        console.log(decodeLinkResult)
-        this.$router.push({ name: 'send', params: { sendTxData: decodeLinkResult } })
-      } catch (error) {
-        console.log(error)
+      const typeContent = checkAddress(content)
+      if (typeContent && (typeContent === 'Mx' || typeContent === 'Mp')) {
+        this.$router.push({ name: 'send', params: { import: { address: content } } })
+      } else {
+        try {
+          const decodeLinkResult = decodeLink(content)
+          console.log(decodeLinkResult)
+          this.$router.push({ name: 'send', params: { import: { link: decodeLinkResult } } })
+        } catch (error) {
+          console.log(error)
+        }
       }
     },
     turnCameraOn () {
@@ -100,15 +104,6 @@ export default {
       this.camera = 'off'
       this.showCamera = false
     }
-  },
-  created () {
-    // let xx = 'hasdttpsasd://bispasdasdas.toasd/tx?d=f83b01abea8a4249500000000000000094ce705c250ecb7499377f8e16ced2fa302f80f570895bab56d4b2b18c000080c0c08a42495000000000000000'
-    // try {
-    //   let decodeLinkRes = decodeLink(xx)
-    //   console.log(decodeLinkRes)
-    // } catch (error) {
-    //   console.log(error)
-    // }
   }
 }
 </script>

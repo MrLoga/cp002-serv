@@ -28,6 +28,7 @@
 </style>
 <script>
 import { mapState } from 'vuex'
+import { copyToClipboard } from 'quasar'
 
 export default {
   name: 'Setting_Private',
@@ -43,7 +44,7 @@ export default {
   },
   methods: {
     copyMnemonic () {
-      navigator.clipboard.writeText(this.mnemonic).then(() => {
+      copyToClipboard(this.mnemonic).then(() => {
         this.$q.notify({
           message: this.$t('Seed phrase copied'),
           color: 'purple',

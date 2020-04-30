@@ -1,18 +1,14 @@
-import { pretty, numberSpaces } from '../../utils'
+import { pretty, numberSpaces, prettyNumber } from '../../utils'
 import axios from 'axios'
 
 const getDefaultState = () => {
   return {
     scoringApi: 'https://minter-scoring.space/api/',
     explorerApi: 'https://explorer-api.minter.network/api/v1/',
-    balances: null,
-    balancesJSON: {},
-    balancesSelect: [],
-    coinsJSON: null,
-    coinsSelect: [],
+    balance: null,
+    coins: null,
     delegations: null,
-    validators: null,
-    validatorsSelect: null
+    validators: null
   }
 }
 const state = getDefaultState()
@@ -28,68 +24,60 @@ const getters = {
       }
     })
   },
-  findValidator: state => address => state.validatorsSelect.find(item => item.value === address),
-  balanceSum: state => pretty(state.balances.available_balance_sum, 5),
-  balanceCustom: state => pretty(state.balances.available_balance_sum - state.balancesJSON.BIP, 5),
-  getBalancesSelectItem: state => ticet => state.balances.balances.find(item => item.value === ticet),
-  balancesSelect: state => {
-    const tmpArr = []
-    state.balances.balances.forEach(item => {
-      item.label = item.coin
-      item.value = item.coin
-      item.amountPretty = numberSpaces(pretty(item.amount, 5))
-      tmpArr.push(item)
+  findValidator: state => address => state.validators.find(item => item.public_key === address),
+  balanceSum: state => pretty(state.balance.available_balance_sum, 5),
+  // balanceCustom: state => pretty(state.balances.available_balance_sum - state.balancesJSON.BIP, 5),
+  // getBalancesSelectItem: state => ticet => state.balances.balances.find(item => item.value === ticet),
+  balanceSelect: state => state.balance.balances.map(item => {
+    return {
+      label: `<b>${ item.coin }</b> (${ prettyNumber(item.amount, 5) })`,
+      value: item.coin,
+      amount: item.amount
+    }
+  }),
+  balanceObj: state => {
+    const tmpBalance = {}
+    state.balance.balances.forEach(item => {
+      tmpBalance[item.coin] = item.amount
     })
-    return tmpArr
+    return tmpBalance
+  },
+  coinsSelect: state => state.coins.map(item => {
+    return {
+      label: `<b>${ item.symbol }</b> (crr: ${ item.crr })`,
+      value: item.symbol,
+      reserve: item.reserveBalance,
+      crr: item.crr,
+      volume: item.volume
+    }
+  }),
+  coinsInfo: state => {
+    const tmpCoins = {}
+    state.coins.forEach(item => {
+      tmpCoins[item.symbol] = {
+        crr: item.crr,
+        name: item.name
+      }
+    })
+    return tmpCoins
+  },
+  delegationsGroup: state => {
+    return state.delegations.reduce((prev, curr) => {
+      (prev[curr.validator_meta.name] = prev[curr.validator_meta.name] || []).push(curr)
+      return prev
+    }, {})
   },
   delegationsSum: state => {
     const sum = state.delegations.reduce((prev, curr) => ({
       bip_value: parseInt(prev.bip_value) + parseInt(curr.bip_value)
     }))
     return numberSpaces(pretty(sum.bip_value, 5))
-  }
-}
-
-const mutations = {
-  RESET_API: state => {
-    Object.assign(state, getDefaultState())
   },
-  SET_BALANCE: (state, payload) => {
-    const tmpJson = {}
-    payload.balances.forEach((item) => {
-      tmpJson[item.coin] = pretty(item.amount, 5)
-    })
-    state.balancesJSON = tmpJson
-    state.balances = payload
-  },
-  SET_COINS: (state, payload) => {
-    const coinsJSON = {}
-    payload.forEach((item) => {
-      coinsJSON[item.symbol] = {
-        crr: item.crr,
-        name: item.name.length ? item.name : ''
-      }
-    })
-    const tmpArr = []
-    payload.forEach(item => {
-      item.label = item.symbol
-      item.value = item.symbol
-      tmpArr.push(item)
-    })
-    state.coinsSelect = tmpArr
-    state.coinsJSON = coinsJSON
-  },
-  SET_DELEGATION: (state, payload) => {
-    state.delegations = payload
-  },
-  // SET_VALIDATOR: (state, payload) => {
-  //   state.delegations = payload
-  // },
-  SET_VALIDATORS: (state, payload) => {
-    const tmpArr = []
-    payload.forEach(item => {
+  validatorsSelect: state => {
+    const tmpValidators = []
+    state.validators.forEach(item => {
       if (item.status === 2 && item.part && item.meta.name) {
-        tmpArr.push({
+        tmpValidators.push({
           label: item.meta.name,
           value: item.public_key,
           desc: item.meta.description,
@@ -98,12 +86,32 @@ const mutations = {
         })
       }
     })
-    tmpArr.sort((a, b) => {
+    tmpValidators.sort((a, b) => {
       if (parseFloat(a.part) < parseFloat(b.part)) return 1
       if (parseFloat(a.part) > parseFloat(b.part)) return -1
       return 0
     })
-    state.validatorsSelect = tmpArr
+    return tmpValidators
+  }
+}
+
+const mutations = {
+  RESET_API: state => {
+    Object.assign(state, getDefaultState())
+  },
+  SET_BALANCE: (state, payload) => {
+    state.balance = payload
+  },
+  SET_COINS: (state, payload) => {
+    state.coins = payload
+  },
+  SET_DELEGATION: (state, payload) => {
+    state.delegations = payload
+  },
+  // SET_VALIDATOR: (state, payload) => {
+  //   state.delegations = payload
+  // },
+  SET_VALIDATORS: (state, payload) => {
     state.validators = payload
   },
   SET_TRANSACTION: (state, payload) => {
@@ -120,8 +128,13 @@ const actions = {
     return data.data
   },
   FETCH_BALANCE: async (context, payload) => {
-    const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }?withSum=true`)
-    context.commit('SET_BALANCE', data.data)
+    try {
+      const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }?withSum=true`)
+      context.commit('SET_BALANCE', data.data)
+      return data.data
+    } catch (error) {
+      console.log('SET_BALANCE', error)
+    }
   },
   FETCH_DELEGATION: async (context, payload) => {
     const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/delegations`)

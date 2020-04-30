@@ -1,8 +1,8 @@
 <template>
   <q-layout view="hHh lpR fFf">
 
-    <header-app></header-app>
-    <main-menu></main-menu>
+    <HeaderApp />
+    <MainMenu />
 
     <q-page-container>
       <transition
@@ -12,9 +12,9 @@
       >
         <router-view></router-view>
       </transition>
-      <q-page-sticky position="bottom-right" :offset="[18, 36]">
+      <!-- <q-page-sticky position="bottom-right" :offset="[18, 36]">
         <q-btn to="/qr-code" round color="accent" icon="camera_alt" size="lg" /><br>
-      </q-page-sticky>
+      </q-page-sticky> -->
     </q-page-container>
 
   </q-layout>
@@ -33,8 +33,8 @@ import MainMenu from '../components/MainMenu.vue'
 export default {
   name: 'Main',
   components: {
-    'header-app': HeaderApp,
-    'main-menu': MainMenu
+    HeaderApp,
+    MainMenu
   },
   data () {
     return {

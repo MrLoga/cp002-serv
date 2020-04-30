@@ -1,18 +1,23 @@
 <template>
-  <q-page padding>
+  <q-page>
     <div class="q-gutter-md q-pa-md">
       <q-input
         v-model="search"
         outlined
         clearable
         bottom-slots
+        bg-color="white"
         :label="$t('Search')"
       >
+        <template v-slot:append>
+          <q-icon v-if="!search || search === ''" name="search" />
+        </template>
         <template v-slot:after>
           <q-btn flat size="20px" round icon="add_circle_outline" class="cursor-pointer" @click="newContact = true" />
         </template>
       </q-input>
     </div>
+
     <q-dialog v-model="newContact" transition-show="scale" transition-hide="scale">
       <q-card class="dialog-min300">
         <form @submit.prevent.stop="newContactValidate" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
@@ -46,15 +51,15 @@
       </q-card>
     </q-dialog>
 
-    <q-list bordered separator v-if="contactsFilter && contactsFilter.length > 0">
+    <q-list class="bg-white" bordered separator v-if="contactsFilter && contactsFilter.length > 0">
       <q-item v-for="contact in contactsFilter" :key="contact.address" class="q-my-sm">
-        <q-item-section avatar clickable v-ripple @click="$router.push({ name: 'send', params: {routeAddressTo: contact.address }})">
-          <q-avatar color="primary" text-color="white">
+        <q-item-section avatar clickable v-ripple @click="$router.push({ name: 'send', params: { import: { address: contact.address } } })">
+          <q-avatar color="light-blue-14" text-color="white">
             {{ contact.title[0] }}
           </q-avatar>
         </q-item-section>
 
-        <q-item-section clickable v-ripple @click="$router.push({ name: 'send', params: {routeAddressTo: contact.address }})">
+        <q-item-section clickable v-ripple @click="$router.push({ name: 'send', params: { import: { address: contact.address } } })">
           <q-item-label>{{ contact.title }}</q-item-label>
           <q-item-label caption lines="1">{{ contact.address }}</q-item-label>
         </q-item-section>

@@ -11,10 +11,39 @@ const getDefaultState = () => {
 const state = getDefaultState()
 
 const getters = {
-  filterContacts: state => searchVal => state.contacts.filter(item => item.title.toLowerCase().indexOf(searchVal.toLowerCase()) > -1),
+  filterContacts: state => searchVal => state.contacts.filter(item => item.title && item.title.toLowerCase().indexOf(searchVal.toLowerCase()) > -1),
   findContact: state => address => state.contacts.find(item => item.address && item.address === address),
-  filterProfiles: state => searchVal => state.profiles.filter(item => item.title.toLowerCase().indexOf(searchVal.toLowerCase()) > -1),
-  findProfile: state => address => state.profiles.find(item => item.address && item.address === address)
+  filterProfiles: state => searchVal => state.profiles.filter(item => item.title && item.title.toLowerCase().indexOf(searchVal.toLowerCase()) > -1),
+  findProfile: state => address => state.profiles.find(item => item.address && item.address === address),
+  findUser: (state, getters, rootState) => address => {
+    if (address.substring(0, 2) === 'Mx' && address.length === 42) {
+      const contact = state.contacts.find(item => item.address && item.address === address)
+      if (contact && contact.title && contact.title !== '') {
+        contact.type = 'contact'
+        return contact
+      } else {
+        const profile = state.profiles.find(item => item.address && item.address === address)
+        if (profile && profile.title) {
+          profile.type = 'minterscan'
+          return profile
+        } else {
+          const wallet = rootState.wallet.wallets.find(item => item.address === address)
+          if (wallet && wallet.title) {
+            wallet.type = 'wallet'
+            wallet.caption = address.substr(0, 6) + '...' + address.substr(-6)
+            return wallet
+          } else {
+            return {
+              title: address.substr(0, 6) + '...' + address.substr(-6),
+              address: address,
+              caption: 'Profile not found',
+              icon: null
+            }
+          }
+        }
+      }
+    } else return null
+  }
 }
 
 const mutations = {
@@ -23,7 +52,6 @@ const mutations = {
   },
   REMOVE_CONTACT: (state, payload) => {
     const itemId = state.contacts.findIndex(item => item.address === payload)
-    console.log(itemId)
     state.contacts.splice(itemId, 1)
   },
   ADD_CONTACT: (state, payload) => {
@@ -49,8 +77,8 @@ const actions = {
     const { data } = await axios.get(`${ state.minterscanApi }profiles`)
     context.commit('SET_PROFILES', data)
   },
-  GET_PROFILE: async (context, address) => {
-    const { data } = await axios.get(`${ state.minterscanApi }profiles/${ address }`)
+  GET_PROFILE: async (context, payload) => {
+    const { data } = await axios.get(`${ state.minterscanApi }profiles/${ payload }`)
     return data
   }
 }

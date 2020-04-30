@@ -3,7 +3,9 @@ import { i18n } from 'boot/i18n'
 const getDefaultState = () => {
   return {
     rightMenu: false,
-    language: 'en-us'
+    language: 'en-us',
+    // menu: 'footer'
+    menu: 'header'
   }
 }
 const state = getDefaultState()
@@ -18,6 +20,9 @@ const mutations = {
   },
   SET_MENU: (state, payload) => {
     state.rightMenu = payload
+  },
+  SET_MAIN_MENU: (state, payload) => {
+    state.menu = payload
   },
   SET_LANG: (state, payload) => {
     i18n.locale = payload

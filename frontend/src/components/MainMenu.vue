@@ -35,7 +35,7 @@ export default {
         // { icon: 'search', text: 'Saved searches' }
       ],
       menu2: [
-        { icon: 'person', text: this.$t('Profile'), url: '/soon' },
+        // { icon: 'person', text: this.$t('Profile'), url: '/soon' },
         { icon: 'settings', text: this.$t('Settings'), url: '/setting' }
       ]
     }
