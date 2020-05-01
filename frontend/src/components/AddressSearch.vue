@@ -71,7 +71,12 @@
                 <q-item :key="index" class="q-pl-none q-pr-none" clickable v-ripple v-close-popup @click="addressTo = item.address">
                   <q-item-section top avatar class="q-ml-none">
                     <q-avatar color="primary" text-color="white">
-                      {{ item.title[0] }}
+                      <q-img v-if="item.icon && checkIcon(item.icon)" :src="item.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
+                        <template v-slot:error>
+                          <div class="avatar__text text-white bg-primary">{{ item.title[0] }}</div>
+                        </template>
+                      </q-img>
+                      <div v-else class="avatar__text text-white bg-primary">{{ item.title[0] }}</div>
                     </q-avatar>
                   </q-item-section>
 
@@ -89,21 +94,23 @@
               </div>
             </div>
           </q-tab-panel>
-          <q-tab-panel name="validatorsSelectTab">
+          <q-tab-panel name="validatorsSelectTab" class="q-pr-none">
             <q-virtual-scroll
-              style="max-height: 50vh"
+              style="max-height: 48vh"
               :items="validatorsSelect"
               separator
+              class="q-pr-md"
             >
               <template v-slot="{ item, index }">
                 <q-item :key="index" class="q-pl-none q-pr-none" clickable v-ripple v-close-popup @click="addressTo = item.value">
                   <q-item-section top avatar class="q-ml-none">
                     <q-avatar text-color="primary">
-                      <q-img v-if="item.icon" :src="item.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
+                      <img v-if="item.icon" :src="item.icon" style="height: 40px" />
+                      <!-- <q-img v-if="item.icon" :src="item.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
                         <template v-slot:error>
                           <div class="avatar__text text-white bg-primary">{{ item.label[0] }}</div>
                         </template>
-                      </q-img>
+                      </q-img> -->
                       <div v-else class="avatar__text text-white bg-primary">{{ item.label[0] }}</div>
                     </q-avatar>
                   </q-item-section>

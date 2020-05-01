@@ -5,21 +5,6 @@
       <q-page class="flex flex-center">
 
         <q-stepper v-model="step" ref="stepper" alternative-labels color="primary" animated style="width: 100%;">
-          <!-- <q-step :name="1" title="About" icon="settings" :done="step > 1" style="height: 250px;">
-            <p>Готово уже сейчас:</p>
-            <ul style="padding: 0 14px;">
-              <li>Авторизация в сервисах без сид фразы</li>
-              <li>Мультиплатформенность. Можно как сайт, приложение на телефоне или компьютере</li>
-              <li>Базовая отправка и делегирование монет</li>
-              <li>Подсказка сообщающая кому вы отправляете или делегируете свои средства</li>
-              <li>Баланс монет</li>
-              <li>Средства в делегировании</li>
-            </ul>
-          </q-step>
-          <q-step :name="2" title="Secure" icon="settings" :done="step > 2" style="height: 250px;">
-            <p>Безопасность кошелька находиться на уровне официального веб кошелька от команды минтер.</p>
-            <p>Защита ваших данных будет повышаться с последующими обновлениями, это один из основных векторов разработки.</p>
-          </q-step> -->
           <q-step :name="2" title="About" icon="settings" :done="step > 2" style="height: 250px;">
             <div class="text-h5 text-center">WALLET.REEF.MN</div>
             <div class="text-center q-mt-md">
@@ -99,25 +84,22 @@ export default {
         this.walletLogin()
       }, 100)
     },
-    walletLogin: function () {
+    async walletLogin () {
       const walletData = {
         address: this.wallet.getAddressString(),
         privateKey: this.wallet.getPrivateKeyString(),
         mnemonic: this.wallet.getMnemonic()
       }
-      this.$store.dispatch('GET_PROFILE', walletData.address).then(async profile => {
-        walletData.title = (profile && profile.title) ? profile.title : 'Main wallet'
-        walletData.icon = (profile && profile.icon) ? profile.icon : ''
 
-        this.$store.commit('SAVE_WALLET', walletData)
-        await this.$store.dispatch('FETCH_BALANCE')
-        await this.$store.dispatch('FETCH_COINS')
-        await this.$store.dispatch('FETCH_DELEGATION')
-        this.$router.push({ path: '/' })
-      })
+      const profile = await this.$store.dispatch('GET_PROFILE', walletData.address)
+      walletData.title = (profile && profile.title) ? profile.title : 'Main wallet'
+      walletData.icon = (profile && profile.icon) ? profile.icon : ''
 
-      // this.$store.dispatch('FETCH_VALIDATORS')
-      // this.$store.dispatch('NEW_WS')
+      this.$store.commit('SAVE_WALLET', walletData)
+      await this.$store.dispatch('FETCH_BALANCE')
+      await this.$store.dispatch('FETCH_COINS')
+      await this.$store.dispatch('FETCH_DELEGATION')
+      this.$router.push({ path: '/' })
     }
   }
 }

@@ -34,6 +34,9 @@ export default {
       intervalID: null
     }
   },
+  created () {
+    this.countdown()
+  },
   methods: {
     countdown () {
       const now = new Date()
@@ -122,17 +125,6 @@ export default {
       minterGate: state => state.wallet.minterGate,
       wsPayment: state => state.payments.wsPayment
     })
-  },
-  created () {
-    this.countdown()
-  },
-  mounted () {
   }
 }
 </script>
-
-<style lang="stylus">
-  .login {
-    width: 100%
-  }
-</style>

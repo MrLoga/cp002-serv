@@ -185,9 +185,7 @@
                 <q-item-label caption lines="1">{{ item[0].validator_meta.description }}</q-item-label>
               </q-item-section>
               <q-item-section side>
-                <div class="text-grey-7">
-                  <q-btn size="1rem" flat dense round icon="add_circle_outline" @click="$router.push({ name: 'send', params: { import: { address: item[0].pub_key } } })" />
-                </div>
+                <q-btn size="1rem" flat color="light-blue-14" dense round icon="add_circle_outline" @click="$router.push({ name: 'send', params: { import: { address: item[0].pub_key } } })" />
               </q-item-section>
             </q-item>
             <q-separator inset />

@@ -2,7 +2,7 @@
   <q-page padding>
     <!-- <q-btn align="left" flat to="/setting" color="primary" label="Back to setting" icon="arrow_back" /> -->
 
-    <div class="text-h5 gray q-mt-sm">{{ $t('Keep it secret') }}</div>
+    <div class="text-h5 grey q-mt-sm">{{ $t('Keep it secret') }}</div>
     <q-card class="mnemonic__card">
       <q-card-section>
         <div class="text-h6 ">{{ mnemonic }}</div>
@@ -18,14 +18,6 @@
   </q-page>
 </template>
 
-<style lang="stylus">
-  .gray {
-    color: #555;
-  }
-  .mnemonic__card {
-    margin: 1em 0 2em;
-  }
-</style>
 <script>
 import { mapState } from 'vuex'
 import { copyToClipboard } from 'quasar'

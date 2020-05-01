@@ -6,11 +6,6 @@ const routes = [
     props: true
   },
   {
-    path: '/hello',
-    component: () => import('layouts/Hello.vue'),
-    props: true
-  },
-  {
     path: '/',
     component: () => import('layouts/Main.vue'),
     children: [

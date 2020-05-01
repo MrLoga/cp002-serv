@@ -41,26 +41,26 @@ export default {
   },
   mounted () {
     this.$store.commit('SAVE_GATE')
+
+    if (this.coins && this.coins.length) {
+      // console.log('Coins was uploaded')
+    } else {
+      this.$store.dispatch('FETCH_COINS')
+    }
+    if (this.validators && this.validators.length) {
+      // console.log('Validators was uploaded')
+    } else {
+      this.$store.dispatch('FETCH_VALIDATORS')
+    }
+    if (this.profiles && this.profiles.length) {
+      // console.log('Profiles was uploaded')
+    } else {
+      this.$store.dispatch('FETCH_ALL_PROFILES')
+    }
     // this.$store.dispatch('FETCH_CURRENCY')
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')
       this.$store.dispatch('FETCH_DELEGATION')
-
-      if (this.coins && this.coins.length) {
-        // console.log('Coins was uploaded')
-      } else {
-        this.$store.dispatch('FETCH_COINS')
-      }
-      if (this.validators && this.validators.length) {
-        // console.log('Validators was uploaded')
-      } else {
-        this.$store.dispatch('FETCH_VALIDATORS')
-      }
-      if (this.profiles && this.profiles.length) {
-        // console.log('Profiles was uploaded')
-      } else {
-        this.$store.dispatch('FETCH_ALL_PROFILES')
-      }
 
       // if (this.isRegistered) {
       //   this.$store.dispatch('NEW_WS')

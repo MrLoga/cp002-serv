@@ -26,6 +26,8 @@ export default {
     return {
     }
   },
+  created () {
+  },
   methods: {
     remove () {
       const requests = {
@@ -48,16 +50,6 @@ export default {
     ...mapState({
       nonce: state => state.wallet.nonce
     })
-  },
-  created () {
-  },
-  mounted () {
   }
 }
 </script>
-
-<style lang="stylus">
-  .favicon-site {
-    vertical-align: middle;
-  }
-</style>

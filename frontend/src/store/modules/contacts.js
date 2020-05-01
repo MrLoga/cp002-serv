@@ -78,8 +78,12 @@ const actions = {
     context.commit('SET_PROFILES', data)
   },
   GET_PROFILE: async (context, payload) => {
-    const { data } = await axios.get(`${ state.minterscanApi }profiles/${ payload }`)
-    return data
+    try {
+      const { data } = await axios.get(`${ state.minterscanApi }profiles/${ payload }`)
+      return data
+    } catch (error) {
+      return null
+    }
   }
 }
 

@@ -55,7 +55,12 @@
       <q-item v-for="contact in contactsFilter" :key="contact.address" class="q-my-sm">
         <q-item-section avatar clickable v-ripple @click="$router.push({ name: 'send', params: { import: { address: contact.address } } })">
           <q-avatar color="light-blue-14" text-color="white">
-            {{ contact.title[0] }}
+            <q-img v-if="contact.icon" :src="contact.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
+              <template v-slot:error>
+                <div class="avatar__text text-white bg-primary">{{ contact.title[0] }}</div>
+              </template>
+            </q-img>
+            <div v-else class="avatar__text text-white bg-primary">{{ contact.title[0] }}</div>
           </q-avatar>
         </q-item-section>
 
@@ -83,13 +88,6 @@
       </div>
     </div>
 
-    <!-- <q-dialog ref="menuContact" v-model="menuContact">
-      <q-card style="max-width: 240px" class="q-px-sm">
-        <q-card-section>
-          <q-btn color="red" icon="delete" label="Remove contact" />
-        </q-card-section>
-      </q-card>
-    </q-dialog> -->
   </q-page>
 </template>
 
@@ -116,21 +114,22 @@ export default {
       contactsFilter: []
     }
   },
-  computed: {
-    ...mapState({
-      contacts: state => state.contacts.contacts
-    }),
-    ...mapGetters([
-      'filterContacts'
-      // 'getBlocked'
-    ])
+  created () {
+    this.contactsFilter = this.contacts
+    console.log(this.findContact('Mx7048df59e6154cbe12d0729dd11f326d5abaffcc'))
   },
   methods: {
-    pretty (val, l) { return pretty(val, l) },
-    numberSpaces (val) { return numberSpaces(val) },
-    newContactSave () {
-      this.$store.dispatch('NEW_CONTACT', { title: this.newName, address: this.newAddress }).then(contact => {
-        this.$store.commit('ADD_CONTACT', contact)
+    pretty: (val, l) => pretty(val, l),
+    numberSpaces: val => numberSpaces(val),
+    async newContactSave () {
+      if (!this.findContact(this.newAddress)) {
+        const profile = await this.$store.dispatch('GET_PROFILE', this.newAddress)
+        const newContact = {
+          title: this.newName,
+          address: this.newAddress,
+          icon: (profile && profile.icon) ? profile.icon : ''
+        }
+        this.$store.commit('ADD_CONTACT', newContact)
         this.contactsFilter = this.contacts
         this.$q.notify({
           message: this.$t('Contact added'),
@@ -138,14 +137,14 @@ export default {
           color: 'teal',
           position: 'bottom'
         })
-      }).catch(() => {
+      } else {
         this.$q.notify({
           message: this.$t('This contact already exists'),
           icon: 'report_problem',
           color: 'negative',
           position: 'bottom'
         })
-      })
+      }
       this.search = ''
       this.newName = ''
       this.newAddress = ''
@@ -198,8 +197,14 @@ export default {
       })
     }
   },
-  created () {
-    this.contactsFilter = this.contacts
+  computed: {
+    ...mapState({
+      contacts: state => state.contacts.contacts
+    }),
+    ...mapGetters([
+      'filterContacts',
+      'findContact'
+    ])
   },
   watch: {
     newAddress (newVal) {
