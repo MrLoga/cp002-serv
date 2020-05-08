@@ -28,9 +28,12 @@ export default {
   'Scan QR Code': 'Scan QR Code',
 
   // Wallet
+  'Wallet': 'Wallet',
+  'Wallets': 'Wallets',
   'Add new wallet': 'Add new wallet',
   'Current wallet': 'Current wallet',
   'Сhoose active wallet': 'Сhoose active wallet',
+  'Share address': 'Share address',
   'Wallet setting': 'Wallet setting',
   'Start using': 'Start using',
   'Now this is your new wallet': 'Now this is your new wallet',
@@ -110,6 +113,7 @@ export default {
 
   // Contacts
   'Contacts': 'Contacts',
+  'Profiles': 'Profiles',
   'Search': 'Search',
   'New contact': 'New contact',
   'Add new contact': 'Add new contact',

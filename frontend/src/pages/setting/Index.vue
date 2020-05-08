@@ -36,7 +36,7 @@
         <q-item-section>
           <q-item-label>{{ $t('Change language') }}</q-item-label>
           <q-item-label caption>
-            {{ $t('Available') }}: English, Russin
+            {{ $t('Available') }}: English, Russian
           </q-item-label>
         </q-item-section>
         <q-item-section avatar>

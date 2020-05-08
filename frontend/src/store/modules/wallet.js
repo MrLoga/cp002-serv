@@ -133,7 +133,7 @@ const actions = {
       }).catch(error => {
         console.log(error)
         context.commit('SET_SENDING', false)
-        reject(error.response.data)
+        reject(error.response && error.response.data ? error.response.data.error.message : error.response.error.message)
       })
     })
   }

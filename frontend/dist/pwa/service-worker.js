@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.d5b612896ac135974c0860c3b7e7153b.js"
+  "precache-manifest.18f6491862ca6f2ed6e0822b1623b426.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "reef_wallet"});

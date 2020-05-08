@@ -28,9 +28,12 @@ export default {
   'Scan QR Code': 'Сканировать QR Code',
 
   // Wallet
+  'Wallet': 'Кошелек',
+  'Wallets': 'Кошельки',
   'Add new wallet': 'Добавить кошелек',
   'Current wallet': 'Текущий кошелек',
   'Сhoose active wallet': 'Выберите активный кошелек',
+  'Share address': 'Поделиться адресом',
   'Wallet setting': 'Настройки кошелька',
   'Start using': 'Начать пользоваться',
   'Now this is your new wallet': 'Теперь это ваш новый кошелек',
@@ -110,6 +113,7 @@ export default {
 
   // Contacts
   'Contacts': 'Контакты',
+  'Profiles': 'Профили',
   'Search': 'Поиск',
   'New contact': 'Новый контакт',
   'Add new contact': 'Добавить новый контакт',

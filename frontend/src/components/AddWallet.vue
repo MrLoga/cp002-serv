@@ -91,6 +91,8 @@ export default {
 
           this.newWalletDialog = false
           this.$store.commit('SAVE_WALLET', walletData)
+          this.$store.dispatch('FETCH_BALANCE')
+          this.$store.dispatch('FETCH_DELEGATION')
           this.$router.push({ path: '/wallet' })
         }
       } else {

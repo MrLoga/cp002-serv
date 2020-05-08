@@ -38,7 +38,7 @@
     </form>
 
     <q-dialog v-model="confirmSend" persistent full-width transition-show="scale" transition-hide="scale">
-      <q-card style="max-width: 440px !important">
+      <q-card class="dialog-min300">
         <q-card-section style="text-align: center;">
           <div class="text-h5 text-grey-7">{{ $t('You are') }} {{ txType === 'DELEGATE' ? $t('Delegate dialog') : $t('Send dialog') }}</div>
           <div class="text-h6" v-if="coin && coin.value">{{ prettyNumber(amountBig.toString(), 5) }} <b>{{ coin.value }}</b></div>
@@ -72,7 +72,7 @@
 <script>
 import { getFeeValue } from 'minterjs-util'
 import { TX_TYPE } from 'minter-js-sdk'
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { checkAddress, prettyNumber } from '../utils'
 import Big from 'big.js'
 import AddressSearch from '../components/AddressSearch.vue'
@@ -116,6 +116,7 @@ export default {
   },
   created () {},
   mounted () {
+    console.log(this.import)
     if (this.import && this.import.address !== '') {
       this.address = {
         address: this.import.address
@@ -193,10 +194,11 @@ export default {
       }
     },
 
-    validateForm () {
+    async validateForm () {
       this.amountIsError = false
       this.amountErrorMsg = null
-      this.validate = true
+      let validateTmp = true
+      this.validate = false
       this.validateError = null
       this.amountBig = this.amount ? Big(this.amount.replace(',', '.')) : Big(0)
 
@@ -210,11 +212,12 @@ export default {
         this.amountErrorMsg = this.$t('Not enough') + ` ${ this.amountBig.minus(this.coin.amount).round(5, 0) } ${this.coin.value }`
       }
 
-      if (!addressType || !addressType.length) this.validate = false
-      if (!this.amount || !this.amount.length) this.validate = false
-      if (this.amountBig.lte(0)) this.validate = false
-      if (this.amountIsError) this.validate = false
-      if (this.validate) this.updateFee()
+      if (!addressType || !addressType.length) validateTmp = false
+      if (!this.amount || !this.amount.length) validateTmp = false
+      if (validateTmp) await this.updateFee()
+      if (this.amountBig.lte(0)) validateTmp = false
+      if (this.amountIsError) validateTmp = false
+      if (validateTmp) this.validate = true
     },
 
     sender () {
@@ -248,6 +251,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      activeWalletAddress: state => state.wallet.address
+    }),
     ...mapGetters([
       'balanceSelect',
       'balanceObj',
@@ -255,6 +261,12 @@ export default {
     ])
   },
   watch: {
+    balanceSelect () {
+      this.setDefaultCoin()
+    },
+    activeWalletAddress () {
+      this.amount = null
+    },
     coin () { this.validateForm() },
     address () { this.validateForm() },
     amount () { this.validateForm() }

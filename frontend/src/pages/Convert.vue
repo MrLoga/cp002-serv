@@ -4,8 +4,9 @@
       v-model="convertTab"
       inline-label
       active-color="white"
-      indicator-color="white"
-      class="bg-teal text-white shadow-2"
+      indicator-color="grey-4"
+      active-bg-color="light-blue-10"
+      class="bg-light-blue-9 text-white"
     >
       <q-tab name="sell" :label="$t('Exchange')" />
       <q-tab name="buy" :label="$t('Get')" />

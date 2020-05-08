@@ -22,10 +22,12 @@ export function numberSpaces (x) {
   return parts.join('.')
 }
 
-export function prettyNumber (x, length) {
+export function prettyNumber (x, length, html) {
   const num = parseFloat(parseFloat(x).toFixed(length))
   const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  parts[1] = parts[1] ? parts[1] : '0'
+  parts[1] = html ? '<span class="pretty__min">' + parts[1] + '</span>' : parts[1]
   return parts.join('.')
 }
 

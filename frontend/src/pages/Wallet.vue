@@ -2,7 +2,7 @@
   <q-page padding>
     <!-- <div class="text-grey-7 q-mt-lg">{{ $t('Current wallet') }}</div> -->
     <q-card v-if="wallet" flat bordered class="q-mb-lg q-mt-sm">
-      <q-card-section>
+      <!-- <q-card-section>
         <div v-if="wallets.length === 1" style="font-size: 1.2rem">
           <b>{{ wallet.title }}</b>
           <span class="text-grey-7"> ({{ wallet.address.substr(0,4) + "..." + wallet.address.substr(-4) }})</span>
@@ -36,10 +36,14 @@
                 <q-item-label lines="1" v-html="scope.opt.label"></q-item-label>
                 <q-item-label caption lines="1">{{ scope.opt.caption }}</q-item-label>
               </q-item-section>
+              <q-item-section side>
+                <BalanceValue :address="scope.opt.address" />
+              </q-item-section>
             </q-item>
             <q-separator inset />
           </template>
         </q-select>
+
         <div v-if="balance && balance.total_balance_sum" class="q-mt-sm">
           <div>{{ $t('Total balance') }}</div>
           <b>{{ prettyNumber(balance.total_balance_sum, 3) }} BIP</b>
@@ -47,19 +51,32 @@
             (~ {{ prettyNumber(balance.total_balance_sum_usd, 2) }} usd)
           </span>
         </div>
-      </q-card-section>
+      </q-card-section> -->
+      <div class="q-pa-md">
+        <div class="text-h5">{{ wallet.title }}</div>
+        <div class="text-caption text-grey-7">{{ wallet.address }}</div>
+      </div>
 
       <q-list bordered>
         <q-item v-ripple clickable @click="copyAddress">
           <q-item-section avatar>
-            <q-icon color="blue" name="file_copy" />
+            <q-icon color="indigo" name="file_copy" />
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-subtitle2">{{ $t('Copy address') }}</q-item-label>
-            <!-- <q-item-label caption>Copy to clipboard</q-item-label> -->
           </q-item-section>
         </q-item>
         <q-separator inset />
+
+        <q-item v-if="shareTest()" v-ripple clickable @click="shareAddress">
+          <q-item-section avatar>
+            <q-icon color="blue" name="share" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-subtitle2">{{ $t('Share address') }}</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator inset v-if="shareTest()" />
 
         <q-item v-ripple clickable @click="settingWalletDialog = true">
           <q-item-section avatar>
@@ -67,13 +84,12 @@
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-subtitle2">{{ $t('Wallet setting') }}</q-item-label>
-            <!-- <q-item-label caption>{{ $t('Open ') }}</q-item-label> -->
           </q-item-section>
         </q-item>
         <q-dialog v-model="settingWalletDialog" transition-show="scale" transition-hide="scale">
           <q-card class="dialog-min300">
             <q-list>
-              <q-item v-if="wallet && wallet.title">
+              <!-- <q-item v-if="wallet && wallet.title">
                 <q-item-section top avatar class="q-ml-none">
                   <q-avatar text-color="primary">
                     <q-img v-if="wallet.icon" :src="wallet.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
@@ -88,9 +104,9 @@
                   <q-item-label lines="1" class="text-bold">{{ wallet.title }}</q-item-label>
                   <q-item-label caption lines="1">{{ wallet.caption }}</q-item-label>
                 </q-item-section>
-              </q-item>
+              </q-item> -->
 
-              <q-item-label header class="q-pb-sm">{{ $t('Settings') }}</q-item-label>
+              <q-item-label header class="q-pb-sm">{{ $t('Wallet setting') }}</q-item-label>
               <q-separator />
               <q-item v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
                 <q-item-section avatar>
@@ -145,11 +161,12 @@
       v-model="balanceTab"
       inline-label
       active-color="white"
-      indicator-color="white"
-      class="bg-teal text-white shadow-2"
+      indicator-color="grey-13"
+      active-bg-color="light-blue-10"
+      class="bg-light-blue-9 text-white"
     >
-      <q-tab name="balance" icon="toll" :label="$t('Balance')" />
-      <q-tab name="delegations" icon="work" :label="$t('Delegations')" />
+      <q-tab no-caps name="balance" icon="toll" :label="$t('Coins')" />
+      <q-tab no-caps name="delegations" icon="work" :label="$t('Delegations')" />
     </q-tabs>
 
     <q-tab-panels v-model="balanceTab" animated>
@@ -208,9 +225,13 @@
 import { mapGetters, mapState } from 'vuex'
 import { stringToHSL, prettyNumber } from '../utils'
 import { copyToClipboard } from 'quasar'
+// import WalletSelect from '../components/WalletSelect.vue'
 
 export default {
   name: 'Wallet',
+  // components: {
+  //   WalletSelect
+  // },
   data () {
     return {
       wallet: null,
@@ -229,6 +250,17 @@ export default {
   methods: {
     prettyNumber: (val, l) => prettyNumber(val, l),
     stringToHSL: str => stringToHSL(str),
+    shareTest () {
+      if (navigator.share) return true
+      else return false
+    },
+    shareAddress () {
+      navigator.share({
+        url: this.wallet.address
+      })
+        .then(() => console.log('Successful share'))
+        .catch(error => console.log('Error sharing', error))
+    },
     copyAddress () {
       copyToClipboard(this.wallet.address).then(() => {
         this.$q.notify({
@@ -253,6 +285,9 @@ export default {
       this.logoutDialog = false
       this.$store.commit('REMOVE_WALLET', this.wallet.address)
       this.wallet = this.walletsSelect[0]
+      this.$store.commit('SET_WALLET', this.wallet.address)
+      this.$store.dispatch('FETCH_BALANCE')
+      this.$store.dispatch('FETCH_DELEGATION')
     }
   },
   computed: {
@@ -273,14 +308,15 @@ export default {
     ])
   },
   watch: {
-    wallet (val) {
-      if (val && val.address) {
-        this.wallet = val
-        this.$store.commit('SET_WALLET', val.address)
-        this.$store.dispatch('FETCH_BALANCE')
-        this.$store.dispatch('FETCH_DELEGATION')
-      }
-    }
+    // wallet (val) {
+    //   console.log(val)
+    //   if (val && val.address) {
+    //     this.wallet = val
+    //     this.$store.commit('SET_WALLET', val.address)
+    //     this.$store.dispatch('FETCH_BALANCE')
+    //     this.$store.dispatch('FETCH_DELEGATION')
+    //   }
+    // }
   }
 }
 </script>

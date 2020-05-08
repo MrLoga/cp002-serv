@@ -24,7 +24,8 @@
           class="contacts__filter"
         >
           <template v-slot="{ item, index }">
-            <q-item :key="index" class="q-pl-none q-pr-none" clickable v-ripple v-close-popup @click="addressTo = item.address">
+            <q-item-label header v-if="item.label && item.label.length" :key="index" class="q-pb-sm q-pl-none">{{ $t(item.label) }}</q-item-label>
+            <q-item v-else :key="index" class="q-pl-none q-pr-none" clickable v-ripple v-close-popup @click="addressTo = item.address">
               <q-item-section top avatar class="q-ml-none">
                 <q-avatar text-color="primary">
                   <q-img v-if="item.icon && checkIcon(item.icon)" :src="item.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
@@ -52,11 +53,12 @@
           v-model="popupAddressTab"
           inline-label
           active-color="white"
-          indicator-color="white"
-          class="bg-light-blue-9 text-white shadow-2"
+          indicator-color="grey-4"
+          active-bg-color="light-blue-10"
+          class="bg-light-blue-9 text-white"
         >
-          <q-tab name="addressSelectTab" icon="supervisor_account" :label="$t('Contacts')" />
-          <q-tab name="validatorsSelectTab" icon="work" :label="$t('Validators')" />
+          <q-tab no-caps name="addressSelectTab" icon="supervisor_account" :label="$t('Contacts')" />
+          <q-tab no-caps name="validatorsSelectTab" icon="work" :label="$t('Validators')" />
         </q-tabs>
 
         <q-tab-panels v-model="popupAddressTab" animated>
@@ -219,8 +221,23 @@ export default {
         this.findAddress(newVal)
       } else {
         if (newVal.length > 1) {
-          const filterTmp = this.filterContacts(newVal).concat(this.filterValidator(newVal)).concat(this.filterProfiles(newVal))
-          this.contactsFilter = filterTmp
+          this.contactsFilter = []
+          const resContacts = this.filterContacts(newVal)
+          console.log(resContacts)
+          if (resContacts && resContacts.length) {
+            this.contactsFilter.push({ label: 'Contacts' })
+            this.contactsFilter = this.contactsFilter.concat(resContacts)
+          }
+          const resValidator = this.filterValidator(newVal)
+          if (resValidator && resValidator.length) {
+            this.contactsFilter.push({ label: 'Validators' })
+            this.contactsFilter = this.contactsFilter.concat(resValidator)
+          }
+          const resProfiles = this.filterProfiles(newVal)
+          if (resProfiles && resProfiles.length) {
+            this.contactsFilter.push({ label: 'Profiles' })
+            this.contactsFilter = this.contactsFilter.concat(resProfiles)
+          }
           if (this.contactsFilter && this.contactsFilter.length) {
             this.addressProfilesShow = true
           } else {

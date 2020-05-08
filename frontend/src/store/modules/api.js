@@ -6,6 +6,10 @@ const getDefaultState = () => {
     scoringApi: 'https://minter-scoring.space/api/',
     explorerApi: 'https://explorer-api.minter.network/api/v1/',
     balance: null,
+    currency: {
+      avrbuy: 0,
+      avrsell: 0
+    },
     coins: null,
     delegations: null,
     validators: null
@@ -75,22 +79,24 @@ const getters = {
   },
   validatorsSelect: state => {
     const tmpValidators = []
-    state.validators.forEach(item => {
-      if (item.status === 2 && item.part && item.meta.name) {
-        tmpValidators.push({
-          label: item.meta.name,
-          value: item.public_key,
-          desc: item.meta.description,
-          icon: item.meta.icon_url,
-          part: item.part
-        })
-      }
-    })
-    tmpValidators.sort((a, b) => {
-      if (parseFloat(a.part) < parseFloat(b.part)) return 1
-      if (parseFloat(a.part) > parseFloat(b.part)) return -1
-      return 0
-    })
+    if (state.validators && state.validators.length) {
+      state.validators.forEach(item => {
+        if (item.status === 2 && item.part && item.meta.name) {
+          tmpValidators.push({
+            label: item.meta.name,
+            value: item.public_key,
+            desc: item.meta.description,
+            icon: item.meta.icon_url,
+            part: item.part
+          })
+        }
+      })
+      tmpValidators.sort((a, b) => {
+        if (parseFloat(a.part) < parseFloat(b.part)) return 1
+        if (parseFloat(a.part) > parseFloat(b.part)) return -1
+        return 0
+      })
+    }
     return tmpValidators
   }
 }
@@ -116,6 +122,9 @@ const mutations = {
   },
   SET_TRANSACTION: (state, payload) => {
     state.transactions = payload
+  },
+  SET_CURRENCY: (state, payload) => {
+    state.currency = payload
   }
   // SET_TRANSACTION_LOADING: (state, payload) => {
   //  state.transactionsLoading = payload;
@@ -152,6 +161,11 @@ const actions = {
     const { data } = await axios.get(`${ state.explorerApi }validators/${ pubKey }`)
     // context.commit('SET_VALIDATOR', data.data)
     return data.data
+  },
+  GET_CURRENCY: async (context, pubKey) => {
+    const { data } = await axios.get('https://bipchange.org/api/')
+    context.commit('SET_CURRENCY', data)
+    // return data.data
   }
   // FETCH_TRANSACTION: async (context, payload) => {
   //  let { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/transactions`);
