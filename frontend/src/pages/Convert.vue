@@ -224,11 +224,49 @@ export default {
       }
       try {
         const result = await this.minterGate[estimateTxAction](estimateTx)
-        this.commissionCoin = this.coin.value
-        this.commission = result.commission
         this.resultSell = result.will_get
         this.resultBuy = result.will_pay
 
+        const bipFee = getFeeValue(TX_TYPE[this.txType])
+        if (this.coin.value === 'BIP') {
+          if (Big(this.coin.amount).lt(bipFee)) {
+            this.validate = false
+            this.amountIsError = true
+            this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(this.amountBig).minus(this.coin.amount).plus(result.commission).round(3, 0).toString() } ${this.coin.value }`
+          }
+          if (Big(this.coin.amount).lt(this.amountBig.plus(bipFee))) {
+            this.amountBig = Big(this.coin.amount).minus(bipFee)
+          }
+          this.commission = bipFee
+          this.commissionCoin = 'BIP'
+        } else {
+          if (Big(this.balanceObj.BIP).lt(bipFee)) {
+            if (Big(this.coin.amount).lt(this.amountBig.plus(result.commission))) {
+              this.resultSell = result.will_get
+              if (Big(this.coin.amount).gte(result.commission)) {
+                this.amountBig = Big(this.coin.amount).minus(result.commission)
+                this.resultSell = Big(result.will_get).minus(result.commission).toString()
+              } else {
+                this.validate = false
+                this.amountIsError = true
+                this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(this.amountBig).minus(this.coin.amount).plus(result.commission).round(3, 0).toString() } ${this.coin.value }`
+              }
+              this.commissionCoin = this.coin.value
+              this.commission = result.commission
+            } else {
+              this.commissionCoin = this.coin.value
+              this.commission = result.commission
+            }
+          } else {
+            this.commission = bipFee
+            this.commissionCoin = 'BIP'
+          }
+        }
+        // this.commissionCoin = this.coin.value
+        // this.commission = result.commission
+
+        console.log('estimate')
+        console.log(result, bipFee)
         if (result.will_pay && Big(result.will_pay).gt(Big(this.coin.amount))) {
           this.validate = false
           this.amountIsError = true

@@ -14,16 +14,14 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.319f85ca620ba4526b9634bd1eb4da36.js"
+  "precache-manifest.7b6903d9d4434b9cf0c1065bb831cb84.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "reef_wallet"});
 
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
+workbox.core.skipWaiting();
+
+workbox.core.clientsClaim();
 
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to
