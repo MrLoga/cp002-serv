@@ -2,7 +2,6 @@
   <div>
     <div v-if="wallets.length === 1">
       <b>{{ wallet.title }}</b>
-      <span class="text-grey-7"> ({{ wallet.address.substr(0,4) + "..." + wallet.address.substr(-4) }})</span>
     </div>
     <!-- $t('Сhoose active wallet')" -->
     <q-select

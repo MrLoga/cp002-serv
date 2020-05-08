@@ -25,10 +25,6 @@
         </q-item-section>
       </q-item>
 
-      <q-separator inset class="q-mb-sm q-mt-sm" />
-
-      <q-item-label header>{{ $t('General') }}</q-item-label>
-
       <q-item clickable v-ripple @click="alertLang = true">
         <q-item-section avatar>
           <q-avatar color="teal" text-color="white" icon="language" />
@@ -79,6 +75,23 @@
           </q-item-label>
         </q-item-section>
       </q-item> -->
+
+      <q-separator inset class="q-mb-sm q-mt-sm" />
+      <q-item-label header>{{ $t('General') }}</q-item-label>
+
+      <q-item tag="a" href="tg://resolve?domain=reefmn_chat" v-ripple clickable>
+        <q-item-section avatar>
+          <q-avatar color="teal" text-color="white">
+            <q-icon name="not_listed_location" size="1.2em" />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ $t('Support') }}</q-item-label>
+          <q-item-label caption>
+            Open Telegram chat: @reefmn_chat
+          </q-item-label>
+        </q-item-section>
+      </q-item>
 
       <q-item v-ripple clickable @click="logout">
         <q-item-section avatar>

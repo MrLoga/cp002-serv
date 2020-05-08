@@ -84,6 +84,7 @@ export default {
   // Settings
   'General': 'General',
   'Interface': 'Interface',
+  'Support': 'Support',
   'Show seed phrase': 'Show seed phrase',
   'Keep it secret': 'Keep it secret',
   'Change language': 'Change language',

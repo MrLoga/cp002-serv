@@ -84,6 +84,7 @@ export default {
   // Settings
   'General': 'Основные',
   'Interface': 'Интерфейс',
+  'Support': 'Техподдержка',
   'Show seed phrase': 'Показать сид фразу',
   'Keep it secret': 'Сохраните это в секрете',
   'Change language': 'Сменить язык',
