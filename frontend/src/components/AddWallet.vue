@@ -15,6 +15,7 @@
               v-model="newTitle"
               outlined
               clearable
+              spellcheck="false"
               :label="$t('Title')"
               :hint="$t('Optional')"
             ></q-input>
@@ -22,6 +23,7 @@
               v-model="newMnemonic"
               outlined
               clearable
+              spellcheck="false"
               autogrow
               :label="$t('Mnemonic')"
               :error="newMnemonicIsError"

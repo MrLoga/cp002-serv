@@ -4,6 +4,7 @@
     v-model="coin"
     :label="$t('Coin you want')"
     use-input
+    spellcheck="false"
     input-debounce="250"
     bg-color="white"
     behavior="dialog"

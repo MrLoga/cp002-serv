@@ -5,6 +5,7 @@
         v-model="search"
         outlined
         clearable
+        spellcheck="false"
         bottom-slots
         bg-color="white"
         :label="$t('Search')"
@@ -30,6 +31,7 @@
               outlined
               clearable
               bottom-slots
+              spellcheck="false"
               :label="$t('Name')"
               :error="newNameIsError"
               :error-message="newNameErrorMsg"
@@ -38,6 +40,7 @@
               v-model="newAddress"
               outlined
               clearable
+              spellcheck="false"
               bottom-slots
               :label="$t('Mx address')"
               :error="newAddressIsError"

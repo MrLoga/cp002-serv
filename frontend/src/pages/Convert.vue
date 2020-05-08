@@ -23,6 +23,7 @@
             step="any"
             outlined
             clearable
+            spellcheck="false"
             debounce="250"
             bg-color="white"
             :label="$t('Amount')"
@@ -66,6 +67,7 @@
             type="number"
             step="any"
             outlined
+            spellcheck="false"
             clearable
             debounce="250"
             bg-color="white"

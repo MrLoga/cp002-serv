@@ -14,8 +14,8 @@
           outlined
           clearable
           debounce="250"
+          spellcheck="false"
           bg-color="white"
-          :spellcheck="false"
           :label="$t('Amount')"
           :error="amountIsError"
           :error-message="amountErrorMsg"

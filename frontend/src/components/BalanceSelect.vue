@@ -4,6 +4,7 @@
     v-model="coin"
     :label="$t('Сhoose coin')"
     bottom-slots
+    spellcheck="false"
     bg-color="white"
     behavior="dialog"
     :options="balanceSelect"

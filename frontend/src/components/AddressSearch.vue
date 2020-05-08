@@ -3,8 +3,8 @@
     <q-input
       v-model="addressTo"
       outlined
-      :spellcheck="false"
       clearable
+      spellcheck="false"
       bottom-slots
       debounce="250"
       bg-color="white"
