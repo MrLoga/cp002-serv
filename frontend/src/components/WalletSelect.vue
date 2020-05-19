@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div v-if="wallets.length === 1">
+    <!-- $t('Сhoose active wallet')" -->
+    <div v-if="wallets && wallets.length === 1">
       <b>{{ wallet.title }}</b>
     </div>
-    <!-- $t('Сhoose active wallet')" -->
     <q-select
-      v-else
+      v-else-if="walletsSelect && walletsSelect.length"
       v-model="wallet"
       rounded standout
       bg-color="light-blue-10"
@@ -69,6 +69,7 @@ export default {
   },
   computed: {
     ...mapState({
+      title: state => state.wallet.title,
       address: state => state.wallet.address,
       wallets: state => state.wallet.wallets,
       activeWallet: state => state.wallet.active
@@ -79,6 +80,11 @@ export default {
     ])
   },
   watch: {
+    walletsSelect (val) {
+      console.log(val)
+      const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
+      this.wallet = this.walletsSelect[currentWallet]
+    },
     address (val) {
       if (val) {
         const currentWallet = this.walletsSelect.findIndex(item => item.address === val)

@@ -11,6 +11,7 @@ module.exports = function (ctx) {
       'axios',
       'notify-defaults'
     ],
+    debug: false,
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [
@@ -87,6 +88,7 @@ module.exports = function (ctx) {
     devServer: {
       // https: true,
       // port: 8080,
+      vueDevtools: false,
       open: true // opens browser window automatically
     },
 

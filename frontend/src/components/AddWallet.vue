@@ -1,16 +1,16 @@
 <template>
   <div>
-    <!-- <q-btn color="light-blue-14" text-color="white" class="full-width q-mt-sm" :label="$t('Add new wallet')" icon="add_box" @click="newWalletDialog = true" /> -->
-    <q-btn push class="bg-light-blue-14 text-white full-width q-pa-xs q-pb-sm" @click="newWalletDialog = true">
+    <!-- <q-btn color="light-blue-14" text-color="white" class="full-width q-mt-sm" :label="$t('Add wallet')" icon="add_box" @click="newWalletDialog = true" /> -->
+    <q-btn push stack class="bg-light-blue-14 text-white full-width q-pt-xs q-pl-none q-pr-none q-pb-sm" @click="newWalletDialog = true">
       <q-icon name="add_box" size="1.8rem" class="text-white q-mr-sm" />
-      {{ $t('Add new wallet') }}
+      <div style="font-size: 0.8rem">{{ $t('Add wallet') }}</div>
       <!-- Добавить кошелек -->
     </q-btn>
     <q-dialog v-model="newWalletDialog" transition-show="scale" transition-hide="scale">
       <q-card class="dialog-min300">
         <form @submit.prevent.stop="saveNewWallet" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
           <q-card-section class="q-gutter-md">
-            <div class="text-h6">{{ $t('Add new wallet') }}</div>
+            <div class="text-h6">{{ $t('Add wallet') }}</div>
             <q-input
               v-model="newTitle"
               outlined
@@ -43,7 +43,7 @@
               </template>
             </q-input>
             <div>
-              <q-btn type="submit" class="full-width" :label="$t('Add new wallet')" color="primary" :disabled="!newMnemonic || !newMnemonic.length" />
+              <q-btn type="submit" class="full-width" :label="$t('Add wallet')" color="primary" :disabled="!newMnemonic || !newMnemonic.length" />
             </div>
           </q-card-section>
         </form>

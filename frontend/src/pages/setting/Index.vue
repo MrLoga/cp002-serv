@@ -93,7 +93,7 @@
         </q-item-section>
       </q-item>
 
-      <q-item v-ripple clickable @click="logout">
+      <q-item v-ripple clickable @click="logoutDialog = true">
         <q-item-section avatar>
           <q-avatar color="teal" text-color="white" icon="power_settings_new" />
         </q-item-section>
@@ -104,6 +104,18 @@
           </q-item-label>
         </q-item-section>
       </q-item>
+      <q-dialog v-model="logoutDialog" transition-show="scale" transition-hide="scale">
+        <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;">
+          <div class="text-h6 text-center">{{ $t('Attention') }}</div>
+          <div class="text-subtitle2 text-center">{{ $t('Remove all wallets text') }}</div>
+          <q-separator class="q-mt-md q-mb-xs" />
+          <q-card-actions>
+            <q-btn flat dense :label="$t('Cancel')" color="primary" v-close-popup />
+            <q-space />
+            <q-btn flat dense :label="$t('Remove all wallets')" color="red-10" @click="logout" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
 
     </q-list>
   </q-page>
@@ -119,6 +131,7 @@ export default {
   data () {
     return {
       alertLang: false,
+      logoutDialog: false,
       languageList: [
         {
           label: 'English',

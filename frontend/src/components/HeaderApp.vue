@@ -8,13 +8,14 @@
           Reef Wallet β
         </q-toolbar-title> -->
 
+        <q-btn dense size="md" v-ripple flat round icon="camera_alt" to="/qr-code" class="q-mr-sm" />
         <q-btn dense size="lg" v-ripple flat round icon="menu" @click="toggleMenu" />
       </q-toolbar>
       <q-tabs active-bg-color="light-blue-10" v-if="menu === 'header'" class="headerMenu" dense align="justify" v-model="tab">
         <q-route-tab to="/home" :label="$t('Home')" icon="home" />
         <q-route-tab to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
         <q-route-tab to="/send" :label="$t('Send')" icon="send" />
-        <q-route-tab to="/qr-code" icon="camera_alt" label="QR" />
+        <q-route-tab to="/convert" icon="cached" label="Convert" />
         <!-- <q-route-tab to="/services" :label="$t('Services')" icon="star" /> -->
       </q-tabs>
     </q-header>
@@ -23,7 +24,7 @@
         <q-route-tab no-caps to="/home" :label="$t('Home')" icon="home" />
         <q-route-tab no-caps to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
         <q-route-tab no-caps to="/send" :label="$t('Send')" icon="send" />
-        <q-route-tab no-caps to="/qr-code" icon="camera_alt" label="QR" />
+        <q-route-tab no-caps to="/convert" icon="cached" :label="$t('Convert')" />
         <!-- <q-route-tab to="/services" :label="$t('Services')" icon="star" /> -->
       </q-tabs>
     </q-footer>

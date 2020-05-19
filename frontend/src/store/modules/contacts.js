@@ -5,7 +5,8 @@ const getDefaultState = () => {
   return {
     minterscanApi: 'https://minterscan.pro/',
     contacts: [],
-    profiles: []
+    profiles: [],
+    profilesUpdateDate: null
   }
 }
 const state = getDefaultState()
@@ -19,17 +20,17 @@ const getters = {
     if (address.substring(0, 2) === 'Mx' && address.length === 42) {
       const contact = state.contacts.find(item => item.address && item.address === address)
       if (contact && contact.title && contact.title !== '') {
-        contact.type = 'contact'
+        // contact.type = 'contact'
         return contact
       } else {
         const profile = state.profiles.find(item => item.address && item.address === address)
         if (profile && profile.title) {
-          profile.type = 'minterscan'
+          // profile.type = 'minterscan'
           return profile
         } else {
           const wallet = rootState.wallet.wallets.find(item => item.address === address)
           if (wallet && wallet.title) {
-            wallet.type = 'wallet'
+            // wallet.type = 'wallet'
             wallet.caption = address.substr(0, 6) + '...' + address.substr(-6)
             return wallet
           } else {
@@ -74,8 +75,12 @@ const actions = {
     })
   },
   FETCH_ALL_PROFILES: async (context, payload) => {
-    const { data } = await axios.get(`${ state.minterscanApi }profiles`)
-    context.commit('SET_PROFILES', data)
+    try {
+      const { data } = await axios.get(`${ state.minterscanApi }profiles`)
+      context.commit('SET_PROFILES', data)
+    } catch (error) {
+      return null
+    }
   },
   GET_PROFILE: async (context, payload) => {
     try {

@@ -17,6 +17,7 @@
     </q-item-section>
     <q-item-section side>
       <b v-if="value" v-html="value + ' BIP'" class="text-grey-10" />
+      <b v-else-if="wallet.balance" v-html="wallet.balance + ' BIP'" class="text-grey-10" />
       <q-spinner-rings v-else size="2em" />
       <!-- <BalanceValue :address="item.address" /> -->
     </q-item-section>
@@ -40,6 +41,8 @@ export default {
   async created () {
     const data = await this.$store.dispatch('FETCH_BALANCE_ADDRESS', this.wallet.address)
     this.value = prettyNumber(data.total_balance_sum, 2, true)
+  },
+  mounted () {
   },
   methods: {
     selectWallet (address) {

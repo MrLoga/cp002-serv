@@ -21,6 +21,7 @@ const routes = [
       { path: 'authenticator', component: () => import('pages/Authenticator.vue') },
       { path: 'contacts', component: () => import('pages/ContactList.vue') },
       { path: 'wallet', component: () => import('pages/Wallet.vue') },
+      { path: 'transactions', component: () => import('pages/Transactions.vue') },
       { path: 'soon', component: () => import('pages/Soon.vue') }
     ]
   }

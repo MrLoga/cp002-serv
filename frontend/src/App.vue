@@ -27,6 +27,7 @@ export default {
       language: state => state.app.language,
       coins: state => state.api.coins,
       profiles: state => state.contacts.profiles,
+      dataUpdateDate: state => state.app.dataUpdateDate,
       validators: state => state.api.validators
     }),
     ...mapGetters([
@@ -42,21 +43,26 @@ export default {
   mounted () {
     this.$store.commit('SAVE_GATE')
 
-    if (this.coins && this.coins.length) {
-      // console.log('Coins was uploaded')
-    } else {
+    const lastDate = new Date()
+    lastDate.setDate(lastDate.getDate() - 5)
+
+    if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate > lastDate.getTime())) {
+      this.$store.dispatch('FETCH_COINS')
+      this.$store.dispatch('FETCH_VALIDATORS')
+      this.$store.dispatch('FETCH_ALL_PROFILES')
+      this.$store.commit('SET_UPDATE_DATE', lastDate.getTime())
+    }
+
+    if (!this.coins) {
       this.$store.dispatch('FETCH_COINS')
     }
-    if (this.validators && this.validators.length) {
-      // console.log('Validators was uploaded')
-    } else {
+    if (!this.validators) {
       this.$store.dispatch('FETCH_VALIDATORS')
     }
-    if (this.profiles && this.profiles.length) {
-      // console.log('Profiles was uploaded')
-    } else {
+    if (!this.profiles) {
       this.$store.dispatch('FETCH_ALL_PROFILES')
     }
+
     // this.$store.dispatch('FETCH_CURRENCY')
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')
@@ -65,8 +71,6 @@ export default {
       // if (this.isRegistered) {
       //   this.$store.dispatch('NEW_WS')
       // }
-    } else {
-      // this.$router.push({ path: '/start' })
     }
   }
 }

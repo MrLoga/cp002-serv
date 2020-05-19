@@ -30,11 +30,13 @@ export default {
   // Wallet
   'Wallet': 'Кошелек',
   'Wallets': 'Кошельки',
-  'Add new wallet': 'Добавить кошелек',
+  'Add wallet': 'Добавить кошелек',
   'Current wallet': 'Текущий кошелек',
   'Сhoose active wallet': 'Выберите активный кошелек',
   'Share address': 'Поделиться адресом',
-  'Wallet setting': 'Настройки кошелька',
+  'Wallet settings': 'Настройки кошелька',
+  'Change name': 'Изменить название',
+  'Save': 'Сохранить',
   'Start using': 'Начать пользоваться',
   'Now this is your new wallet': 'Теперь это ваш новый кошелек',
   'Mnemonic': 'Мнемоник',
@@ -45,7 +47,9 @@ export default {
   'Data about wallet will be deleted': 'Все данные о кошельке будут удалены',
   'This wallet already exists': 'Этот кошелек уже есть',
   'Remove wallet text': 'Удалив кошелек, вы потеряете доступ к нему. Убедитесь что сохранили сид фразу для восстановления доступа',
+  'Remove all wallets text': 'Удалив все кошельки, вы потеряете доступы к ним. Убедитесь что сохранили сид фразы всех кошельков для восстановления доступа',
   'Remove wallet': 'Удалить кошелек',
+  'Remove all wallets': 'Удалить все кошельки',
   'Attention': 'Внимание',
 
   // Forms
@@ -62,6 +66,7 @@ export default {
   'Delegate dialog': 'делегируете',
   'Send dialog': 'отправляете',
   // 'Send': 'Отправить',
+  'Convert': 'Конвертация',
   'Exchange': 'Обменять',
   'Get': 'Получить',
   'Сhoose coin': 'Выбрать монету',
@@ -80,6 +85,7 @@ export default {
   'Accept': 'Подтвердить',
   'Field is required': 'Поле обязательно',
   'Сhoose different coins': 'Выберите разные монеты',
+  'for transaction fee': 'для оплаты комиссии',
 
   // Settings
   'General': 'Основные',

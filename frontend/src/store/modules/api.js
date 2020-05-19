@@ -1,4 +1,4 @@
-import { pretty, numberSpaces, prettyNumber } from '../../utils'
+import { prettyNumber } from '../../utils'
 import axios from 'axios'
 
 const getDefaultState = () => {
@@ -12,6 +12,7 @@ const getDefaultState = () => {
     },
     coins: null,
     delegations: null,
+    delegationsTotal: null,
     validators: null
   }
 }
@@ -29,7 +30,7 @@ const getters = {
     })
   },
   findValidator: state => address => state.validators.find(item => item.public_key === address),
-  balanceSum: state => pretty(state.balance.available_balance_sum, 5),
+  balanceSum: state => prettyNumber(state.balance.available_balance_sum, 5),
   // balanceCustom: state => pretty(state.balances.available_balance_sum - state.balancesJSON.BIP, 5),
   // getBalancesSelectItem: state => ticet => state.balances.balances.find(item => item.value === ticet),
   balanceSelect: state => state.balance.balances.map(item => {
@@ -71,12 +72,12 @@ const getters = {
       return prev
     }, {})
   },
-  delegationsSum: state => {
-    const sum = state.delegations.reduce((prev, curr) => ({
-      bip_value: parseInt(prev.bip_value) + parseInt(curr.bip_value)
-    }))
-    return numberSpaces(pretty(sum.bip_value, 5))
-  },
+  // delegationsSum: state => {
+  //   const sum = state.delegations.reduce((prev, curr) => ({
+  //     bip_value: parseInt(prev.bip_value) + parseInt(curr.bip_value)
+  //   }))
+  //   return prettyNumber(sum.bip_value, 2)
+  // },
   validatorsSelect: state => {
     const tmpValidators = []
     if (state.validators && state.validators.length) {
@@ -112,7 +113,8 @@ const mutations = {
     state.coins = payload
   },
   SET_DELEGATION: (state, payload) => {
-    state.delegations = payload
+    state.delegations = payload.coins
+    state.delegationsTotal = payload.total
   },
   // SET_VALIDATOR: (state, payload) => {
   //   state.delegations = payload
@@ -132,10 +134,6 @@ const mutations = {
 }
 
 const actions = {
-  FETCH_BALANCE_ADDRESS: async (context, payload) => {
-    const { data } = await axios.get(`${ state.explorerApi }addresses/${ payload }?withSum=true`)
-    return data.data
-  },
   FETCH_BALANCE: async (context, payload) => {
     try {
       const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }?withSum=true`)
@@ -147,7 +145,7 @@ const actions = {
   },
   FETCH_DELEGATION: async (context, payload) => {
     const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/delegations`)
-    context.commit('SET_DELEGATION', data.data)
+    context.commit('SET_DELEGATION', { coins: data.data, total: data.meta.additional.total_delegated_bip_value })
   },
   FETCH_COINS: async (context, address) => {
     const { data } = await axios.get(`${ state.explorerApi }coins`)
@@ -166,11 +164,12 @@ const actions = {
     const { data } = await axios.get('https://bipchange.org/api/')
     context.commit('SET_CURRENCY', data)
     // return data.data
+  },
+  FETCH_TRANSACTION: async context => {
+    const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/transactions`)
+    return data
+    // context.commit('SET_TRANSACTION', data.data);
   }
-  // FETCH_TRANSACTION: async (context, payload) => {
-  //  let { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/transactions`);
-  //  context.commit('SET_TRANSACTION', data.data);
-  // }
 }
 
 export default {

@@ -1,6 +1,8 @@
 import { Minter, TX_TYPE, prepareSignedTx } from 'minter-js-sdk'
 import { Loading, QSpinnerFacebook } from 'quasar'
+import { prettyNumber, shortAddress } from '../../utils'
 import Big from 'big.js'
+import axios from 'axios'
 
 const getDefaultState = () => {
   return {
@@ -28,12 +30,13 @@ const getters = {
     return {
       label: `<b>${ item.title }</b>`,
       value: item.address,
-      caption: item.address.substr(0, 8) + '...' + item.address.substr(-8),
+      caption: shortAddress(item.address, 8),
       icon: item.icon,
       title: item.title,
       privateKey: item.privateKey,
       mnemonic: item.mnemonic,
-      address: item.address
+      address: item.address,
+      balance: item.balance ? prettyNumber(item.balance, 2, true) : null
     }
   })
 }
@@ -69,6 +72,10 @@ const mutations = {
     const itemId = state.wallets.findIndex(item => item.address === payload)
     state.wallets[itemId] = payload
   },
+  CHANGE_NAME_WALLET: (state, payload) => {
+    const itemId = state.wallets.findIndex(item => item.address === payload.address)
+    state.wallets[itemId].title = payload.title
+  },
   // SAVE_KEYS: (state, payload) => {
   //   state.key = payload.key
   //   state.nonce = payload.nonce
@@ -91,10 +98,20 @@ const mutations = {
     } else {
       Loading.hide()
     }
+  },
+  SET_WALLET_BALANCE: (state, payload) => {
+    // const wallet = state.wallets.find(item => item.address === payload.address)
+    const itemId = state.wallets.findIndex(item => item.address === payload.address)
+    state.wallets[itemId].balance = payload.balance
   }
 }
 
 const actions = {
+  FETCH_BALANCE_ADDRESS: async (context, payload) => {
+    const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }?withSum=true`)
+    context.commit('SET_WALLET_BALANCE', { address: payload, balance: data.data.available_balance_sum })
+    return data.data
+  },
   GET_COMMISSION: (context, payload) => {
     const txParams = {
       chainId: 1,

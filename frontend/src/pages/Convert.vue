@@ -45,7 +45,7 @@
             <q-btn type="submit" color="teal" size="16px"  icon="compare_arrows" class="full-width" :disabled="!validate" :label="$t('Exchange')" />
           </div>
 
-          <div v-if="validate && resultSell != 0">
+          <div v-if="validate && txType === 'SELL' && resultSell != 0">
             <span class="text-subtitle1">{{ $t('You will get') }}</span>&nbsp;
             <span class="text-h6">{{ prettyNumber(resultSell, 3) }}</span>&nbsp;
             <span class="text-subtitle1">{{ coinTo.value.toUpperCase() }}</span>
@@ -85,7 +85,7 @@
           <div>
             <q-btn type="submit" color="teal" size="16px" icon="compare_arrows" class="full-width" :disabled="!validate" :label="$t('Exchange')" />
           </div>
-          <div v-if="validate && resultBuy != 0">
+          <div v-if="validate && txType === 'BUY' && resultBuy != 0">
             <span class="text-subtitle1">{{ $t('You will pay') }}</span>&nbsp;
             <span class="text-h6">{{ prettyNumber(resultBuy, 5) }}</span>&nbsp;
             <span class="text-subtitle1">{{ coin.value.toUpperCase() }}</span>
@@ -100,7 +100,7 @@
 
     <q-dialog v-if="validate" v-model="confirmConvert" persistent full-width transition-show="scale" transition-hide="scale">
       <q-card>
-        <q-card-section class="text-center" v-if="convertTab === 'sell'">
+        <q-card-section class="text-center" v-if="txType === 'SELL'">
           <div class="text-h5 text-grey-7 q-mb-md">{{ $t('Youre Exchange') }}</div>
           <div class="text-h5">{{ prettyNumber(amountBig.toString(), 3) }} <span class="text-h6">{{ coin.value }}</span></div>
           <div class="text-grey-7">{{ $t('to') }}</div>
@@ -213,17 +213,18 @@ export default {
     },
     async estimateTx () {
       const estimateTxAction = this.txType === 'BUY' ? 'estimateCoinBuy' : 'estimateCoinSell'
-      const estimateTx = {
+      const estimateTxData = {
         coinToSell: this.coin.value,
         coinToBuy: this.coinTo.value
       }
       if (estimateTxAction === 'estimateCoinBuy') {
-        estimateTx.valueToBuy = this.amountBig.toString()
+        estimateTxData.valueToBuy = this.amountBig.toString()
       } else if (estimateTxAction === 'estimateCoinSell') {
-        estimateTx.valueToSell = this.amountBig.toString()
+        estimateTxData.valueToSell = this.amountBig.toString()
       }
       try {
-        const result = await this.minterGate[estimateTxAction](estimateTx)
+        const result = await this.minterGate[estimateTxAction](estimateTxData)
+        console.log(result)
         this.resultSell = result.will_get
         this.resultBuy = result.will_pay
 
@@ -241,21 +242,33 @@ export default {
           this.commissionCoin = 'BIP'
         } else {
           if (Big(this.balanceObj.BIP).lt(bipFee)) {
-            if (Big(this.coin.amount).lt(this.amountBig.plus(result.commission))) {
-              this.resultSell = result.will_get
-              if (Big(this.coin.amount).gte(result.commission)) {
-                this.amountBig = Big(this.coin.amount).minus(result.commission)
-                this.resultSell = Big(result.will_get).minus(result.commission).toString()
+            if (this.txType === 'SELL' && result.will_get) {
+              if (Big(this.coin.amount).lt(this.amountBig.plus(result.commission))) {
+                this.resultSell = result.will_get
+                if (Big(this.coin.amount).gte(result.commission)) {
+                  this.amountBig = Big(this.coin.amount).minus(result.commission)
+                  this.resultSell = Big(result.will_get).minus(result.commission).toString()
+                } else {
+                  this.validate = false
+                  this.amountIsError = true
+                  this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(this.amountBig).minus(this.coin.amount).plus(result.commission).round(3, 0).toString() } ${ this.coin.value } ` + this.$t('for transaction fee')
+                }
+                this.commissionCoin = this.coin.value
+                this.commission = result.commission
               } else {
+                this.commissionCoin = this.coin.value
+                this.commission = result.commission
+              }
+            } else if (this.txType === 'BUY' && result.will_pay) {
+              console.log(result)
+              if (Big(result.commission).gt(result.will_pay)) {
                 this.validate = false
                 this.amountIsError = true
-                this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(this.amountBig).minus(this.coin.amount).plus(result.commission).round(3, 0).toString() } ${this.coin.value }`
+                this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(result.commission).minus(result.will_pay).round(3, 0).toString() } ${this.coin.value } ` + this.$t('for transaction fee')
+              } else {
+                this.commissionCoin = this.coin.value
+                this.commission = result.commission
               }
-              this.commissionCoin = this.coin.value
-              this.commission = result.commission
-            } else {
-              this.commissionCoin = this.coin.value
-              this.commission = result.commission
             }
           } else {
             this.commission = bipFee
@@ -283,18 +296,18 @@ export default {
       this.validateError = null
       this.amountBig = this.amount ? Big(this.amount.replace(',', '.')) : Big(0)
 
-      if (this.coin && this.coinTo && this.coin.value === this.coinTo.value) {
+      if (!this.coin || !this.coinTo) {
+        this.validate = false
+      } else if (this.coin && this.coinTo && this.coin.value === this.coinTo.value) {
         this.validate = false
         this.txError = this.$t('Сhoose different coins')
       }
-      if (this.coin && Big(this.amountBig).gt(Big(this.coin.amount))) {
+      if (this.txType === 'SELL' && this.coin && Big(this.amountBig).gt(Big(this.coin.amount))) {
         this.validate = false
         this.amountIsError = true
         this.amountErrorMsg = this.$t('Not enough') + ` ${ Big(this.amountBig).minus(this.coin.amount).round(3, 0).toString() } ${this.coin.value }`
       }
-      if (!this.amount || !this.amount.length) this.validate = false
-      if (this.amountBig.lte(0)) this.validate = false
-      if (!this.coin || !this.coinTo) this.validate = false
+      if (!this.amount || !this.amount.length || this.amountBig.lte(0)) this.validate = false
       if (this.validate) {
         this.estimateTx()
       }
@@ -327,7 +340,8 @@ export default {
   },
   computed: {
     ...mapState({
-      minterGate: state => state.wallet.minterGate
+      minterGate: state => state.wallet.minterGate,
+      activeWalletAddress: state => state.wallet.address
     }),
     ...mapGetters([
       'balanceSelect',
@@ -339,6 +353,13 @@ export default {
   watch: {
     amount () { this.valifateForm() },
     coin () { this.valifateForm() },
+    balanceSelect () {
+      this.setDefaultCoin()
+    },
+    activeWalletAddress () {
+      this.amount = null
+      this.coinTo = null
+    },
     coinTo () { this.valifateForm() },
     convertTab () { this.clearAll() }
   }

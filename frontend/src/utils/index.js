@@ -1,3 +1,5 @@
+import Big from 'big.js'
+
 export function btoaUTF16 (sString) {
   var aUTF16CodeUnits = new Uint16Array(sString.length)
   Array.prototype.forEach.call(aUTF16CodeUnits, function (el, idx, arr) { arr[idx] = sString.charCodeAt(idx) })
@@ -23,14 +25,19 @@ export function numberSpaces (x) {
 }
 
 export function prettyNumber (x, length, html) {
-  const num = parseFloat(parseFloat(x).toFixed(length))
-  const parts = num.toString().split('.')
+  const num = Big(x).round(length, 3).toString()
+  const parts = num.split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
-  parts[1] = parts[1] ? parts[1] : '0'
-  parts[1] = html ? '<span class="pretty__min">' + parts[1] + '</span>' : parts[1]
-  return parts.join('.')
+  // parts[1] = parts[1] ? parts[1] : '0'
+  if (parts[1]) {
+    parts[1] = html ? '<span class="pretty__min">' + parts[1] + '</span>' : parts[1]
+    return parts.join('.')
+  } else {
+    return parts[0]
+  }
 }
 
+export const shortAddress = (address, l) => address.substr(0, l) + '...' + address.substr(l * -1)
 export const checkAddress = address => {
   if (!address) return false
   if (address.substring(0, 2) === 'Mx' && address.length === 42) return 'Mx'

@@ -200,11 +200,11 @@ export default {
       profiles: state => state.contacts.profiles
     }),
     ...mapGetters([
-      'findValidator',
       'validatorsSelect',
       'filterContacts',
       'filterProfiles',
       'filterValidator',
+      'findValidator',
       'findContact',
       'findProfile',
       'findUser'

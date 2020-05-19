@@ -30,11 +30,13 @@ export default {
   // Wallet
   'Wallet': 'Wallet',
   'Wallets': 'Wallets',
-  'Add new wallet': 'Add new wallet',
+  'Add wallet': 'Add wallet',
   'Current wallet': 'Current wallet',
   'Сhoose active wallet': 'Сhoose active wallet',
   'Share address': 'Share address',
-  'Wallet setting': 'Wallet setting',
+  'Wallet settings': 'Wallet settings',
+  'Change name': 'Change name',
+  'Save': 'Save',
   'Start using': 'Start using',
   'Now this is your new wallet': 'Now this is your new wallet',
   'Mnemonic': 'Mnemonic',
@@ -45,7 +47,9 @@ export default {
   'Data about wallet will be deleted': 'Data about wallet will be deleted',
   'This wallet already exists': 'This wallet already exists',
   'Remove wallet text': 'If you delete your wallet, you will lose access to it. Be sure to save the seed phrase to restore access',
+  'Remove all wallets text': 'If you delete all wallets, you will lose access to them. Be sure to save seed phrases for all wallets to restore access',
   'Remove wallet': 'Remove wallet',
+  'Remove all wallets': 'Remove all wallets',
   'Attention': 'Attention',
 
   // Forms
@@ -62,6 +66,7 @@ export default {
   'Delegate dialog': 'delegate',
   'Send dialog': 'send',
   // 'Send': 'Send',
+  'Convert': 'Convert',
   'Exchange': 'Exchange',
   'Get': 'Get',
   'Сhoose coin': 'Сhoose coin',
@@ -80,6 +85,7 @@ export default {
   'Accept': 'Accept',
   'Field is required': 'Field is required',
   'Сhoose different coins': 'Сhoose different coins',
+  'for transaction fee': 'for transaction fee',
 
   // Settings
   'General': 'General',

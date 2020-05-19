@@ -4,7 +4,7 @@ const getDefaultState = () => {
   return {
     rightMenu: false,
     language: 'en-us',
-    // menu: 'footer'
+    dataUpdateDate: null,
     menu: 'header'
   }
 }
@@ -20,6 +20,9 @@ const mutations = {
   },
   SET_MENU: (state, payload) => {
     state.rightMenu = payload
+  },
+  SET_UPDATE_DATE: (state, payload) => {
+    state.dataUpdateDate = payload
   },
   SET_MAIN_MENU: (state, payload) => {
     state.menu = payload

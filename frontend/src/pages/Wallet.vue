@@ -2,62 +2,35 @@
   <q-page padding>
     <!-- <div class="text-grey-7 q-mt-lg">{{ $t('Current wallet') }}</div> -->
     <q-card v-if="wallet" flat bordered class="q-mb-lg q-mt-sm">
-      <!-- <q-card-section>
-        <div v-if="wallets.length === 1" style="font-size: 1.2rem">
-          <b>{{ wallet.title }}</b>
-          <span class="text-grey-7"> ({{ wallet.address.substr(0,4) + "..." + wallet.address.substr(-4) }})</span>
-        </div>
-        <q-select
-          v-else
-          v-model="wallet"
-          outlined
-          class="q-mb-xs"
-          :label="$t('Сhoose active wallet')"
-          bg-color="white"
-          behavior="dialog"
-          :options="walletsSelect"
-        >
-          <template v-slot:option="scope">
-            <q-item
-              v-bind="scope.itemProps"
-              v-on="scope.itemEvents"
-            >
-              <q-item-section top avatar class="q-ml-none">
-                <q-avatar text-color="primary">
-                  <q-img v-if="scope.opt.icon" :src="scope.opt.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
-                    <template v-slot:error>
-                      <div class="avatar__text text-white bg-primary">{{ scope.opt.title[0] }}</div>
-                    </template>
-                  </q-img>
-                  <q-icon v-else name="person" color="grey" size="2rem" />
-                </q-avatar>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label lines="1" v-html="scope.opt.label"></q-item-label>
-                <q-item-label caption lines="1">{{ scope.opt.caption }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <BalanceValue :address="scope.opt.address" />
-              </q-item-section>
-            </q-item>
-            <q-separator inset />
-          </template>
-        </q-select>
 
-        <div v-if="balance && balance.total_balance_sum" class="q-mt-sm">
-          <div>{{ $t('Total balance') }}</div>
-          <b>{{ prettyNumber(balance.total_balance_sum, 3) }} BIP</b>
-          <span class="text-grey-7" v-if="balance && balance.total_balance_sum_usd">
-            (~ {{ prettyNumber(balance.total_balance_sum_usd, 2) }} usd)
-          </span>
-        </div>
-      </q-card-section> -->
       <div class="q-pa-md">
         <div class="text-h5">{{ wallet.title }}</div>
         <div class="text-caption text-grey-7">{{ wallet.address }}</div>
+
+        <q-separator class="q-mb-sm q-mt-sm" />
+
+        <div>
+          Available balance: <b class="q-ml-sm">{{ prettyNumber(balance.available_balance_sum, 2) }}</b> bip
+          <span class="q-ml-xs text-grey-7">({{ prettyNumber(balance.available_balance_sum_usd, 2) }} $)</span>
+        </div>
+        <div>Delegated: <b class="q-ml-sm">{{ prettyNumber(delegationsTotal, 2) }}</b> bip</div>
+
       </div>
 
-      <q-list bordered>
+      <q-separator inset />
+      <q-card-actions align="center">
+        <q-btn flat round color="teal" @click="qrAddressDialog = true">
+          <q-icon size="sm">
+            <img style="max-width: 92%" src="statics/qr-icon_black.svg" />
+          </q-icon>
+        </q-btn>
+        <q-btn flat round color="teal" icon="file_copy" @click="copyAddress" />
+        <q-btn flat round color="primary" icon="share" v-if="shareTest()" @click="shareAddress" />
+        <q-btn flat round color="purple" icon="format_list_bulleted" to="/transactions" />
+        <q-btn flat round color="purple" icon="settings" @click="settingWalletDialog = true" />
+      </q-card-actions>
+
+      <!-- <q-list bordered>
         <q-item v-ripple clickable @click="copyAddress">
           <q-item-section avatar>
             <q-icon color="indigo" name="file_copy" />
@@ -83,79 +56,115 @@
             <q-icon color="blue-grey-14" size="1.7rem" name="settings" />
           </q-item-section>
           <q-item-section>
-            <q-item-label class="text-subtitle2">{{ $t('Wallet setting') }}</q-item-label>
+            <q-item-label class="text-subtitle2">{{ $t('Wallet settings') }}</q-item-label>
           </q-item-section>
         </q-item>
-        <q-dialog v-model="settingWalletDialog" transition-show="scale" transition-hide="scale">
-          <q-card class="dialog-min300">
-            <q-list>
-              <!-- <q-item v-if="wallet && wallet.title">
-                <q-item-section top avatar class="q-ml-none">
-                  <q-avatar text-color="primary">
-                    <q-img v-if="wallet.icon" :src="wallet.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
-                      <template v-slot:error>
-                        <q-icon name="person" color="grey" size="2rem" />
-                      </template>
-                    </q-img>
-                    <q-icon v-else name="person" color="grey" size="2rem" />
-                  </q-avatar>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label lines="1" class="text-bold">{{ wallet.title }}</q-item-label>
-                  <q-item-label caption lines="1">{{ wallet.caption }}</q-item-label>
-                </q-item-section>
-              </q-item> -->
-
-              <q-item-label header class="q-pb-sm">{{ $t('Wallet setting') }}</q-item-label>
-              <q-separator />
-              <q-item v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
-                <q-item-section avatar>
-                  <q-icon color="orange" name="visibility" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-subtitle2">{{ $t('Show seed phrase') }}</q-item-label>
-                  <q-item-label caption>{{ $t('Keep it secret') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-separator inset />
-
-              <q-item v-ripple clickable @click="settingWalletDialog = false; logoutDialog = true">
-                <q-item-section avatar>
-                  <q-icon color="deep-orange-14" name="delete" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-subtitle2">{{ $t('Logout this wallet') }}</q-item-label>
-                  <q-item-label caption>{{ $t('Data about wallet will be deleted') }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </q-dialog>
-        <q-dialog v-model="showSeedDialog" transition-show="scale" transition-hide="scale">
-          <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;">
-            <div class="text-subtitle1">{{ wallet.mnemonic }}</div>
-            <q-separator class="q-mt-md q-mb-xs" />
-            <q-card-actions>
-              <q-btn flat dense :label="$t('Copy')" color="primary" @click="copyMnemonic" />
-              <q-space />
-              <q-btn flat dense :label="$t('Close')" color="primary" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-        <q-dialog v-model="logoutDialog" transition-show="scale" transition-hide="scale">
-          <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;">
-            <div class="text-h6 text-center">{{ $t('Attention') }}</div>
-            <div class="text-subtitle2 text-center">{{ $t('Remove wallet text') }}</div>
-            <q-separator class="q-mt-md q-mb-xs" />
-            <q-card-actions>
-              <q-btn flat dense :label="$t('Remove wallet')" color="red-10" @click="removeWallet" />
-              <q-space />
-              <q-btn flat dense :label="$t('Close')" color="primary" v-close-popup />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
-      </q-list>
+      </q-list> -->
     </q-card>
+
+    <q-dialog v-model="qrAddressDialog">
+      <q-card>
+        <img class="address__qr" :src="qrImg" />
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="settingWalletDialog" transition-show="scale" transition-hide="scale">
+      <q-card class="dialog-min300">
+        <q-list>
+          <!-- <q-item v-if="wallet && wallet.title">
+            <q-item-section top avatar class="q-ml-none">
+              <q-avatar text-color="primary">
+                <q-img v-if="wallet.icon" :src="wallet.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
+                  <template v-slot:error>
+                    <q-icon name="person" color="grey" size="2rem" />
+                  </template>
+                </q-img>
+                <q-icon v-else name="person" color="grey" size="2rem" />
+              </q-avatar>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label lines="1" class="text-bold">{{ wallet.title }}</q-item-label>
+              <q-item-label caption lines="1">{{ wallet.caption }}</q-item-label>
+            </q-item-section>
+          </q-item> -->
+
+          <q-item-label header class="q-pb-sm">{{ $t('Wallet settings') }}</q-item-label>
+          <q-separator />
+          <q-item v-ripple clickable @click="settingWalletDialog = false; editWalletDialog = true">
+            <q-item-section avatar>
+              <q-icon color="teal" name="edit" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-subtitle2">{{ $t('Change name') }}</q-item-label>
+              <!-- <q-item-label caption>{{ $t('Keep it secret') }}</q-item-label> -->
+            </q-item-section>
+          </q-item>
+          <q-separator inset />
+
+          <q-item v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
+            <q-item-section avatar>
+              <q-icon color="orange" name="visibility" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-subtitle2">{{ $t('Show seed phrase') }}</q-item-label>
+              <q-item-label caption>{{ $t('Keep it secret') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-separator inset />
+
+          <q-item v-ripple clickable @click="settingWalletDialog = false; logoutDialog = true">
+            <q-item-section avatar>
+              <q-icon color="deep-orange-14" name="delete" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-subtitle2">{{ $t('Logout this wallet') }}</q-item-label>
+              <q-item-label caption>{{ $t('Data about wallet will be deleted') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="editWalletDialog" transition-show="scale" transition-hide="scale">
+      <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;">
+        <div>
+          <q-input
+            v-model="newTitle"
+            outlined
+            clearable
+            spellcheck="false"
+            bg-color="white"
+          />
+        </div>
+        <q-separator class="q-mt-md q-mb-xs" />
+        <q-card-actions>
+          <q-btn flat dense :label="$t('Cancel')" color="primary" v-close-popup />
+          <q-space />
+          <q-btn flat dense :label="$t('Save')" color="teal" @click="saveNewTitle" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="showSeedDialog" transition-show="scale" transition-hide="scale">
+      <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;">
+        <div class="text-subtitle1">{{ wallet.mnemonic }}</div>
+        <q-separator class="q-mt-md q-mb-xs" />
+        <q-card-actions>
+          <q-btn flat dense :label="$t('Cancel')" color="primary" v-close-popup />
+          <q-space />
+          <q-btn flat dense :label="$t('Copy')" color="teal" @click="copyMnemonic" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="logoutDialog" transition-show="scale" transition-hide="scale">
+      <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;">
+        <div class="text-h6 text-center">{{ $t('Attention') }}</div>
+        <div class="text-subtitle2 text-center">{{ $t('Remove wallet text') }}</div>
+        <q-separator class="q-mt-md q-mb-xs" />
+        <q-card-actions>
+          <q-btn flat dense :label="$t('Cancel')" color="primary" v-close-popup />
+          <q-space />
+          <q-btn flat dense :label="$t('Remove wallet')" color="red-10" @click="removeWallet" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <q-tabs
       v-model="balanceTab"
@@ -184,7 +193,7 @@
               <q-item-label v-if="coinsInfo" caption lines="1">{{ coinsInfo[coin].name }}</q-item-label>
             </q-item-section>
 
-            <q-item-section side>{{ prettyNumber(amount, 5) }}</q-item-section>
+            <q-item-section side>{{ prettyNumber(amount, 4) }}</q-item-section>
           </q-item>
         </q-list>
       </q-tab-panel>
@@ -225,6 +234,7 @@
 import { mapGetters, mapState } from 'vuex'
 import { stringToHSL, prettyNumber } from '../utils'
 import { copyToClipboard } from 'quasar'
+import QRCode from 'qrcode'
 // import WalletSelect from '../components/WalletSelect.vue'
 
 export default {
@@ -237,6 +247,10 @@ export default {
       wallet: null,
       currentWallet: null,
       currentProfile: null,
+      editWalletDialog: false,
+      newTitle: false,
+      qrAddressDialog: false,
+      qrImg: '',
       settingWalletDialog: false,
       showSeedDialog: false,
       logoutDialog: false,
@@ -246,6 +260,8 @@ export default {
   created () {
     const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
     this.wallet = this.walletsSelect[currentWallet]
+    this.newTitle = this.wallet.title
+    this.createQR()
   },
   methods: {
     prettyNumber: (val, l) => prettyNumber(val, l),
@@ -254,12 +270,38 @@ export default {
       if (navigator.share) return true
       else return false
     },
+    createQR () {
+      const opts = {
+        errorCorrectionLevel: 'M',
+        type: 'image/png',
+        width: 400,
+        margin: 1
+      }
+      QRCode.toDataURL(this.address, opts).then(url => {
+        this.qrImg = url
+      }).catch(err => {
+        this.$q.notify({
+          message: err,
+          color: 'purple'
+        })
+        // console.error(err)
+      })
+    },
     shareAddress () {
       navigator.share({
         url: this.wallet.address
       })
         .then(() => console.log('Successful share'))
         .catch(error => console.log('Error sharing', error))
+    },
+    saveNewTitle () {
+      if (this.newTitle) {
+        this.$store.commit('CHANGE_NAME_WALLET', { title: this.newTitle, address: this.address })
+        this.wallet.title = this.newTitle
+      } else {
+        this.$store.commit('CHANGE_NAME_WALLET', { title: 'No name', address: this.address })
+        this.wallet.title = 'No name'
+      }
     },
     copyAddress () {
       copyToClipboard(this.wallet.address).then(() => {
@@ -294,29 +336,27 @@ export default {
     ...mapState({
       address: state => state.wallet.address,
       wallets: state => state.wallet.wallets,
-      activeWallet: state => state.wallet.active,
       balance: state => state.api.balance,
-      delegations: state => state.api.delegations
+      delegations: state => state.api.delegations,
+      delegationsTotal: state => state.api.delegationsTotal
     }),
     ...mapGetters([
       'balanceObj',
       'delegationsGroup',
       'coinsInfo',
+      'delegationsSum',
       'walletsSelect',
       'findWallet',
       'findUser'
     ])
   },
   watch: {
-    // wallet (val) {
-    //   console.log(val)
-    //   if (val && val.address) {
-    //     this.wallet = val
-    //     this.$store.commit('SET_WALLET', val.address)
-    //     this.$store.dispatch('FETCH_BALANCE')
-    //     this.$store.dispatch('FETCH_DELEGATION')
-    //   }
-    // }
+    address (val) {
+      const currentWallet = this.walletsSelect.findIndex(item => item.address === val)
+      this.wallet = this.walletsSelect[currentWallet]
+      this.newTitle = this.wallet.title
+      this.createQR()
+    }
   }
 }
 </script>
