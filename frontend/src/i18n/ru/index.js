@@ -23,6 +23,7 @@ export default {
   'Profile': 'Профиль',
   'Settings': 'Настройки',
   'Exit': 'Выход',
+  'Transactions': 'Переводы',
 
   // QR Code
   'Scan QR Code': 'Сканировать QR Code',
@@ -31,6 +32,10 @@ export default {
   'Wallet': 'Кошелек',
   'Wallets': 'Кошельки',
   'Add wallet': 'Добавить кошелек',
+  'Observers': 'Наблюдатели',
+  'Add observer': 'Добавить наблюдателя',
+  'Remove observer': 'Удалить наблюдателя',
+  'Remove observer text': 'Прекратить наблюдение за этим кошельком?',
   'Current wallet': 'Текущий кошелек',
   'Сhoose active wallet': 'Выберите активный кошелек',
   'Share address': 'Поделиться адресом',

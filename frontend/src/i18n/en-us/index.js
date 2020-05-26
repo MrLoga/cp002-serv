@@ -23,6 +23,7 @@ export default {
   'Profile': 'Profile',
   'Settings': 'Settings',
   'Exit': 'Exit',
+  'Transactions': 'Transactions',
 
   // QR Code
   'Scan QR Code': 'Scan QR Code',
@@ -31,6 +32,10 @@ export default {
   'Wallet': 'Wallet',
   'Wallets': 'Wallets',
   'Add wallet': 'Add wallet',
+  'Observers': 'Observers',
+  'Add observer': 'Add observer',
+  'Remove observer': 'Remove observer',
+  'Remove observer text': 'Stop observation this wallet?',
   'Current wallet': 'Current wallet',
   'Сhoose active wallet': 'Сhoose active wallet',
   'Share address': 'Share address',

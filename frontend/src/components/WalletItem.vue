@@ -2,7 +2,7 @@
   <q-item v-ripple clickable @click="selectWallet(wallet.address)">
     <q-item-section top avatar class="q-ml-none">
       <q-avatar text-color="green" rounded>
-        <q-icon name="check_circle" color="green" size="1rem" v-if="wallet.address === activeAddress" class="wallet__active-icon" />
+        <q-icon name="check_circle" color="green" size="1rem" v-if="type !== 'observer' && wallet.address === activeAddress" class="wallet__active-icon" />
         <q-img v-if="wallet.icon" :src="wallet.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
           <template v-slot:error>
             <div class="avatar__text text-white bg-primary">{{ wallet.title[0] }}</div>
@@ -31,7 +31,8 @@ import { mapState } from 'vuex'
 export default {
   name: 'WalletItem',
   props: {
-    wallet: Object
+    wallet: Object,
+    type: String
   },
   data () {
     return {
@@ -42,14 +43,16 @@ export default {
     const data = await this.$store.dispatch('FETCH_BALANCE_ADDRESS', this.wallet.address)
     this.value = prettyNumber(data.total_balance_sum, 2, true)
   },
-  mounted () {
-  },
   methods: {
     selectWallet (address) {
-      this.$store.commit('SET_WALLET', address)
-      this.$store.dispatch('FETCH_BALANCE')
-      this.$store.dispatch('FETCH_DELEGATION')
-      this.$router.push({ path: '/wallet' })
+      if (this.type === 'observer') {
+        this.$router.push({ path: '/wallet/' + address })
+      } else {
+        this.$store.commit('SET_WALLET', address)
+        this.$store.dispatch('FETCH_BALANCE')
+        this.$store.dispatch('FETCH_DELEGATION')
+        this.$router.push({ path: '/wallet' })
+      }
     }
   },
   computed: {

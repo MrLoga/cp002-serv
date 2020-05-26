@@ -7,6 +7,7 @@ import axios from 'axios'
 const getDefaultState = () => {
   return {
     wallets: [],
+    observer: [],
 
     address: null,
     privateKey: null,
@@ -38,6 +39,17 @@ const getters = {
       address: item.address,
       balance: item.balance ? prettyNumber(item.balance, 2, true) : null
     }
+  }),
+  observerSelect: state => state.observer.map(item => {
+    return {
+      label: `<b>${ item.title }</b>`,
+      value: item.address,
+      caption: shortAddress(item.address, 8),
+      icon: item.icon,
+      title: item.title,
+      address: item.address,
+      balance: item.balance ? prettyNumber(item.balance, 2, true) : null
+    }
   })
 }
 
@@ -58,11 +70,18 @@ const mutations = {
     state.privateKey = tmpWallet.privateKey
     state.mnemonic = tmpWallet.mnemonic
   },
+  SAVE_OBSERVER: (state, payload) => {
+    state.observer.push(payload)
+  },
   SET_WALLET: (state, payload) => {
     const itemId = state.wallets.findIndex(item => item.address === payload)
     state.address = state.wallets[itemId].address
     state.privateKey = state.wallets[itemId].privateKey
     state.mnemonic = state.wallets[itemId].mnemonic
+  },
+  REMOVE_OBSERVER: (state, payload) => {
+    const itemId = state.observer.findIndex(item => item.address === payload)
+    state.observer.splice(itemId, 1)
   },
   REMOVE_WALLET: (state, payload) => {
     const itemId = state.wallets.findIndex(item => item.address === payload)
@@ -101,8 +120,12 @@ const mutations = {
   },
   SET_WALLET_BALANCE: (state, payload) => {
     // const wallet = state.wallets.find(item => item.address === payload.address)
-    const itemId = state.wallets.findIndex(item => item.address === payload.address)
-    state.wallets[itemId].balance = payload.balance
+    const walletId = state.wallets.findIndex(item => item.address === payload.address)
+    if (walletId !== -1) state.wallets[walletId].balance = payload.balance
+    else {
+      const observerId = state.observer.findIndex(item => item.address === payload.address)
+      if (observerId !== -1) state.observer[observerId].balance = payload.balance
+    }
   }
 }
 
@@ -111,6 +134,10 @@ const actions = {
     const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }?withSum=true`)
     context.commit('SET_WALLET_BALANCE', { address: payload, balance: data.data.available_balance_sum })
     return data.data
+  },
+  FETCH_DELEGATIONS_ADDRESS: async (context, payload) => {
+    const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations`)
+    return data
   },
   GET_COMMISSION: (context, payload) => {
     const txParams = {

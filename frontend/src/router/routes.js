@@ -6,11 +6,25 @@ const routes = [
     props: true
   },
   {
+    path: '/wallet/:obsAddress?',
+    component: () => import('layouts/Main.vue'),
+    children: [
+      { path: '', component: () => import('pages/Wallet.vue'), props: true }
+    ]
+  },
+  {
     path: '/',
     component: () => import('layouts/Main.vue'),
     children: [
-      { path: '', redirect: '/home' },
-      { path: 'home', component: () => import('pages/Index.vue') },
+      { path: '', component: () => import('pages/Index.vue') }
+    ]
+  },
+  {
+    path: '/',
+    component: () => import('layouts/Main.vue'),
+    children: [
+      // { path: '', redirect: '/home' },
+      // { path: 'home', component: () => import('pages/Index.vue') },
       { path: 'send', name: 'send', component: () => import('pages/Send.vue'), props: true },
       { path: 'qr-code', component: () => import('pages/QRcode.vue') },
       { path: 'requests', component: () => import('pages/Requests.vue') },
@@ -20,7 +34,7 @@ const routes = [
       { path: 'services', component: () => import('pages/services/index.vue') },
       { path: 'authenticator', component: () => import('pages/Authenticator.vue') },
       { path: 'contacts', component: () => import('pages/ContactList.vue') },
-      { path: 'wallet', component: () => import('pages/Wallet.vue') },
+      // { path: 'wallet', component: () => import('pages/Wallet.vue') },
       { path: 'transactions', component: () => import('pages/Transactions.vue') },
       { path: 'soon', component: () => import('pages/Soon.vue') }
     ]

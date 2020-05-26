@@ -1,9 +1,9 @@
 <template>
   <div>
     <!-- <q-btn color="light-blue-14" text-color="white" class="full-width q-mt-sm" :label="$t('Add wallet')" icon="add_box" @click="newWalletDialog = true" /> -->
-    <q-btn push stack class="bg-light-blue-14 text-white full-width q-pt-xs q-pl-none q-pr-none q-pb-sm" @click="newWalletDialog = true">
-      <q-icon name="add_box" size="1.8rem" class="text-white q-mr-sm" />
-      <div style="font-size: 0.8rem">{{ $t('Add wallet') }}</div>
+    <q-btn push stack class="bg-light-blue-14 text-white full-width q-pt-xs q-pl-none q-pr-none q-pb-xs" @click="newWalletDialog = true">
+      <q-icon name="add_box" size="1.4rem" class="text-white" />
+      <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Add wallet') }}</div>
       <!-- Добавить кошелек -->
     </q-btn>
     <q-dialog v-model="newWalletDialog" transition-show="scale" transition-hide="scale">

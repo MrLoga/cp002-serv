@@ -79,7 +79,8 @@ const actions = {
       const { data } = await axios.get(`${ state.minterscanApi }profiles`)
       context.commit('SET_PROFILES', data)
     } catch (error) {
-      return null
+      const { data } = await axios.get('https://api.charity.cloudp.group/mscanprofiles')
+      context.commit('SET_PROFILES', data)
     }
   },
   GET_PROFILE: async (context, payload) => {

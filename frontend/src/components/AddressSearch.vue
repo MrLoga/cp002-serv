@@ -57,8 +57,11 @@
           active-bg-color="light-blue-10"
           class="bg-light-blue-9 text-white"
         >
-          <q-tab no-caps name="addressSelectTab" icon="supervisor_account" :label="$t('Contacts')" />
-          <q-tab no-caps name="validatorsSelectTab" icon="work" :label="$t('Validators')" />
+          <!-- <q-tab no-caps name="addressSelectTab" icon="supervisor_account" :label="$t('Contacts')" />
+          <q-tab no-caps name="validatorsSelectTab" icon="work" :label="$t('Validators')" /> -->
+          <q-tab no-caps name="addressSelectTab" :label="$t('Contacts')" />
+          <q-tab no-caps name="walletsSelectTab" :label="$t('Wallets')" />
+          <q-tab no-caps name="validatorsSelectTab" :label="$t('Validators')" />
         </q-tabs>
 
         <q-tab-panels v-model="popupAddressTab" animated>
@@ -67,6 +70,40 @@
               v-if="contacts && contacts.length > 0"
               style="max-height: 50vh"
               :items="contacts"
+              separator
+            >
+              <template v-slot="{ item, index }">
+                <q-item :key="index" class="q-pl-none q-pr-none" clickable v-ripple v-close-popup @click="addressTo = item.address">
+                  <q-item-section top avatar class="q-ml-none">
+                    <q-avatar color="primary" text-color="white">
+                      <q-img v-if="item.icon && checkIcon(item.icon)" :src="item.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
+                        <template v-slot:error>
+                          <div class="avatar__text text-white bg-primary">{{ item.title[0] }}</div>
+                        </template>
+                      </q-img>
+                      <div v-else class="avatar__text text-white bg-primary">{{ item.title[0] }}</div>
+                    </q-avatar>
+                  </q-item-section>
+
+                  <q-item-section>
+                    <q-item-label>{{ item.title }}</q-item-label>
+                    <q-item-label caption lines="1">{{ item.address }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-virtual-scroll>
+            <div v-else class="flex flex-center">
+              <div class="self-center text-h5 text-center">
+                {{ $t('You dont have any saved contacts') }}<br>
+                <q-btn class="q-mt-lg" to="/contacts" color="primary" :label="$t('Add first contact')" />
+              </div>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="walletsSelectTab">
+            <q-virtual-scroll
+              v-if="walletsSelect && walletsSelect.length > 0"
+              style="max-height: 50vh"
+              :items="walletsSelect"
               separator
             >
               <template v-slot="{ item, index }">
@@ -201,6 +238,7 @@ export default {
     }),
     ...mapGetters([
       'validatorsSelect',
+      'walletsSelect',
       'filterContacts',
       'filterProfiles',
       'filterValidator',
@@ -223,7 +261,7 @@ export default {
         if (newVal.length > 1) {
           this.contactsFilter = []
           const resContacts = this.filterContacts(newVal)
-          console.log(resContacts)
+          // console.log(resContacts)
           if (resContacts && resContacts.length) {
             this.contactsFilter.push({ label: 'Contacts' })
             this.contactsFilter = this.contactsFilter.concat(resContacts)

@@ -201,8 +201,18 @@ export default {
         gasCoin: this.commissionCoin
       }
       if (this.txType === 'SELL') {
-        if (Big(this.amount).eq(this.coin.amount) || Big(this.coin.amount).lt(this.amountBig.plus(this.commission))) {
+        if (this.amountBig.eq(this.coin.amount)) {
           txData.type = 'SELL_ALL'
+        } else if (Big(this.coin.amount).lt(Big(this.amount).plus(this.commission))) {
+          txData.type = 'SELL_ALL'
+          // txData.type = 'SELL'
+          // if (this.coin.value === this.commissionCoin) {
+          //   txData.data.valueToSell = Big(this.coin.amount).minus(this.commission).toString()
+          // } else {
+          //   txData.data.valueToSell = this.amountBig.toString()
+          // }
+          // txData.data.valueToSell = this.amountBig.toString()
+          // txData.data.valueToSell = this.amountBig.toString()
         } else {
           txData.data.valueToSell = this.amountBig.toString()
         }
@@ -329,9 +339,9 @@ export default {
           })
         }, 2000)
       }).catch(error => {
-        console.log(error.error)
+        console.log(error)
         this.$q.notify({
-          message: error.error.message,
+          message: error,
           icon: 'report_problem',
           color: 'negative'
         })

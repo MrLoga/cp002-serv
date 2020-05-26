@@ -34,7 +34,10 @@
             <q-item-label caption lines="1">{{ scope.opt.caption }}</q-item-label>
           </q-item-section>
           <q-item-section side class="text-grey-10">
-            <BalanceValue :address="scope.opt.address" />
+            <!-- <BalanceValue :address="scope.opt.address" /> -->
+            <!-- <b v-if="value" v-html="value + ' BIP'" class="text-grey-10" /> -->
+            <b v-if="scope.opt.balance" v-html="scope.opt.balance + ' BIP'" class="text-grey-10" />
+            <q-spinner-rings v-else size="2em" />
           </q-item-section>
         </q-item>
         <q-separator inset />
@@ -45,34 +48,26 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import BalanceValue from './BalanceValue.vue'
-// import { stringToHSL } from '../utils'
 
 export default {
   name: 'WalletSelect',
-  components: {
-    BalanceValue
-  },
   props: {
     dense: Boolean
   },
   data () {
     return {
-      wallet: null
+      wallet: null,
+      value: null
     }
   },
   created () {
     const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
     this.wallet = this.walletsSelect[currentWallet]
   },
-  methods: {
-  },
   computed: {
     ...mapState({
-      title: state => state.wallet.title,
       address: state => state.wallet.address,
-      wallets: state => state.wallet.wallets,
-      activeWallet: state => state.wallet.active
+      wallets: state => state.wallet.wallets
     }),
     ...mapGetters([
       'walletsSelect',
@@ -81,7 +76,6 @@ export default {
   },
   watch: {
     walletsSelect (val) {
-      console.log(val)
       const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
       this.wallet = this.walletsSelect[currentWallet]
     },

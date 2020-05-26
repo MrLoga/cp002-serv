@@ -12,7 +12,7 @@
         <q-btn dense size="lg" v-ripple flat round icon="menu" @click="toggleMenu" />
       </q-toolbar>
       <q-tabs active-bg-color="light-blue-10" v-if="menu === 'header'" class="headerMenu" dense align="justify" v-model="tab">
-        <q-route-tab to="/home" :label="$t('Home')" icon="home" />
+        <q-route-tab to="/" :label="$t('Home')" icon="home" />
         <q-route-tab to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
         <q-route-tab to="/send" :label="$t('Send')" icon="send" />
         <q-route-tab to="/convert" icon="cached" label="Convert" />
@@ -21,7 +21,7 @@
     </q-header>
     <q-footer v-if="menu === 'footer'" bordered flat elevated class="bg-light-blue-10 text-white" height-hint="98">
       <q-tabs active-bg-color="light-blue-9" class="headerMenu" dense align="justify" v-model="tab">
-        <q-route-tab no-caps to="/home" :label="$t('Home')" icon="home" />
+        <q-route-tab no-caps to="/" :label="$t('Home')" icon="home" />
         <q-route-tab no-caps to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
         <q-route-tab no-caps to="/send" :label="$t('Send')" icon="send" />
         <q-route-tab no-caps to="/convert" icon="cached" :label="$t('Convert')" />

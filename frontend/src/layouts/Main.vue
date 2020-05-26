@@ -59,7 +59,7 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      const tabs = ['/', '/wallet', '/send', '/requests']
+      const tabs = ['/home', '/wallet', '/send', '/convert']
       let toDepth = tabs.findIndex((val) => val === to.path)
       let fromDepth = tabs.findIndex((val) => val === from.path)
       if ((toDepth === -1 && fromDepth >= 0) || (toDepth >= 0 && fromDepth === -1)) {

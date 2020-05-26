@@ -3,28 +3,35 @@
     <div v-if="wallets">
       <q-item-label header>{{ $t('Wallets') }}</q-item-label>
       <q-card>
+        <!-- <q-item-label header>{{ $t('Observer') }}</q-item-label> -->
         <q-list separator class="q-mb-md">
           <WalletItem v-for="(item, index) in walletsSelect" :key="index" :wallet="item" />
+        </q-list>
+      </q-card>
+    </div>
+    <div v-if="observer">
+      <q-item-label header>{{ $t('Observers') }}</q-item-label>
+      <q-card>
+        <!-- <q-item-label header>{{ $t('Observer') }}</q-item-label> -->
+        <q-list separator class="q-mb-md">
+          <WalletItem v-for="(item, index) in observerSelect" :key="index" :wallet="item" type="observer" />
         </q-list>
       </q-card>
     </div>
 
     <q-item-label header>{{ $t('Services') }}</q-item-label>
     <div class="row q-mb-lg">
-      <!-- <div class="col-md-6 col-xs-6 q-pa-xs">
-        <q-btn push stack class="bg-light-blue-14 text-white full-width q-pb-sm" to="/convert">
-          <div><q-icon name="compare_arrows" size="2rem" class="text-white" /></div>
-          {{ $t('Convert coins') }}
-        </q-btn>
-      </div> -->
-      <div class="col-md-6 col-xs-6 q-pa-xs">
-        <q-btn push stack class="bg-light-blue-14 text-white full-width q-pb-sm" to="/contacts">
-          <q-icon name="supervisor_account" size="2rem" class="text-white" />
-          <div style="font-size: 0.8rem">{{ $t('Contacts') }}</div>
-        </q-btn>
-      </div>
       <div class="col-md-6 col-xs-6 q-pa-xs">
         <AddWallet />
+      </div>
+      <div class="col-md-6 col-xs-6 q-pa-xs">
+        <AddObserver />
+      </div>
+      <div class="col-md-6 col-xs-6 q-pa-xs">
+        <q-btn push stack class="bg-light-blue-14 text-white full-width q-pb-xs" to="/contacts">
+          <q-icon name="supervisor_account" size="1.4rem" class="text-white" />
+          <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Contacts') }}</div>
+        </q-btn>
       </div>
     </div>
 
@@ -37,22 +44,28 @@ import { mapGetters, mapState } from 'vuex'
 // import nacl from 'tweetnacl'
 import { prettyNumber } from '../utils'
 import AddWallet from '../components/AddWallet.vue'
+import AddObserver from '../components/AddObserver.vue'
 // import BalanceValue from '../components/BalanceValue.vue'
 import WalletItem from '../components/WalletItem.vue'
+// import ObserverItem from '../components/ObserverItem.vue'
 // nacl.util = require('tweetnacl-util')
 
 export default {
   name: 'Index',
   components: {
     AddWallet,
+    AddObserver,
     WalletItem
+    // ObserverItem
     // BalanceValue
   },
   data () {
     return {
       language: this.$i18n.locale,
       qrAddress: false,
-      currentWallet: null
+      currentWallet: null,
+      newObserverDialog: false,
+      newObserverAddress: null
     }
   },
   created () {
@@ -65,6 +78,9 @@ export default {
     // getAddress () {
     //   this.$store.dispatch('GET_ADDRESS')
     // },
+    saveNewObserver () {
+
+    },
     prettyNumber (val, l) { return prettyNumber(val, l) },
     // selectWallet (address) {
     //   this.$store.commit('SET_WALLET', address)
@@ -89,6 +105,7 @@ export default {
     ...mapState({
       address: state => state.wallet.address,
       wallets: state => state.wallet.wallets,
+      observer: state => state.wallet.observer,
       // key: state => state.wallet.key,
       // nonce: state => state.wallet.nonce,
       // currency: state => state.request.currency,
@@ -101,6 +118,7 @@ export default {
       'balanceSum',
       'balanceCustom',
       'walletsSelect',
+      'observerSelect',
       'findWallet'
       // 'balanceObj',
       // 'coinsInfo'

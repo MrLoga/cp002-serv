@@ -36,9 +36,9 @@ export default {
   },
   created () {
     this.$i18n.locale = this.language
-    if (process.env.DEV || location.hostname === 'localhost') {
-      this.$store.commit('SET_DEV')
-    }
+    // if (process.env.DEV || location.hostname === 'localhost') {
+    //   this.$store.commit('SET_DEV')
+    // }
   },
   mounted () {
     this.$store.commit('SAVE_GATE')
@@ -46,21 +46,16 @@ export default {
     const lastDate = new Date()
     lastDate.setDate(lastDate.getDate() - 5)
 
+    this.$store.dispatch('GET_CURRENCY')
     if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate > lastDate.getTime())) {
+      this.$store.dispatch('FETCH_ALL_PROFILES')
       this.$store.dispatch('FETCH_COINS')
       this.$store.dispatch('FETCH_VALIDATORS')
-      this.$store.dispatch('FETCH_ALL_PROFILES')
       this.$store.commit('SET_UPDATE_DATE', lastDate.getTime())
-    }
-
-    if (!this.coins) {
-      this.$store.dispatch('FETCH_COINS')
-    }
-    if (!this.validators) {
-      this.$store.dispatch('FETCH_VALIDATORS')
-    }
-    if (!this.profiles) {
-      this.$store.dispatch('FETCH_ALL_PROFILES')
+    } else {
+      if (!this.coins) this.$store.dispatch('FETCH_COINS')
+      if (!this.validators) this.$store.dispatch('FETCH_VALIDATORS')
+      if (!this.profiles) this.$store.dispatch('FETCH_ALL_PROFILES')
     }
 
     // this.$store.dispatch('FETCH_CURRENCY')

@@ -1,15 +1,12 @@
 import { prettyNumber } from '../../utils'
 import axios from 'axios'
-
+// https://t.me/MinterDevChat/25378 Запросы
 const getDefaultState = () => {
   return {
     scoringApi: 'https://minter-scoring.space/api/',
     explorerApi: 'https://explorer-api.minter.network/api/v1/',
     balance: null,
-    currency: {
-      avrbuy: 0,
-      avrsell: 0
-    },
+    currency: null,
     coins: null,
     delegations: null,
     delegationsTotal: null,
@@ -61,7 +58,9 @@ const getters = {
     state.coins.forEach(item => {
       tmpCoins[item.symbol] = {
         crr: item.crr,
-        name: item.name
+        name: item.name,
+        reserve: item.reserveBalance,
+        volume: item.volume
       }
     })
     return tmpCoins
@@ -136,20 +135,36 @@ const mutations = {
 const actions = {
   FETCH_BALANCE: async (context, payload) => {
     try {
-      const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }?withSum=true`)
-      context.commit('SET_BALANCE', data.data)
+      const address = payload || context.rootState.wallet.address
+      const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }?withSum=true`)
+      if (!payload || !payload.length) {
+        context.commit('SET_BALANCE', data.data)
+      }
       return data.data
     } catch (error) {
       console.log('SET_BALANCE', error)
     }
   },
   FETCH_DELEGATION: async (context, payload) => {
-    const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/delegations`)
-    context.commit('SET_DELEGATION', { coins: data.data, total: data.meta.additional.total_delegated_bip_value })
+    try {
+      const address = payload || context.rootState.wallet.address
+      const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }/delegations`)
+      if (!payload || !payload.length) {
+        context.commit('SET_DELEGATION', { coins: data.data, total: data.meta.additional.total_delegated_bip_value })
+      }
+      return data
+    } catch (error) {
+      console.log('SET_DELEGATION', error)
+    }
   },
   FETCH_COINS: async (context, address) => {
-    const { data } = await axios.get(`${ state.explorerApi }coins`)
-    context.commit('SET_COINS', data.data)
+    try {
+      const { data } = await axios.get(`${ state.explorerApi }coins`)
+      context.commit('SET_COINS', data.data)
+    } catch (error) {
+      const { data } = await axios.get('https://api.charity.cloudp.group/coins')
+      context.commit('SET_COINS', data)
+    }
   },
   FETCH_VALIDATORS: async (context, pubKey) => {
     const { data } = await axios.get(`${ state.explorerApi }validators`)
@@ -160,13 +175,17 @@ const actions = {
     // context.commit('SET_VALIDATOR', data.data)
     return data.data
   },
-  GET_CURRENCY: async (context, pubKey) => {
-    const { data } = await axios.get('https://bipchange.org/api/')
-    context.commit('SET_CURRENCY', data)
-    // return data.data
+  GET_CURRENCY: async (context) => {
+    try {
+      const { data } = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bip&vs_currencies=usd')
+      // const { data } = await axios.get('https://bipchange.org/api/')
+      context.commit('SET_CURRENCY', data.bip)
+    } catch (error) {
+      console.log(error)
+    }
   },
-  FETCH_TRANSACTION: async context => {
-    const { data } = await axios.get(`${ state.explorerApi }addresses/${ context.rootState.wallet.address }/transactions`)
+  FETCH_TRANSACTION: async (context, address) => {
+    const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }/transactions`)
     return data
     // context.commit('SET_TRANSACTION', data.data);
   }

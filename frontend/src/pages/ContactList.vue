@@ -119,7 +119,6 @@ export default {
   },
   created () {
     this.contactsFilter = this.contacts
-    console.log(this.findContact('Mx7048df59e6154cbe12d0729dd11f326d5abaffcc'))
   },
   methods: {
     pretty: (val, l) => pretty(val, l),
@@ -184,12 +183,12 @@ export default {
         message: this.$t('Would you like to remove') + ` <b>${contact.title}</b> ` + this.$t('from your contact list?'),
         html: true,
         cancel: {
-          label: 'Cancel',
+          label: this.$t('Cancel'),
           color: 'red',
           flat: true
         },
         ok: {
-          label: 'Remove'
+          label: this.$t('Remove')
         },
         persistent: false
       }).onOk(() => {
