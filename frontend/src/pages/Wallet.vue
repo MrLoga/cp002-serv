@@ -289,6 +289,7 @@ export default {
       else return false
     },
     coinsCost (value, coin) {
+      if (!this.coinsInfo[coin] || !this.coinsInfo[coin].volume) return 'Error'
       const info = this.coinsInfo[coin]
       const times = 1 - (Math.pow(1 - (value / info.volume), (100 / info.crr)))
       return Big(info.reserve).times(times).round(1, 0).toString()
