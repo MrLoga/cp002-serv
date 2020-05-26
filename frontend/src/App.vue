@@ -22,18 +22,6 @@ export default {
     return {}
   },
   method: {},
-  computed: {
-    ...mapState({
-      language: state => state.app.language,
-      coins: state => state.api.coins,
-      profiles: state => state.contacts.profiles,
-      dataUpdateDate: state => state.app.dataUpdateDate,
-      validators: state => state.api.validators
-    }),
-    ...mapGetters([
-      'isLogin'
-    ])
-  },
   created () {
     this.$i18n.locale = this.language
     // if (process.env.DEV || location.hostname === 'localhost') {
@@ -44,7 +32,7 @@ export default {
     this.$store.commit('SAVE_GATE')
 
     const lastDate = new Date()
-    lastDate.setDate(lastDate.getDate() - 5)
+    lastDate.setDate(lastDate.getDate() - 3)
 
     this.$store.dispatch('GET_CURRENCY')
     if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate > lastDate.getTime())) {
@@ -67,6 +55,18 @@ export default {
       //   this.$store.dispatch('NEW_WS')
       // }
     }
+  },
+  computed: {
+    ...mapState({
+      language: state => state.app.language,
+      coins: state => state.api.coins,
+      profiles: state => state.contacts.profiles,
+      dataUpdateDate: state => state.app.dataUpdateDate,
+      validators: state => state.api.validators
+    }),
+    ...mapGetters([
+      'isLogin'
+    ])
   }
 }
 </script>

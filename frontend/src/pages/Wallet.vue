@@ -156,23 +156,23 @@
 
     <q-tab-panels v-model="balanceTab" animated>
       <q-tab-panel name="balance">
-        <q-list>
-          <q-item v-for="(amount, coin) in balanceObj" :key="coin" class="q-pl-none q-pr-none">
+        <q-list v-if="balanceData && balanceData.balances.length">
+          <q-item v-for="(item, index) in balanceData.balances" :key="index" class="q-pl-none q-pr-none">
             <q-item-section avatar>
-              <q-avatar :style="`background-color: ${stringToHSL(coin)}`" class="balance__coin-avatar" text-color="white">
-                <span class="balance__coin-letter">{{ coin.charAt(0).toUpperCase() }}</span>
+              <q-avatar :style="`background-color: ${ stringToHSL(item.coin) }`" class="balance__coin-avatar" text-color="white">
+                <span class="balance__coin-letter">{{ item.coin.charAt(0).toUpperCase() }}</span>
               </q-avatar>
             </q-item-section>
 
             <q-item-section>
-              <q-item-label class="text-bold">{{ coin }}</q-item-label>
-              <q-item-label v-if="coinsInfo" caption lines="1">{{ coinsInfo[coin].name }}</q-item-label>
+              <q-item-label class="text-bold">{{ item.coin }}</q-item-label>
+              <q-item-label v-if="coinsInfo && coinsInfo[item.coin]" caption lines="1">{{ coinsInfo[item.coin].name }}</q-item-label>
             </q-item-section>
 
             <q-item-section side class="text-grey-9">
-              <b>{{ prettyNumber(amount, 4) }}</b>
-              <div class="text-caption text-grey-7 text-weight-medium" v-if="coin !== 'BIP'">
-                {{ coinsCost(amount, coin) }} bip
+              <b>{{ prettyNumber(item.amount, 4) }}</b>
+              <div class="text-caption text-grey-7 text-weight-medium" v-if="item.coin !== 'BIP'">
+                {{ coinsCost(item.amount, item.coin) }} bip
               </div>
             </q-item-section>
           </q-item>
@@ -259,28 +259,31 @@ export default {
     }
   },
   created () {
-    if (this.obsAddress && this.obsAddress.length === 42) {
-      const currentWallet = this.observerSelect.findIndex(item => item.address === this.obsAddress)
-      if (currentWallet !== -1) {
-        this.wallet = this.observerSelect[currentWallet]
-        this.newTitle = this.wallet.title
-      } else {
-        const profile = this.findUser(this.obsAddress)
-        this.newTitle = profile.title
-      }
-    } else {
-      const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
-      this.wallet = this.walletsSelect[currentWallet]
-      this.newTitle = this.wallet.title
-    }
-    this.getBalance(this.wallet.address)
-    this.getDelegations(this.wallet.address)
-    this.createQR()
+    this.init(this.address)
   },
   methods: {
     Big: (val) => Big(val),
     prettyNumber: (val, l) => prettyNumber(val, l),
     stringToHSL: str => stringToHSL(str),
+    init (address) {
+      if (this.obsAddress && this.obsAddress.length === 42) {
+        const currentWallet = this.observerSelect.findIndex(item => item.address === this.obsAddress)
+        if (currentWallet !== -1) {
+          this.wallet = this.observerSelect[currentWallet]
+          this.newTitle = this.wallet.title
+        } else {
+          const profile = this.findUser(this.obsAddress)
+          this.newTitle = profile.title
+        }
+      } else {
+        const currentWallet = this.walletsSelect.findIndex(item => item.address === address)
+        this.wallet = this.walletsSelect[currentWallet]
+        this.newTitle = this.wallet.title
+      }
+      this.getBalance(this.wallet.address)
+      this.getDelegations(this.wallet.address)
+      this.createQR()
+    },
     shareTest () {
       if (navigator.share) return true
       else return false
@@ -301,9 +304,7 @@ export default {
         } else item.bip_cost = 0
         return item
       })
-      console.log(arrDelegations)
       this.delegationsData = tmpDelegations
-      console.log(this.delegationsData)
       this.delegationsGroup = arrDelegations.reduce((prev, curr) => {
         (prev[curr.validator_meta.name] = prev[curr.validator_meta.name] || []).push(curr)
         return prev
@@ -397,10 +398,7 @@ export default {
   },
   watch: {
     address (val) {
-      const currentWallet = this.walletsSelect.findIndex(item => item.address === val)
-      this.wallet = this.walletsSelect[currentWallet]
-      this.newTitle = this.wallet.title
-      this.createQR()
+      this.init(val)
     }
   }
 }

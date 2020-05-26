@@ -12,18 +12,20 @@ const routes = [
       { path: '', component: () => import('pages/Wallet.vue'), props: true }
     ]
   },
+  // {
+  //   path: '/',
+  //   component: () => import('layouts/Main.vue'),
+  //   children: [
+  //     { path: '', component: () => import('pages/Index.vue') },
+  //     { path: '/home', redirect: '/' }
+  //   ]
+  // },
   {
     path: '/',
     component: () => import('layouts/Main.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
-    ]
-  },
-  {
-    path: '/',
-    component: () => import('layouts/Main.vue'),
-    children: [
-      // { path: '', redirect: '/home' },
+      { path: '', component: () => import('pages/Index.vue') },
+      { path: '/home', redirect: '/' },
       // { path: 'home', component: () => import('pages/Index.vue') },
       { path: 'send', name: 'send', component: () => import('pages/Send.vue'), props: true },
       { path: 'qr-code', component: () => import('pages/QRcode.vue') },
@@ -45,7 +47,7 @@ const routes = [
 if (process.env.MODE !== 'ssr') {
   routes.push({
     path: '*',
-    redirect: '/home'
+    redirect: '/'
     // component: () => import('pages/Error404.vue')
   })
 }
