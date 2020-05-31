@@ -92,8 +92,15 @@ const mutations = {
     state.wallets[itemId] = payload
   },
   CHANGE_NAME_WALLET: (state, payload) => {
-    const itemId = state.wallets.findIndex(item => item.address === payload.address)
-    state.wallets[itemId].title = payload.title
+    if (payload.isObserve) {
+      console.log(state.observer, payload.address)
+      const itemId = state.observer.findIndex(item => item.address === payload.address)
+      console.log(itemId, state.observer, payload.title)
+      state.observer[itemId].title = payload.title
+    } else {
+      const itemId = state.wallets.findIndex(item => item.address === payload.address)
+      state.wallets[itemId].title = payload.title
+    }
   },
   // SAVE_KEYS: (state, payload) => {
   //   state.key = payload.key

@@ -17,6 +17,7 @@ export default {
   'My Wallet': 'Кошелек',
   'Send': 'Отправить',
   'Request': 'Запросы',
+  'Make unbond': 'Отозвать',
 
   // MainMenu
   'Сontact list': 'Список контактов',

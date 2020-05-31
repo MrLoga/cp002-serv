@@ -17,6 +17,7 @@ export default {
   'My Wallet': 'My Wallet',
   'Send': 'Send',
   'Request': 'Request',
+  'Make unbond': 'Make unbond',
 
   // MainMenu
   'Сontact list': 'Сontact list',

@@ -15,7 +15,7 @@
         <q-route-tab to="/" :label="$t('Home')" icon="home" />
         <q-route-tab to="/wallet" :label="$t('My Wallet')" icon="account_balance_wallet" />
         <q-route-tab to="/send" :label="$t('Send')" icon="send" />
-        <q-route-tab to="/convert" icon="cached" label="Convert" />
+        <q-route-tab to="/convert" icon="cached" :label="$t('Convert')" />
         <!-- <q-route-tab to="/services" :label="$t('Services')" icon="star" /> -->
       </q-tabs>
     </q-header>

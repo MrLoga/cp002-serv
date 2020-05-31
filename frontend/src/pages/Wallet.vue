@@ -35,9 +35,10 @@
         </q-btn>
         <q-btn flat round color="teal" icon="file_copy" @click="copyAddress" />
         <q-btn flat round color="primary" icon="share" v-if="shareTest()" @click="shareAddress" />
-        <q-btn flat round color="purple" icon="format_list_bulleted" to="/transactions" />
-        <q-btn flat round color="purple" icon="settings" v-if="!obsAddress || obsAddress.length !== 42" @click="settingWalletDialog = true" />
-        <q-btn flat round color="deep-orange-14" icon="delete" v-else @click="removeObserveDialog = true" />
+        <!-- <q-btn flat round color="purple" icon="format_list_bulleted" to="/transactions" /> -->
+        <q-btn flat round color="purple" icon="settings" @click="settingWalletDialog = true" />
+        <!-- <q-btn flat round color="purple" icon="settings" v-if="!isObserve" @click="settingWalletDialog = true" />
+        <q-btn flat round color="deep-orange-14" icon="delete" v-else @click="removeObserveDialog = true" /> -->
       </q-card-actions>
     </q-card>
 
@@ -63,7 +64,7 @@
           </q-item>
           <q-separator inset />
 
-          <q-item v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
+          <q-item v-show="!isObserve" v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
             <q-item-section avatar>
               <q-icon color="orange" name="visibility" />
             </q-item-section>
@@ -174,6 +175,7 @@
               <div class="text-caption text-grey-7 text-weight-medium" v-if="item.coin !== 'BIP'">
                 {{ coinsCost(item.amount, item.coin) }} bip
               </div>
+              <div class="text-caption text-grey-7 text-weight-medium" v-else>Base coin</div>
             </q-item-section>
           </q-item>
         </q-list>
@@ -191,12 +193,12 @@
                 <q-item-label class="text-bold" lines="1">{{ item[0].validator_meta.name }}</q-item-label>
                 <q-item-label caption lines="1">{{ item[0].validator_meta.description }}</q-item-label>
               </q-item-section>
-              <q-item-section side v-if="!obsAddress || obsAddress.length !== 42">
+              <q-item-section side v-if="!isObserve">
                 <q-btn size="1rem" flat color="light-blue-14" dense round icon="add_circle_outline" @click="$router.push({ name: 'send', params: { import: { address: item[0].pub_key } } })" />
               </q-item-section>
             </q-item>
             <q-separator inset class="q-mb-sm" />
-            <q-item dense v-for="coin in item" :key="coin.coin" class="q-mb-xs">
+            <q-item v-for="coin in item" :key="coin.coin" class="q-mb-xs">
               <q-item-section>
                 <q-item-label class="text-grey-10" lines="1">
                   <b>{{ coin.coin }}</b>
@@ -212,6 +214,9 @@
                   {{ prettyNumber(coin.bip_value, 0) }} bip
                 </div>
               </q-item-section>
+              <q-item-section side class="text-grey-9">
+                <q-btn size="1rem" flat color="grey-6" dense round icon="remove_circle_outline" @click="unbondOpen(item[0].pub_key, coin.coin, coin.value)" />
+              </q-item-section>
             </q-item>
             <q-separator color="grey-2" style="height: 1rem;" class="q-mt-xs" />
           </q-list>
@@ -222,6 +227,29 @@
         <TransactionsList :address="wallet.address" />
       </q-tab-panel>
     </q-tab-panels>
+    <q-dialog v-model="unbondDialog" transition-show="scale" transition-hide="scale">
+      <q-card class="dialog-min300 q-pa-md" style="padding-bottom: 4px;" v-if="unbondDialogData">
+        <q-item class="q-mb-xs" v-if="unbondDialogData.validator">
+          <q-item-section avatar>
+            <q-avatar>
+              <img :src="unbondDialogData.validator.meta.icon_url">
+            </q-avatar>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-bold" lines="1">{{ unbondDialogData.validator.meta.name }}</q-item-label>
+            <q-item-label caption lines="1">{{ unbondDialogData.validator.meta.description }}</q-item-label>
+          </q-item-section>
+        </q-item>
+        <div class="text-h6 text-center q-mt-sm">{{ prettyNumber(unbondDialogData.value, 2) }} {{ unbondDialogData.coin }}</div>
+        <div class="text-caption text-center text-grey-7 q-mt-sm">Unbond commision: 0.2 bip</div>
+        <q-separator class="q-mt-md q-mb-xs" />
+        <q-card-actions>
+          <q-btn flat dense :label="$t('Cancel')" color="primary" v-close-popup />
+          <q-space />
+          <q-btn flat dense :label="$t('Make unbond')" color="red-10" @click="unbondSend" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -244,6 +272,7 @@ export default {
   data () {
     return {
       wallet: null,
+      isObserve: false,
       balanceData: null,
       delegationsData: null,
       delegationsGroup: null,
@@ -251,6 +280,8 @@ export default {
       newTitle: false,
       removeObserveDialog: false,
       qrAddressDialog: false,
+      unbondDialog: false,
+      unbondDialogData: null,
       qrImg: '',
       settingWalletDialog: false,
       showSeedDialog: false,
@@ -265,8 +296,9 @@ export default {
     Big: (val) => Big(val),
     prettyNumber: (val, l) => prettyNumber(val, l),
     stringToHSL: str => stringToHSL(str),
-    init (address) {
-      if (this.obsAddress && this.obsAddress.length === 42) {
+    init (address, update) {
+      if (!update && this.obsAddress && this.obsAddress.length === 42) {
+        this.isObserve = true
         const currentWallet = this.observerSelect.findIndex(item => item.address === this.obsAddress)
         if (currentWallet !== -1) {
           this.wallet = this.observerSelect[currentWallet]
@@ -276,6 +308,7 @@ export default {
           this.newTitle = profile.title
         }
       } else {
+        this.isObserve = false
         const currentWallet = this.walletsSelect.findIndex(item => item.address === address)
         this.wallet = this.walletsSelect[currentWallet]
         this.newTitle = this.wallet.title
@@ -283,6 +316,43 @@ export default {
       this.getBalance(this.wallet.address)
       this.getDelegations(this.wallet.address)
       this.createQR()
+    },
+    unbondOpen (pubKey, coin, value) {
+      this.unbondDialogData = {
+        validator: this.findValidator(pubKey),
+        pubKey,
+        coin,
+        value
+      }
+      this.unbondDialog = true
+    },
+    unbondSend () {
+      console.log(this.unbondDialogData)
+      const txParams = {
+        type: 'UNBOND',
+        data: {
+          publicKey: this.unbondDialogData.pubKey,
+          coin: this.unbondDialogData.coin,
+          stake: this.unbondDialogData.value
+        },
+        gasCoin: 'BIP'
+      }
+      this.$store.dispatch('SENDER', txParams).then(txHash => {
+        this.$q.notify({
+          message: this.$t('Transaction successful') + '. Сoins return in about 30 days',
+          icon: 'tag_faces',
+          color: 'teal',
+          position: 'bottom'
+        })
+      }).catch(error => {
+        console.log(error)
+        this.$q.notify({
+          message: error,
+          icon: 'report_problem',
+          color: 'negative',
+          position: 'bottom'
+        })
+      })
     },
     shareTest () {
       if (navigator.share) return true
@@ -337,10 +407,10 @@ export default {
     },
     saveNewTitle () {
       if (this.newTitle) {
-        this.$store.commit('CHANGE_NAME_WALLET', { title: this.newTitle, address: this.address })
+        this.$store.commit('CHANGE_NAME_WALLET', { title: this.newTitle, address: this.wallet.address, isObserve: this.isObserve })
         this.wallet.title = this.newTitle
       } else {
-        this.$store.commit('CHANGE_NAME_WALLET', { title: 'No name', address: this.address })
+        this.$store.commit('CHANGE_NAME_WALLET', { title: 'No name', address: this.wallet.address, isObserve: this.isObserve })
         this.wallet.title = 'No name'
       }
     },
@@ -393,13 +463,14 @@ export default {
       'delegationsSum',
       'observerSelect',
       'walletsSelect',
+      'findValidator',
       'findWallet',
       'findUser'
     ])
   },
   watch: {
     address (val) {
-      this.init(val)
+      this.init(val, true)
     }
   }
 }
