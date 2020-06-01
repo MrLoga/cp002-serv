@@ -119,11 +119,11 @@ export default {
           if (item.from === this.address) {
             tmpObj.symbol = '-'
             const user = this.findUser(item.data.to)
-            tmpObj.title = user ? user.title : shortAddress(item.data.to)
+            tmpObj.title = '<span class="text-grey-7">To:</span> ' + (user ? user.title : shortAddress(item.data.to))
           } else {
             tmpObj.symbol = '+'
             const user = this.findUser(item.from)
-            tmpObj.title = user ? user.title : shortAddress(item.from)
+            tmpObj.title = '<span class="text-grey-7">From:</span> ' + (user ? user.title : shortAddress(item.from))
           }
           tmpObj.value = prettyNumber(item.data.value, 1)
           tmpObj.coin = item.data.coin
@@ -150,7 +150,7 @@ export default {
           } else {
             tmpObj.symbol = '+'
             const user = this.findUser(item.from)
-            tmpObj.title = user ? user.title : shortAddress(item.from)
+            tmpObj.title = '<span class="text-grey-7">From:</span>  ' + (user ? user.title : shortAddress(item.from))
             const sendData = item.data.list.find(msend => msend.to === this.address)
             tmpObj.value = prettyNumber(sendData.value, 1)
             tmpObj.coin = sendData.coin

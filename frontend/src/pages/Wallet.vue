@@ -214,7 +214,7 @@
                   {{ prettyNumber(coin.bip_value, 0) }} bip
                 </div>
               </q-item-section>
-              <q-item-section side class="text-grey-9">
+              <q-item-section side class="text-grey-9" v-if="!isObserve">
                 <q-btn size="1rem" flat color="grey-6" dense round icon="remove_circle_outline" @click="unbondOpen(item[0].pub_key, coin.coin, coin.value)" />
               </q-item-section>
             </q-item>
