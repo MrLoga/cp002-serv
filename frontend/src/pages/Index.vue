@@ -9,7 +9,7 @@
         </q-list>
       </q-card>
     </div>
-    <div v-if="observer">
+    <div v-if="observer && observer.length">
       <q-item-label header>{{ $t('Observers') }}</q-item-label>
       <q-card>
         <!-- <q-item-label header>{{ $t('Observer') }}</q-item-label> -->

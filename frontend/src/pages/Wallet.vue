@@ -75,7 +75,16 @@
           </q-item>
           <q-separator inset />
 
-          <q-item v-ripple clickable @click="settingWalletDialog = false; logoutDialog = true">
+          <q-item v-if="!isObserve" v-ripple clickable @click="settingWalletDialog = false; logoutDialog = true">
+            <q-item-section avatar>
+              <q-icon color="deep-orange-14" name="delete" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-subtitle2">{{ $t('Logout this wallet') }}</q-item-label>
+              <q-item-label caption>{{ $t('Data about wallet will be deleted') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-else v-ripple clickable @click="settingWalletDialog = false; removeObserveDialog = true">
             <q-item-section avatar>
               <q-icon color="deep-orange-14" name="delete" />
             </q-item-section>
@@ -213,6 +222,7 @@
                   /
                   {{ prettyNumber(coin.bip_value, 0) }} bip
                 </div>
+                <div class="text-caption text-grey-7 text-weight-medium" v-else>Base coin</div>
               </q-item-section>
               <q-item-section side class="text-grey-9" v-if="!isObserve">
                 <q-btn size="1rem" flat color="grey-6" dense round icon="remove_circle_outline" @click="unbondOpen(item[0].pub_key, coin.coin, coin.value)" />
@@ -445,6 +455,7 @@ export default {
     removeObserver () {
       this.removeObserveDialog = false
       this.$store.commit('REMOVE_OBSERVER', this.wallet.address)
+      this.$router.push({ path: '/' })
     }
   },
   computed: {
@@ -467,6 +478,15 @@ export default {
       'findWallet',
       'findUser'
     ])
+  },
+  beforeRouteUpdate (to, from, next) {
+    console.log(to.obsAddress)
+    if (to.obsAddress === undefined) {
+      this.init(this.address, true)
+    } else {
+      this.init(to.obsAddress, true)
+    }
+    next()
   },
   watch: {
     address (val) {

@@ -24,6 +24,21 @@
             <q-btn round no-caps flat label="Max" @click="maxAmount" />
           </template>
         </q-input>
+
+        <div class="text-right">
+          <q-input
+            v-model="payload"
+            v-if="isAddMessage"
+            outlined
+            clearable
+            bg-color="white"
+            :hint="`${ payloadLength } / 1024`"
+            :label="$t('Message')"
+            :rules="[ val => payloadLength <= 1024 || 'Please use maximum 1024 characters']"
+          />
+          <q-btn v-else flat dense color="indigo" :label="$t('Add message')" class="q-pr-none" @click="isAddMessage = true" />
+        </div>
+
         <div>
           <q-btn type="submit" color="teal" size="16px" class="full-width" :disabled="!validate">
             <q-icon left name="send" />
@@ -101,7 +116,9 @@ export default {
       amountIsError: false,
       amountErrorMsg: null,
 
+      isAddMessage: false,
       payload: null,
+      payloadLength: 0,
 
       validate: false,
       validateError: null,
@@ -212,6 +229,8 @@ export default {
         this.amountErrorMsg = this.$t('Not enough') + ` ${ this.amountBig.minus(this.coin.amount).round(5, 0) } ${this.coin.value }`
       }
 
+      this.payloadLength = this.payload === null ? 0 : new Blob([this.payload]).size
+
       if (!addressType || !addressType.length) validateTmp = false
       if (!this.amount || !this.amount.length) validateTmp = false
       if (validateTmp) await this.updateFee()
@@ -269,7 +288,9 @@ export default {
     },
     coin () { this.validateForm() },
     address () { this.validateForm() },
-    amount () { this.validateForm() }
+    amount () { this.validateForm() },
+    payload () { this.validateForm() }
   }
 }
+// Помощь проектам, это залог успеха развития сети
 </script>

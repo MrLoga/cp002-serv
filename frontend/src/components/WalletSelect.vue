@@ -86,7 +86,8 @@ export default {
       }
     },
     wallet (val) {
-      if (val && val.address && val.address !== this.address) {
+      if (val && val.address) {
+      // if (val && val.address && val.address !== this.address) {
         this.wallet = val
         this.$store.commit('SET_WALLET', val.address)
         this.$store.dispatch('FETCH_BALANCE')

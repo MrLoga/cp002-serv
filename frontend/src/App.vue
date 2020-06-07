@@ -31,9 +31,6 @@ export default {
     const nowDate = new Date()
     const lastDate = new Date()
     lastDate.setDate(lastDate.getDate() - 3)
-    console.log(lastDate.getTime())
-    console.log(this.dataUpdateDate)
-    console.log(this.dataUpdateDate < lastDate.getTime())
     this.$store.dispatch('GET_CURRENCY')
     if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate < lastDate.getTime())) {
       this.$store.dispatch('FETCH_ALL_PROFILES')
