@@ -30,7 +30,7 @@ const getters = {
   findWallet: state => address => state.wallets.find(item => item.address === address),
   findObserver: state => address => state.observer.find(item => item.address === address),
   totalWalletsBip: state => state.wallets.reduce((prev, curr) => curr && curr.balance ? Big(prev).plus(curr.balance) : 0, 0),
-  totalObserversBip: state => state.observer.reduce((prev, curr) => Big(prev).plus(curr.balance), 0),
+  totalObserversBip: state => state.observer.reduce((prev, curr) => curr && curr.balance ? Big(prev).plus(curr.balance) : 0, 0),
   walletsSelect: state => state.wallets.map(item => {
     return {
       label: `<b>${ item.title }</b>`,
