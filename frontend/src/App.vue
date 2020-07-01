@@ -25,13 +25,15 @@ export default {
   created () {
     this.$i18n.locale = this.language
     this.$store.commit('SAVE_GATE')
-    // if (process.env.DEV || location.hostname === 'localhost') {
-    //   this.$store.commit('SET_DEV')
-    // }
+    if (location.hostname === 'localhost') {
+      this.$store.commit('SET_DEV')
+    }
+
     const nowDate = new Date()
     const lastDate = new Date()
     lastDate.setDate(lastDate.getDate() - 3)
     this.$store.dispatch('GET_CURRENCY')
+    this.$store.dispatch('GET_STATUS')
     if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate < lastDate.getTime())) {
       this.$store.dispatch('FETCH_ALL_PROFILES')
       this.$store.dispatch('FETCH_COINS')
@@ -45,12 +47,12 @@ export default {
   },
   mounted () {
     // this.$store.dispatch('FETCH_CURRENCY')
+    if (this.isAuth) {
+      this.$store.dispatch('SYNC_USER_CONTACTS')
+    }
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')
       this.$store.dispatch('FETCH_DELEGATION')
-      // if (this.isRegistered) {
-      //   this.$store.dispatch('NEW_WS')
-      // }
     }
   },
   computed: {
@@ -62,7 +64,8 @@ export default {
       validators: state => state.api.validators
     }),
     ...mapGetters([
-      'isLogin'
+      'isLogin',
+      'isAuth'
     ])
   }
 }

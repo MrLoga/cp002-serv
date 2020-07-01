@@ -62,17 +62,18 @@ export default {
           title: 'Observer'
         }
         const checkWallet = this.findWallet(tmpObserver.address)
-        if (checkWallet && checkWallet.address) {
+        const checkObserve = this.findObserver(tmpObserver.address)
+        if ((checkWallet && checkWallet.address) || (checkObserve && checkObserve.address)) {
           this.newAddressIsError = true
           this.newAddressErrorMsg = this.$t('This wallet already exists')
         } else {
           const profile = this.findProfile(tmpObserver.address)
-          tmpObserver.title = this.newTitle || (profile ? profile.title : '') || (this.walletsSelect.length ? (this.walletsSelect.length + 1) + ' observer' : 'Observer')
+          tmpObserver.title = this.newTitle || (profile ? profile.title : '') || (this.observerSelect.length ? (this.observerSelect.length + 1) + ' observer' : 'Observer')
           tmpObserver.icon = profile ? profile.icon : ''
 
           this.newWalletDialog = false
           this.$store.commit('SAVE_OBSERVER', tmpObserver)
-          this.$router.push({ path: '/observer/' + tmpObserver.address })
+          this.$router.push({ path: '/wallet/' + tmpObserver.address })
         }
       } else {
         this.newAddressIsError = true
@@ -86,7 +87,9 @@ export default {
     }),
     ...mapGetters([
       'walletsSelect',
+      'observerSelect',
       'findWallet',
+      'findObserver',
       'findProfile'
     ])
   },

@@ -57,7 +57,7 @@
     <q-list class="bg-white" bordered separator v-if="contactsFilter && contactsFilter.length > 0">
       <q-item v-for="contact in contactsFilter" :key="contact.address" class="q-my-sm">
         <q-item-section avatar clickable v-ripple @click="$router.push({ name: 'send', params: { import: { address: contact.address } } })">
-          <q-avatar color="light-blue-14" text-color="white">
+          <q-avatar text-color="white" v-if="contact.title">
             <q-img v-if="contact.icon" :src="contact.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
               <template v-slot:error>
                 <div class="avatar__text text-white bg-primary">{{ contact.title[0] }}</div>
@@ -118,27 +118,23 @@ export default {
     }
   },
   created () {
-    this.contactsFilter = this.contacts
+    this.filter()
   },
   methods: {
     pretty: (val, l) => pretty(val, l),
     numberSpaces: val => numberSpaces(val),
+    filter () {
+      this.contactsFilter = this.contacts
+    },
     async newContactSave () {
       if (!this.findContact(this.newAddress)) {
-        const profile = await this.$store.dispatch('GET_PROFILE', this.newAddress)
+        // const user = this.findProfile(this.newAddress)
+        // const profile = await this.$store.dispatch('GET_PROFILE', this.newAddress)
         const newContact = {
           title: this.newName,
-          address: this.newAddress,
-          icon: (profile && profile.icon) ? profile.icon : ''
+          address: this.newAddress
         }
-        this.$store.commit('ADD_CONTACT', newContact)
-        this.contactsFilter = this.contacts
-        this.$q.notify({
-          message: this.$t('Contact added'),
-          icon: 'tag_faces',
-          color: 'teal',
-          position: 'bottom'
-        })
+        this.$store.dispatch('SAVE_USER_CONTACTS', newContact)
       } else {
         this.$q.notify({
           message: this.$t('This contact already exists'),
@@ -193,7 +189,7 @@ export default {
         persistent: false
       }).onOk(() => {
         // console.log('>>>> OK')
-        this.$store.commit('REMOVE_CONTACT', contact.address)
+        this.$store.dispatch('REMOVE_USER_CONTACTS', contact.address)
       }).onCancel(() => {
         // console.log('>>>> Cancel')
       })
@@ -209,6 +205,9 @@ export default {
     ])
   },
   watch: {
+    contacts (newVal) {
+      this.filter()
+    },
     newAddress (newVal) {
       this.newAddressIsError = false
       this.newAddressErrorMsg = null

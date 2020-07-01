@@ -190,7 +190,7 @@
         </q-list>
       </q-tab-panel>
       <q-tab-panel name="delegations" class="q-pl-none q-pr-none">
-        <div class="delegations" v-if="delegationsData && delegationsData.data.length">
+        <div class="delegations" v-if="delegationsGroup">
           <q-list v-for="(item, name) in delegationsGroup" :key="name">
             <q-item class="q-mb-xs">
               <q-item-section avatar>
@@ -219,13 +219,21 @@
                 <div class="text-caption text-grey-7 text-weight-medium" v-if="coin.coin !== 'BIP'">
                   {{ prettyNumber(coin.bip_cost, 0) }}
                   <!-- {{ prettyNumber(Big(coin.bip_value).div(coinsInfo[coin.coin].crr).times(100).toString(), 0) }} bip -->
-                  /
-                  {{ prettyNumber(coin.bip_value, 0) }} bip
+                  <span v-if="coin.bip_value">/ {{ prettyNumber(coin.bip_value, 0) }}</span>
+                  bip
                 </div>
                 <div class="text-caption text-grey-7 text-weight-medium" v-else>Base coin</div>
               </q-item-section>
-              <q-item-section side class="text-grey-9" v-if="!isObserve">
+              <q-item-section side class="text-grey-9" v-if="!isObserve && coin.type !== 'unbond'">
                 <q-btn size="1rem" flat color="grey-6" dense round icon="remove_circle_outline" @click="unbondOpen(item[0].pub_key, coin.coin, coin.value)" />
+              </q-item-section>
+              <q-item-section side class="text-grey-9" v-if="!isObserve && coin.type && coin.type === 'unbond'">
+                <div class="text-caption text-grey-7 text-weight-medium">{{ coin.days }} days</div>
+                <div class="text-caption text-grey-7 text-weight-medium">{{ coin.hours }} hours</div>
+              </q-item-section>
+              <q-item-section side class="text-grey-9 text-center" v-if="!isObserve && coin.type && coin.type === 'unbond'">
+                <q-spinner-ios style="margin: 0 auto" color="text-grey-9" size="1.5em" />
+                <div class="text-caption text-grey-7 text-weight-medium">{{ $t('Unbonding') }}</div>
               </q-item-section>
             </q-item>
             <q-separator color="grey-2" style="height: 1rem;" class="q-mt-xs" />
@@ -335,9 +343,9 @@ export default {
         value
       }
       this.unbondDialog = true
+      console.log(this.unbondDialogData)
     },
     unbondSend () {
-      console.log(this.unbondDialogData)
       const txParams = {
         type: 'UNBOND',
         data: {
@@ -348,6 +356,14 @@ export default {
         gasCoin: 'BIP'
       }
       this.$store.dispatch('SENDER', txParams).then(txHash => {
+        this.unbondDialog = false
+        this.$store.commit('SET_UNBOND', {
+          pub_key: txParams.data.publicKey,
+          value: txParams.data.stake,
+          coin: txParams.data.coin,
+          validator_meta: { name: this.unbondDialogData.validator.meta.name },
+          address: this.address
+        })
         this.$q.notify({
           message: this.$t('Transaction successful') + '. Сoins return in about 30 days',
           icon: 'tag_faces',
@@ -378,14 +394,39 @@ export default {
       this.balanceData = await this.$store.dispatch('FETCH_BALANCE_ADDRESS', this.wallet.address)
     },
     async getDelegations (address) {
-      const tmpDelegations = await this.$store.dispatch('FETCH_DELEGATIONS_ADDRESS', this.wallet.address)
-      const arrDelegations = tmpDelegations.data.map(item => {
+      // this.$store.commit('REMOVE_UNBOND')
+      const loadDelegations = await this.$store.dispatch('FETCH_DELEGATIONS_ADDRESS', this.wallet.address)
+      let tmpDelegations
+      if (this.unbond[this.address]) {
+        const unbondList = this.unbond[this.address].map(unbondItem => {
+          const validator = this.findValidator(unbondItem.pub_key)
+          const tmpItem = Object.assign({}, unbondItem)
+          const time = Big(518400).minus(this.status.latestBlockHeight - tmpItem.height).times(this.status.averageBlockTime).round(0, 0).toString()
+          tmpItem.days = Big(time).div(86400).round(0, 0)
+          tmpItem.hours = Big(time).minus(Big(tmpItem.days).times(86400)).div(3600).round(0, 0).toString()
+          tmpItem.validator_meta = validator.meta
+          tmpItem.bip_value = false
+          return tmpItem
+        })
+        tmpDelegations = loadDelegations.data.filter(item => {
+          if (this.unbond && unbondList) {
+            const delegate = unbondList.findIndex(unbondItem => unbondItem.pub_key === item.pub_key && unbondItem.coin === item.coin && unbondItem.value === item.value)
+            // console.log(delegate)
+            return (delegate < 0)
+          } else return true
+        })
+        tmpDelegations = tmpDelegations.concat(unbondList)
+      } else {
+        tmpDelegations = loadDelegations.data
+      }
+
+      const arrDelegations = tmpDelegations.map(item => {
         if (item.coin !== 'BIP') {
           item.bip_cost = this.coinsCost(item.value, item.coin)
         } else item.bip_cost = 0
         return item
       })
-      this.delegationsData = tmpDelegations
+      this.delegationsData = loadDelegations
       this.delegationsGroup = arrDelegations.reduce((prev, curr) => {
         (prev[curr.validator_meta.name] = prev[curr.validator_meta.name] || []).push(curr)
         return prev
@@ -408,12 +449,33 @@ export default {
         // console.error(err)
       })
     },
+    dataURItoBlob (dataURI) {
+      const byteString = atob(dataURI.split(',')[1])
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+      const ab = new ArrayBuffer(byteString.length)
+      const ia = new Uint8Array(ab)
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+      const blob = new Blob([ab], { type: mimeString })
+      return blob
+    },
     shareAddress () {
-      navigator.share({
-        url: this.wallet.address
-      })
-        .then(() => console.log('Successful share'))
-        .catch(error => console.log('Error sharing', error))
+      const file = this.dataURItoBlob(this.qrImg)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          text: this.wallet.address
+        })
+          .then(() => console.log('Share was successful.'))
+          .catch((error) => console.log('Sharing failed', error))
+      } else {
+        navigator.share({
+          text: this.wallet.address
+        })
+          .then(() => console.log('Successful share'))
+          .catch(error => console.log('Error sharing', error))
+      }
     },
     saveNewTitle () {
       if (this.newTitle) {
@@ -465,6 +527,8 @@ export default {
       currency: state => state.api.currency,
       balance: state => state.api.balance,
       delegations: state => state.api.delegations,
+      status: state => state.api.status,
+      unbond: state => state.api.unbond,
       delegationsTotal: state => state.api.delegationsTotal
     }),
     ...mapGetters([

@@ -6,7 +6,7 @@ import Vuex from 'vuex'
 import app from './modules/app'
 import api from './modules/api'
 import wallet from './modules/wallet'
-import auth from './modules/auth'
+import user from './modules/user'
 // import request from './modules/request'
 import contacts from './modules/contacts'
 import createPersistedState from 'vuex-persistedstate'
@@ -24,7 +24,7 @@ export default function (/* { ssrContext } */) {
       app,
       api,
       wallet,
-      auth,
+      user,
       // request,
       contacts
     },

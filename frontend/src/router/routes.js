@@ -12,6 +12,14 @@ const routes = [
       { path: '', component: () => import('pages/Wallet.vue'), props: true }
     ]
   },
+  {
+    path: '/profile',
+    component: () => import('layouts/Main.vue'),
+    children: [
+      { path: '', component: () => import('pages/profile/Profile.vue'), props: true },
+      { path: 'reg', component: () => import('pages/profile/Registration.vue'), props: true }
+    ]
+  },
   // {
   //   path: '/',
   //   component: () => import('layouts/Main.vue'),

@@ -5,8 +5,10 @@ const getDefaultState = () => {
   return {
     scoringApi: 'https://minter-scoring.space/api/',
     explorerApi: 'https://explorer-api.minter.network/api/v1/',
+    status: null,
     balance: null,
     currency: null,
+    unbond: {},
     coins: null,
     delegations: null,
     delegationsTotal: null,
@@ -126,6 +128,18 @@ const mutations = {
   },
   SET_CURRENCY: (state, payload) => {
     state.currency = payload
+  },
+  SET_STATUS: (state, payload) => {
+    state.status = payload
+  },
+  REMOVE_UNBOND: state => {
+    state.unbond = {}
+  },
+  SET_UNBOND: (state, payload) => {
+    if (!state.unbond[payload.address] || !Array.isArray(state.unbond[payload.address])) state.unbond[payload.address] = []
+    payload.type = 'unbond'
+    payload.height = state.status.latestBlockHeight
+    state.unbond[payload.address].push(payload)
   }
   // SET_TRANSACTION_LOADING: (state, payload) => {
   //  state.transactionsLoading = payload;
@@ -180,6 +194,16 @@ const actions = {
       const { data } = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bip&vs_currencies=usd')
       // const { data } = await axios.get('https://bipchange.org/api/')
       context.commit('SET_CURRENCY', data.bip)
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  GET_STATUS: async (context) => {
+    try {
+      const { data } = await axios.get(`${ state.explorerApi }status`)
+      // const { data } = await axios.get(`${ state.explorerApi }blocks`)
+      // const { data } = await axios.get('https://bipchange.org/api/')
+      context.commit('SET_STATUS', data.data)
     } catch (error) {
       console.log(error)
     }

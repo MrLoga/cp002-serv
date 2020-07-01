@@ -28,11 +28,11 @@ const mutations = {
     state.httpApi = 'https://wallet.reef.mn/api/'
     state.requests = []
   },
-  SET_DEV: (state) => {
-    // console.log('SET_DEV')
-    state.wssApi = 'ws://localhost:3000/api/ws'
-    state.httpApi = 'http://localhost:3000/api/'
-  },
+  // SET_DEV: (state) => {
+  //   console.log('SET_DEV')
+  //   state.wssApi = 'ws://localhost:3000/api/ws'
+  //   state.httpApi = 'http://localhost:3000/api/'
+  // },
   SET_WS: (state, payload) => {
     state.wsRequest = payload
   },
@@ -68,6 +68,8 @@ const actions = {
   FETCH_CURRENCY: context => {
     axios.get(`${context.state.httpApi}currency`).then(data => {
       context.commit('SET_CURRENCY', data.data)
+    }).catch(error => {
+      console.log(error)
     })
   },
   NEW_WS: (context, payload) => {

@@ -1,12 +1,14 @@
 // import { i18n } from 'boot/i18n'
+import { strapiMessage } from '../../utils/error'
 import axios from 'axios'
+import { i18n } from '../../boot/i18n'
+import { Notify } from 'quasar'
 
 const getDefaultState = () => {
   return {
     minterscanApi: 'https://minterscan.pro/',
     contacts: [],
-    profiles: [],
-    profilesUpdateDate: null
+    profiles: []
   }
 }
 const state = getDefaultState()
@@ -60,20 +62,23 @@ const mutations = {
   },
   SET_PROFILES: (state, payload) => {
     state.profiles = payload
+  },
+  UPDATE_CONTACTS: (state, payload) => {
+    state.contacts = payload
   }
 }
 
 const actions = {
-  NEW_CONTACT: (context, payload) => {
-    return new Promise((resolve, reject) => {
-      const findContact = context.state.contacts.filter(item => item.address.toLowerCase() === payload.address.toLowerCase())
-      if (!findContact.length) {
-        resolve(payload)
-      } else {
-        reject(findContact)
-      }
-    })
-  },
+  // NEW_CONTACT: (context, payload) => {
+  //   return new Promise((resolve, reject) => {
+  //     const findContact = context.state.contacts.filter(item => item.address.toLowerCase() === payload.address.toLowerCase())
+  //     if (!findContact.length) {
+  //       resolve(payload)
+  //     } else {
+  //       reject(findContact)
+  //     }
+  //   })
+  // },
   FETCH_ALL_PROFILES: async (context, payload) => {
     try {
       const { data } = await axios.get(`${ state.minterscanApi }profiles`)
@@ -89,6 +94,80 @@ const actions = {
       return data
     } catch (error) {
       return null
+    }
+  },
+  REMOVE_USER_CONTACTS: async ({ state, rootState, commit }, payload) => {
+    try {
+      if (rootState.user.jwt) {
+        await axios.put(`${ rootState.user.backendApi }contacts/pull`, { address: payload }, rootState.user.httpConfig)
+      }
+      commit('REMOVE_CONTACT', payload)
+      Notify.create({
+        progress: true,
+        message: i18n.t('Contact removed'),
+        type: 'positive',
+        position: 'bottom'
+      })
+    } catch (error) {
+      Notify.create({
+        progress: true,
+        message: strapiMessage(error),
+        type: 'negative',
+        position: 'bottom'
+      })
+    }
+  },
+  SAVE_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
+    try {
+      if (rootState.user.jwt) {
+        await axios.put(`${ rootState.user.backendApi }contacts/push`, payload, rootState.user.httpConfig)
+      }
+      const user = getters.findProfile(payload.address)
+      payload.icon = (user && user.icon) ? user.icon : null
+      commit('ADD_CONTACT', payload)
+      Notify.create({
+        progress: true,
+        message: i18n.t('Contact added'),
+        type: 'positive',
+        position: 'bottom'
+      })
+    } catch (error) {
+      Notify.create({
+        progress: true,
+        message: strapiMessage(error),
+        type: 'negative',
+        position: 'bottom'
+      })
+    }
+  },
+  SYNC_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
+    try {
+      const { data } = await axios.get(`${ rootState.user.backendApi }contacts`, rootState.user.httpConfig)
+      if (data.list && data.list.length) {
+        const contactsIcon = data.list.map(item => {
+          const user = getters.findProfile(item.address)
+          return {
+            ...item,
+            icon: (user && user.icon) ? user.icon : null
+          }
+        })
+        // Notify.create({
+        //   progress: true,
+        //   message: i18n.t('Contacts updated'),
+        //   type: 'positive',
+        //   position: 'bottom'
+        // })
+        commit('UPDATE_CONTACTS', contactsIcon)
+      } else {
+        await axios.put(`${ rootState.user.backendApi }contacts`, state.contacts, rootState.user.httpConfig)
+      }
+      return data
+    } catch (error) {
+      if (state.contacts.length) {
+        if (error.response && error.response.data.statusCode === 404) {
+          await axios.post(`${ rootState.user.backendApi }contacts`, state.contacts, rootState.user.httpConfig)
+        }
+      }
     }
   }
 }

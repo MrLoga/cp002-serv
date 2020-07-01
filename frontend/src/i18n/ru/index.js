@@ -12,6 +12,14 @@ export default {
   'Show QR': 'Показать QR',
   'Send to people': 'Отправить людям',
 
+  // Registration
+  'Registration': 'Регистрация',
+  'Sign In': 'Вход',
+  'Sign in with': 'Вход с помощью',
+  'Create account': 'Создать аккаунт',
+  'Login': 'Войти',
+  'Password': 'Пароль',
+
   // HeaderApp
   'Home': 'Главная',
   'My Wallet': 'Кошелек',
@@ -95,6 +103,8 @@ export default {
   'Field is required': 'Поле обязательно',
   'Сhoose different coins': 'Выберите разные монеты',
   'for transaction fee': 'для оплаты комиссии',
+  'Transaction is being sent, please wait': 'Транзакция отправляется, пожалуйста подождите',
+  'Unbonding': 'Возврат',
 
   // Settings
   'General': 'Основные',
@@ -115,6 +125,7 @@ export default {
   'Link copied to your clipboard': 'Ссылка скопирована в ваш буфер обмена',
   'Move menu': 'Переместить меню',
   'Logout app': 'Выйти из приложения',
+  'Logout': 'Выйти',
   'All data will be deleted from this device': 'Все данные будут удалены с этого устройства',
 
   //
@@ -136,9 +147,11 @@ export default {
   'No contacts found': 'Контакты не найдены',
   'Add first contact': 'Добавить первый контакт',
   'Contact added': 'Контакт добавлен',
+  'Contacts updated': 'Контакты обновлены',
   'You dont have any saved contacts': 'У вас не сохранено ни одного контакта',
   'This contact already exists': 'Этот контакт уже есть',
   'Remove contact': 'Удалить контакт',
+  'Contact removed': 'Контакт удален',
   'Remove': 'Удалить',
   'Close': 'Закрыть',
   'Copy': 'Скопировать',

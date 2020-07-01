@@ -1,7 +1,10 @@
 <template>
   <q-page padding>
     <div v-if="wallets">
-      <q-item-label header>{{ $t('Wallets') }}</q-item-label>
+      <div class="row justify-between">
+        <q-item-label class="col" header>{{ $t('Wallets') }}</q-item-label>
+        <div class="col q-pa-md text-right text-caption">{{ prettyNumber(totalWalletsBip, 2) }} BIP</div>
+      </div>
       <q-card>
         <!-- <q-item-label header>{{ $t('Observer') }}</q-item-label> -->
         <q-list separator class="q-mb-md">
@@ -10,7 +13,10 @@
       </q-card>
     </div>
     <div v-if="observer && observer.length">
-      <q-item-label header>{{ $t('Observers') }}</q-item-label>
+      <div class="row justify-between">
+        <q-item-label class="col" header>{{ $t('Observers') }}</q-item-label>
+        <div class="col q-pa-md text-right text-caption">{{ prettyNumber(totalObserversBip, 2) }} BIP</div>
+      </div>
       <q-card>
         <!-- <q-item-label header>{{ $t('Observer') }}</q-item-label> -->
         <q-list separator class="q-mb-md">
@@ -33,6 +39,12 @@
           <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Contacts') }}</div>
         </q-btn>
       </div>
+      <!-- <div class="col-md-6 col-xs-6 q-pa-xs">
+        <q-btn push stack class="bg-light-blue-14 text-white full-width q-pb-xs" to="/profile">
+          <q-icon name="account_circle" size="1.4rem" class="text-white" />
+          <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Profile') }}</div>
+        </q-btn>
+      </div> -->
     </div>
 
   </q-page>
@@ -118,6 +130,8 @@ export default {
       'balanceSum',
       'balanceCustom',
       'walletsSelect',
+      'totalWalletsBip',
+      'totalObserversBip',
       'observerSelect',
       'findWallet'
       // 'balanceObj',

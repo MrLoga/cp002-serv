@@ -11,7 +11,7 @@ module.exports = function (ctx) {
       'axios',
       'notify-defaults'
     ],
-    debug: false,
+    // debug: false,
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: [

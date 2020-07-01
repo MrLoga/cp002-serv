@@ -1,0 +1,12 @@
+ErrorDocument 400 https://charity.cloudp.group/
+ErrorDocument 404 https://charity.cloudp.group/
+ErrorDocument 500 "Кажется что-то пошло не так. напишите @cloud_projects в tg"
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

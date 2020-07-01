@@ -12,6 +12,14 @@ export default {
   'Show QR': 'Show QR',
   'Send to people': 'Send to people',
 
+  // Registration
+  'Registration': 'Registration',
+  'Sign In': 'Sign In',
+  'Sign in with': 'Sign in with',
+  'Create account': 'Create account',
+  'Login': 'Login',
+  'Password': 'Password',
+
   // HeaderApp
   'Home': 'Home',
   'My Wallet': 'My Wallet',
@@ -95,6 +103,8 @@ export default {
   'Field is required': 'Field is required',
   'Сhoose different coins': 'Сhoose different coins',
   'for transaction fee': 'for transaction fee',
+  'Transaction is being sent, please wait': 'Transaction is being sent, please wait',
+  'Unbonding': 'Unbonding',
 
   // Settings
   'General': 'General',
@@ -115,6 +125,7 @@ export default {
   'Link copied to your clipboard': 'Link copied to your clipboard',
   'Move menu': 'Move menu',
   'Logout app': 'Logout app',
+  'Logout': 'Logout',
   'All data will be deleted from this device': 'All data will be deleted from this device',
 
   //
@@ -136,9 +147,11 @@ export default {
   'No contacts found': 'No contacts found',
   'Add first contact': 'Add first contact',
   'Contact added': 'Contact added',
+  'Contacts updated': 'Contacts updated',
   'You dont have any saved contacts': 'You don\'t have any saved contacts',
   'This contact already exists': 'This contact already exists',
   'Remove contact': 'Remove contact',
+  'Contact removed': 'Contact removed',
   'Remove': 'Remove',
   'Close': 'Close',
   'Copy': 'Copy',

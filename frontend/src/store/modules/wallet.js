@@ -3,6 +3,7 @@ import { Loading, QSpinnerFacebook } from 'quasar'
 import { prettyNumber, shortAddress } from '../../utils'
 import Big from 'big.js'
 import axios from 'axios'
+import { i18n } from '../../boot/i18n'
 
 const getDefaultState = () => {
   return {
@@ -27,6 +28,9 @@ const getters = {
   isLogin: state => (!!state.privateKey && !!state.address && !!state.address.length),
   // isRegistered: state => (!!state.key && !!state.nonce),
   findWallet: state => address => state.wallets.find(item => item.address === address),
+  findObserver: state => address => state.observer.find(item => item.address === address),
+  totalWalletsBip: state => state.wallets.reduce((prev, curr) => Big(prev).plus(curr.balance), 0),
+  totalObserversBip: state => state.observer.reduce((prev, curr) => Big(prev).plus(curr.balance), 0),
   walletsSelect: state => state.wallets.map(item => {
     return {
       label: `<b>${ item.title }</b>`,
@@ -93,9 +97,7 @@ const mutations = {
   },
   CHANGE_NAME_WALLET: (state, payload) => {
     if (payload.isObserve) {
-      console.log(state.observer, payload.address)
       const itemId = state.observer.findIndex(item => item.address === payload.address)
-      console.log(itemId, state.observer, payload.title)
       state.observer[itemId].title = payload.title
     } else {
       const itemId = state.wallets.findIndex(item => item.address === payload.address)
@@ -118,7 +120,7 @@ const mutations = {
         spinnerColor: 'white',
         spinnerSize: 120,
         backgroundColor: 'indigo-10',
-        message: 'Transaction is being sent, please wait',
+        message: i18n.t('Transaction is being sent, please wait'),
         messageColor: 'white'
       })
     } else {

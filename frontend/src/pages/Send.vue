@@ -139,6 +139,15 @@ export default {
         address: this.import.address
       }
     }
+    console.log(this.import)
+    if (this.import && this.import.coin !== '') {
+      const tmpCoin = this.balanceSelect.find(item => item.value === this.import.coin)
+      if (tmpCoin) this.coin = tmpCoin
+    }
+    if (this.import && this.import.amount !== '') {
+      const tmpAmount = this.import.amount.replace(' ', '').replace(',', '.')
+      this.amount = tmpAmount
+    }
     if (!this.coin) this.setDefaultCoin()
   },
   methods: {
@@ -159,6 +168,7 @@ export default {
       }
       this.coin = null
       this.amount = null
+      this.payload = null
       this.commission = 0
       this.commissionCoin = 'BIP'
     },
@@ -244,8 +254,7 @@ export default {
       this.$store.dispatch('SENDER', txData).then(txHash => {
         this.$q.notify({
           message: this.$t('Transaction successful'),
-          icon: 'tag_faces',
-          color: 'teal',
+          type: 'positive',
           position: 'bottom'
         })
         setTimeout(() => {
@@ -262,8 +271,7 @@ export default {
         console.log(error)
         this.$q.notify({
           message: error,
-          icon: 'report_problem',
-          color: 'negative',
+          type: 'negative',
           position: 'bottom'
         })
       })
