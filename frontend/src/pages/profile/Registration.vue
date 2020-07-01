@@ -65,7 +65,7 @@ export default {
     async registration () {
       this.error = null
       try {
-        const { data } = await this.$axios.post('http://localhost:1337/auth/local/register', {
+        const { data } = await this.$axios.post(this.backendApi + '/auth/local/register', {
           username: this.username,
           email: this.email,
           password: this.password
@@ -87,7 +87,8 @@ export default {
   },
   computed: {
     ...mapState({
-      jwt: state => state.user.jwt
+      jwt: state => state.user.jwt,
+      backendApi: state => state.user.backendApi
     })
   },
   watch: {

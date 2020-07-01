@@ -91,9 +91,14 @@ export default {
         mnemonic: this.wallet.getMnemonic()
       }
 
-      const profile = await this.$store.dispatch('GET_PROFILE', walletData.address)
-      walletData.title = (profile && profile.title) ? profile.title : 'Main wallet'
-      walletData.icon = (profile && profile.icon) ? profile.icon : ''
+      try {
+        const profile = await this.$store.dispatch('GET_PROFILE', walletData.address)
+        walletData.title = (profile && profile.title) ? profile.title : 'Main wallet'
+        walletData.icon = (profile && profile.icon) ? profile.icon : ''
+      } catch {
+        walletData.title = 'Main wallet'
+        walletData.icon = ''
+      }
 
       this.$store.commit('SAVE_WALLET', walletData)
       await this.$store.dispatch('FETCH_BALANCE')
