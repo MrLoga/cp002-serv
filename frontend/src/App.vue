@@ -34,13 +34,14 @@ export default {
     lastDate.setDate(lastDate.getDate() - 3)
     this.$store.dispatch('GET_CURRENCY')
     this.$store.dispatch('GET_STATUS')
+    this.$store.dispatch('FETCH_COINS')
     if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate < lastDate.getTime())) {
       this.$store.dispatch('FETCH_ALL_PROFILES')
-      this.$store.dispatch('FETCH_COINS')
+      // this.$store.dispatch('FETCH_COINS')
       this.$store.dispatch('FETCH_VALIDATORS')
       this.$store.commit('SET_UPDATE_DATE', nowDate.getTime())
     } else {
-      if (!this.coins) this.$store.dispatch('FETCH_COINS')
+      // if (!this.coins) this.$store.dispatch('FETCH_COINS')
       if (!this.validators) this.$store.dispatch('FETCH_VALIDATORS')
       if (!this.profiles) this.$store.dispatch('FETCH_ALL_PROFILES')
     }

@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { strapiMessage } from '../../utils/error'
 export default {
   name: 'Profile',
@@ -67,7 +68,7 @@ export default {
     async authGoogle () {
       console.log('/connect/google/callback')
       try {
-        const data = await this.$axios.get('http://localhost:1337/connect/google')
+        const data = await this.$axios.get(this.backendApi + '/connect/google')
         console.log(data)
       } catch (error) {
         console.error('REGISTRATION', strapiMessage(error))
@@ -76,7 +77,7 @@ export default {
     async authVk () {
       console.log('/connect/vk/callback')
       try {
-        const data = await this.$axios.get('http://localhost:1337/connect/vk')
+        const data = await this.$axios.get(this.backendApi + '/connect/vk')
         console.log(data)
       } catch (error) {
         console.error('REGISTRATION', strapiMessage(error))
@@ -84,7 +85,7 @@ export default {
     },
     async login () {
       try {
-        const { data } = await this.$axios.post('http://localhost:1337/auth/local', {
+        const { data } = await this.$axios.post(this.backendApi + '/auth/local', {
           identifier: this.identifier,
           password: this.password
         })
@@ -103,6 +104,11 @@ export default {
         console.error('REGISTRATION', strapiMessage(error))
       }
     }
+  },
+  computed: {
+    ...mapState({
+      backendApi: state => state.user.backendApi
+    })
   }
 }
 </script>
