@@ -1,0 +1,111 @@
+.start_animate {
+  opacity: 0;
+  transform: translate(0, 0, 0);
+  animation: start-show 1s ease-in-out 0.5s forwards;
+}
+
+.start__container {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  flex-wrap: wrap;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+
+  &:before,
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -3;
+    opacity: 0.1;
+  }
+  &:before {
+    right: 0;
+    bottom: 10em;
+    height: 16em;
+    width: 16em;
+    border-radius: 30em;
+    transform: translate(10%, -10%) rotate(0deg);
+    background: linear-gradient(#9cf4d8, #0fa7ff);
+    align-self: flex-end;
+    animation: gradient-fade 8s ease-in-out 3s infinite alternate;
+  }
+  &:after {
+    top: 0;
+    left: -5em;
+    height: 15em;
+    width: 15em;
+    border-radius: 15em;
+    transform: translate(-30%, 20%) rotate(0deg);
+    background: linear-gradient(#6ffff2, #0fa7ff);
+    animation: gradient-fade-alt 10s ease-in-out 3s infinite alternate;
+  }
+
+  &-in {
+    position: relative;
+
+    &:before,
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+    }
+
+    &:before {
+      z-index: -1;
+      top: 0em;
+      right: 8em;
+      width: 15em;
+      height: 15em;
+      opacity: 0.1;
+      border-radius: 15em;
+      transform: translate(10%, -10%) rotate(0deg);
+      background: linear-gradient(#87ceeb, #6ffff2);
+      animation: gradient-fade 5s ease-in-out 3s infinite alternate;
+    }
+
+    &:after {
+      z-index: -1;
+      left: 5em;
+      bottom: 10em;
+      width: 16em;
+      height: 16em;
+      opacity: 0.15;
+      border-radius: 16em;
+      transform: translate(-30%, 20%) rotate(0deg);
+      background: linear-gradient(#15e0ff, #9dffd2);
+      animation: gradient-fade-alt 9s ease-in-out 3s infinite alternate;
+    }
+  }
+}
+
+@keyframes start-show {
+  from {
+    opacity: 0;
+    transform: translate(0, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes gradient-fade {
+  from {
+    transform: translate(10%, -10%) rotate(0deg);
+  }
+  to {
+    transform: translate(50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes gradient-fade-alt {
+  from {
+    transform: translate(-30%, 20%) rotate(0deg);
+  }
+  to {
+    transform: translate(-60%, 60%) rotate(360deg);
+  }
+}
