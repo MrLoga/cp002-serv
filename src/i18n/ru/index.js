@@ -33,6 +33,15 @@ export default {
   'Already have an account?': 'Уже есть аккаунт?',
   'New user?': 'Новый пользователь?',
 
+  // Profile
+  'Sync contacts': 'Синхронизировать контакты',
+  'Sync wallets': 'Синхронизировать кошельки',
+  'Sync observers': 'Синхронизировать наблюдателей',
+  'Choose a tariff': 'Выберите тариф',
+  'Pay for a subscription?': 'Оплатить подписку?',
+  'Cost': 'Цена',
+  'Pay': 'Оплатить',
+
   // HeaderApp
   'Home': 'Главная',
   'My Wallet': 'Кошелек',
@@ -78,6 +87,9 @@ export default {
   'Remove wallet': 'Удалить кошелек',
   'Remove all wallets': 'Удалить все кошельки',
   'Attention': 'Внимание',
+  'Add mnemonic phrase': 'Добавить сид фразу',
+  'This is the mnemonic for another address': 'Это сид фраза для другого адреса',
+  'Invalid mnemonic': 'Неверная сид фраза',
 
   // Forms
   'No results': 'Нет результатов',

@@ -2,7 +2,8 @@
   <q-item v-ripple clickable @click="selectWallet(wallet.address)">
     <q-item-section top avatar class="q-ml-none">
       <q-avatar text-color="green" rounded>
-        <q-icon name="radio_button_checked" color="green" size="0.9rem" v-if="type !== 'observer' && wallet.address === activeAddress" class="wallet__active-icon" />
+        <q-icon name="lock" color="red" size="0.9rem" v-if="type !== 'observer' && !wallet.privateKey" class="wallet__active-icon" />
+        <q-icon name="radio_button_checked" color="green" size="0.9rem" v-else-if="type !== 'observer' && wallet.address === activeAddress" class="wallet__active-icon" />
         <q-icon name="radio_button_unchecked" color="grey" size="0.9rem" v-else-if="type !== 'observer'" class="wallet__active-icon" />
         <q-img v-if="wallet.icon" :src="wallet.icon" spinner-color="primary" spinner-size="sm" style="height: 40px">
           <template v-slot:error>

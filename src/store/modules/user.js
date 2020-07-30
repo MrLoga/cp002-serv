@@ -9,7 +9,11 @@ const getDefaultState = () => {
     jwt: null,
     httpConfig: null,
     user: null,
-    contactsSync: false
+    contactsSync: false,
+    // sync Settings
+    syncContacts: true,
+    syncWallets: true,
+    syncObservers: true
   }
 }
 const state = getDefaultState()
@@ -25,6 +29,9 @@ const mutations = {
   SET_DEV: state => {
     state.backendApi = 'http://localhost:1337/'
   },
+  SET_TEST: state => {
+    state.backendApi = 'https://dev.api.reef.mn/'
+  },
   LOGIN_USER_DATA: (state, payload) => {
     state.jwt = payload.jwt
     state.httpConfig = {
@@ -33,6 +40,9 @@ const mutations = {
       }
     }
     state.user = payload.user
+  },
+  SET_SYNC_SETTINGS: (state, payload) => {
+    state[payload[0]] = payload[1]
   },
   SET_SYNC: (state, payload) => {
     state.contactsSync = payload
@@ -51,17 +61,11 @@ const actions = {
   GET_USER_PROFILE: async ({ state }, payload) => {
     try {
       const { data } = await axios.get(`${ state.backendApi }users/me`, state.httpConfig)
+      console.log(data)
       return data
     } catch (error) {
       return strapiMessage(error)
     }
-    // if (data.user) {
-    //   context.commit('LOGIN_USER_DATA', data)
-    // }
-    // if (state.contactsSync) {
-    //   context.commit('UPDATE_CONTACTS', data.user.contacts)
-    // }
-    // return data
   },
   LOGIN_USER: async ({ state, commit }, payload) => {
     try {

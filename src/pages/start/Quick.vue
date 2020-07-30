@@ -36,9 +36,7 @@ export default {
     }
   },
   created () {
-    setTimeout(() => {
-      this.mnemonic = generateMnemonic()
-    }, 10)
+    this.mnemonic = generateMnemonic()
   },
   methods: {
     walletLogin () {

@@ -61,42 +61,42 @@ const mutations = {
   RESET_WALLET: state => {
     Object.assign(state, getDefaultState())
   },
-  SAVE_WALLET: (state, payload) => {
-    const tmpWallet = {
-      title: payload.title || '',
-      icon: payload.icon || '',
-      address: payload.address,
-      privateKey: payload.privateKey,
-      mnemonic: payload.mnemonic
-    }
-    state.wallets.push(tmpWallet)
-    state.address = tmpWallet.address
-    state.privateKey = tmpWallet.privateKey
-    state.mnemonic = tmpWallet.mnemonic
-  },
-  SAVE_OBSERVER: (state, payload) => {
-    state.observer.push(payload)
-  },
   SET_WALLET: (state, payload) => {
     const itemId = state.wallets.findIndex(item => item.address === payload)
     state.address = state.wallets[itemId].address
     state.privateKey = state.wallets[itemId].privateKey
     state.mnemonic = state.wallets[itemId].mnemonic
   },
-  REMOVE_OBSERVER: (state, payload) => {
-    const itemId = state.observer.findIndex(item => item.address === payload)
-    state.observer.splice(itemId, 1)
+  SAVE_WALLET: (state, payload) => {
+    state.wallets.push(payload)
+    state.address = payload.address
+    state.privateKey = payload.privateKey
+    state.mnemonic = payload.mnemonic
   },
-  UPDATE_OBSERVER: (state, payload) => {
-    console.log(payload)
-    const updateObserve = payload.filter(item => {
-      return getters.findWallet(item.address)
-    })
-    state.observer = updateObserve
+  SAVE_OBSERVER: (state, payload) => {
+    state.observer.push(payload)
   },
   REMOVE_WALLET: (state, payload) => {
     const itemId = state.wallets.findIndex(item => item.address === payload)
     state.wallets.splice(itemId, 1)
+  },
+  REMOVE_OBSERVER: (state, payload) => {
+    const itemId = state.observer.findIndex(item => item.address === payload)
+    state.observer.splice(itemId, 1)
+  },
+  UPDATE_WALLETS: (state, payload) => {
+    const tmpWallets = payload.map(wallet => {
+      const findWallet = state.wallets.find(item => item.address === wallet.address)
+      if (findWallet && findWallet.mnemonic) {
+        wallet.privateKey = findWallet.privateKey
+        wallet.mnemonic = findWallet.mnemonic
+      }
+      return wallet
+    })
+    state.wallets = tmpWallets
+  },
+  UPDATE_OBSERVER: (state, payload) => {
+    state.observer = payload
   },
   CHANGE_WALLET: (state, payload) => {
     const itemId = state.wallets.findIndex(item => item.address === payload)
@@ -111,11 +111,6 @@ const mutations = {
       state.wallets[itemId].title = payload.title
     }
   },
-  // SAVE_KEYS: (state, payload) => {
-  //   state.key = payload.key
-  //   state.nonce = payload.nonce
-  //   state._id = payload._id
-  // },
   SAVE_GATE: (state) => {
     state.minterGate = new Minter({ apiType: 'gate', baseURL: 'https://gate-api.minter.network/api/v1/' })
     // state.minterGate = new Minter({ apiType: API_TYPE_NODE, baseURL: 'https://api.minter.stakeholder.space/' })
@@ -154,6 +149,34 @@ const actions = {
   FETCH_DELEGATIONS_ADDRESS: async (context, payload) => {
     const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations`)
     return data
+  },
+  SAVE_WALLET: async ({ state, rootState, commit }, payload) => {
+    commit('SAVE_WALLET', payload)
+    if (rootState.user.jwt && rootState.user.syncWallets) {
+      const tmpWallet = {
+        address: payload.address,
+        title: payload.title
+      }
+      await axios.put(`${ rootState.user.backendApi }user-data/push-wallet`, tmpWallet, rootState.user.httpConfig)
+    }
+  },
+  SAVE_OBSERVER: ({ state, rootState, commit }, payload) => {
+    commit('SAVE_OBSERVER', payload)
+    if (rootState.user.jwt && rootState.user.syncObservers) {
+      axios.put(`${ rootState.user.backendApi }user-data/push-observer`, payload, rootState.user.httpConfig)
+    }
+  },
+  REMOVE_WALLET: ({ state, rootState, commit }, payload) => {
+    commit('REMOVE_WALLET', payload)
+    if (rootState.user.jwt && rootState.user.syncWallets) {
+      axios.put(`${ rootState.user.backendApi }user-data/pull-wallet`, { address: payload }, rootState.user.httpConfig)
+    }
+  },
+  REMOVE_OBSERVER: ({ state, rootState, commit }, payload) => {
+    commit('REMOVE_OBSERVER', payload)
+    if (rootState.user.jwt && rootState.user.syncObservers) {
+      axios.put(`${ rootState.user.backendApi }user-data/pull-observer`, { address: payload }, rootState.user.httpConfig)
+    }
   },
   GET_COMMISSION: (context, payload) => {
     const txParams = {

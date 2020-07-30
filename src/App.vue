@@ -28,6 +28,9 @@ export default {
     if (location.hostname === 'localhost') {
       this.$store.commit('SET_DEV')
     }
+    if (location.hostname === 'dev.wallet.reef.mn') {
+      this.$store.commit('SET_TEST')
+    }
 
     const nowDate = new Date()
     const lastDate = new Date()
@@ -50,6 +53,7 @@ export default {
     // this.$store.dispatch('FETCH_CURRENCY')
     if (this.isAuth) {
       this.$store.dispatch('SYNC_USER_CONTACTS')
+      this.$store.dispatch('GET_USER_PROFILE')
     }
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')

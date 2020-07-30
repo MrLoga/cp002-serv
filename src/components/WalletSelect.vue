@@ -62,14 +62,16 @@ export default {
     }
   },
   created () {
-    const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
-    this.wallet = this.walletsSelect[currentWallet]
+    if (this.address) {
+      const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
+      this.wallet = this.walletsSelect[currentWallet]
+    } else {
+      this.$store.commit('SET_WALLET', this.walletsSelect[0].address)
+    }
   },
   methods: {
     inputChange (val) {
-      console.log(val.address)
-      console.log(this.wallet.address)
-      if (this.wallet.address === val.address) {
+      if (this.wallet.address === val.address && this.$route.path !== '/wallet') {
         this.$router.push({ path: '/wallet' })
       }
       if (val && val.address) {

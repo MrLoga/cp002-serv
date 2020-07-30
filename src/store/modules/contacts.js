@@ -97,7 +97,7 @@ const actions = {
   },
   REMOVE_USER_CONTACTS: async ({ state, rootState, commit }, payload) => {
     try {
-      if (rootState.user.jwt) {
+      if (rootState.user.jwt && rootState.user.syncContacts) {
         await axios.put(`${ rootState.user.backendApi }user-data/pull-contact`, { address: payload }, rootState.user.httpConfig)
       }
       commit('REMOVE_CONTACT', payload)
@@ -118,7 +118,7 @@ const actions = {
   },
   SAVE_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
     try {
-      if (rootState.user.jwt) {
+      if (rootState.user.jwt && rootState.user.syncContacts) {
         await axios.put(`${ rootState.user.backendApi }user-data/push-contact`, payload, rootState.user.httpConfig)
       }
       const user = getters.findProfile(payload.address)
@@ -142,13 +142,19 @@ const actions = {
   SYNC_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
     const sendUserData = () => {
       return {
-        contacts: state.contacts.map(item => {
+        contacts: !rootState.user.syncContacts ? false : state.contacts.map(item => {
           return {
             title: item.title,
             address: item.address
           }
         }),
-        wallets: rootState.wallet.observer.map(item => {
+        wallets: !rootState.user.syncWallets ? false : rootState.wallet.wallets.map(item => {
+          return {
+            title: item.title,
+            address: item.address
+          }
+        }),
+        observers: !rootState.user.syncObservers ? false : rootState.wallet.observer.map(item => {
           return {
             title: item.title,
             address: item.address
@@ -156,12 +162,16 @@ const actions = {
         })
       }
     }
+
     try {
       const { data } = await axios.get(`${ rootState.user.backendApi }user-data`, rootState.user.httpConfig)
-      if (data.wallets && data.wallets.length) {
-        commit('UPDATE_OBSERVER', data.wallets, { root: true })
+      if (data.wallets && data.wallets.length && rootState.user.syncWallets) {
+        commit('UPDATE_WALLETS', data.wallets, { root: true })
       }
-      if (data.contacts && data.contacts.length) {
+      if (data.observers && data.observers.length && rootState.user.syncObservers) {
+        commit('UPDATE_OBSERVER', data.observers, { root: true })
+      }
+      if (data.contacts && data.contacts.length && rootState.user.syncContacts) {
         const contactsWithIcon = data.contacts.map(item => {
           const user = getters.findProfile(item.address)
           return {
@@ -171,7 +181,11 @@ const actions = {
         })
         commit('UPDATE_CONTACTS', contactsWithIcon)
       }
-      if (!(data.contacts && data.contacts.length) || !(data.wallets && data.wallets.length)) {
+
+      // Если данных на сервере нет, загружаем все с устройства
+      if (!(data.contacts && data.contacts.length && state.contacts.length) ||
+        !(data.wallets && data.wallets.length && rootState.wallet.wallets.length) ||
+        !(data.observers && data.wallets.length && rootState.wallet.observer.length)) {
         await axios.put(`${ rootState.user.backendApi }user-data`, sendUserData(), rootState.user.httpConfig)
       }
       return data

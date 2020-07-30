@@ -33,6 +33,15 @@ export default {
   'Already have an account?': 'Already have an account?',
   'New user?': 'New user?',
 
+  // Profile
+  'Sync contacts': 'Sync contacts',
+  'Sync wallets': 'Sync wallets',
+  'Sync observers': 'Sync observers',
+  'Choose a tariff': 'Choose a tariff',
+  'Pay for a subscription?': 'Pay for a subscription?',
+  'Cost': 'Cost',
+  'Pay': 'Pay',
+
   // HeaderApp
   'Home': 'Home',
   'My Wallet': 'My Wallet',
@@ -78,6 +87,9 @@ export default {
   'Remove wallet': 'Remove wallet',
   'Remove all wallets': 'Remove all wallets',
   'Attention': 'Attention',
+  'Add mnemonic phrase': 'Add mnemonic phrase',
+  'This is the mnemonic for another address': 'This is the mnemonic for another address',
+  'Invalid mnemonic': 'Invalid mnemonic',
 
   // Forms
   'No results': 'No results',

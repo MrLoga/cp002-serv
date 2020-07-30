@@ -56,7 +56,9 @@ export default {
     if (!this.isLogin && !this.isAuth) {
       this.$router.push({ path: '/start' })
     } else if (!this.isLogin && this.isAuth) {
-      this.$router.push({ path: '/' })
+      if (this.$route.path !== '/') {
+        this.$router.push({ path: '/' })
+      }
     }
   },
   watch: {

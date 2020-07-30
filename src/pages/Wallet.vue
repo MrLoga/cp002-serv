@@ -23,8 +23,32 @@
           <q-skeleton type="text" />
           <q-skeleton type="text" />
         </div>
-
       </div>
+
+      <div v-if="!wallet.privateKey && !isObserve" class="text-center q-pa-md">
+        <q-btn label="Add seed phrase" icon="lock" color="negative" @click="addMnemonicDialog = true" />
+      </div>
+      <q-dialog v-model="addMnemonicDialog" transition-show="scale" transition-hide="scale">
+        <q-card class="dialog-min300">
+          <form @submit.prevent.stop="saveMnemonicWallet" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false">
+            <q-card-section class="q-gutter-md">
+              <q-input
+                v-model="addMnemonic"
+                outlined
+                clearable
+                spellcheck="false"
+                autogrow
+                :label="$t('Mnemonic')"
+                :error="addMnemonicIsError"
+                :error-message="addMnemonicErrorMsg"
+              />
+              <div>
+                <q-btn type="submit" class="full-width" :label="$t('Add mnemonic phrase')" color="primary" :disabled="!addMnemonic || !addMnemonic.length" />
+              </div>
+            </q-card-section>
+          </form>
+        </q-card>
+      </q-dialog>
 
       <q-separator inset />
       <q-card-actions align="center">
@@ -64,12 +88,21 @@
           </q-item>
           <q-separator inset />
 
-          <q-item v-show="!isObserve" v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
+          <q-item v-if="wallet.privateKey" v-ripple clickable @click="settingWalletDialog = false; showSeedDialog = true">
             <q-item-section avatar>
               <q-icon color="orange" name="visibility" />
             </q-item-section>
             <q-item-section>
               <q-item-label class="text-subtitle2">{{ $t('Show seed phrase') }}</q-item-label>
+              <q-item-label caption>{{ $t('Keep it secret') }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-else v-ripple clickable @click="settingWalletDialog = false; addMnemonicDialog = true">
+            <q-item-section avatar>
+              <q-icon color="orange" name="visibility" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-subtitle2">{{ $t('Add mnemonic phrase') }}</q-item-label>
               <q-item-label caption>{{ $t('Keep it secret') }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -281,6 +314,7 @@
 import { mapGetters, mapState } from 'vuex'
 import { stringToHSL, prettyNumber } from '../utils'
 import { copyToClipboard } from 'quasar'
+import { isValidMnemonic, walletFromMnemonic } from 'minterjs-wallet'
 import QRCode from 'qrcode'
 import Big from 'big.js'
 import TransactionsList from '../components/TransactionsList.vue'
@@ -307,6 +341,10 @@ export default {
       unbondDialog: false,
       unbondDialogData: null,
       qrImg: '',
+      addMnemonic: null,
+      addMnemonicDialog: false,
+      addMnemonicIsError: null,
+      addMnemonicErrorMsg: null,
       settingWalletDialog: false,
       showSeedDialog: false,
       logoutDialog: false,
@@ -343,6 +381,31 @@ export default {
       this.getBalance(this.wallet.address)
       this.getDelegations(this.wallet.address)
       this.createQR()
+    },
+    async saveMnemonicWallet () {
+      if (isValidMnemonic(this.addMnemonic)) {
+        const tmpWallet = walletFromMnemonic(this.addMnemonic)
+        const walletData = {
+          address: tmpWallet.getAddressString(),
+          privateKey: tmpWallet.getPrivateKeyString(),
+          mnemonic: tmpWallet.getMnemonic()
+        }
+        if (walletData.address === this.wallet.address) {
+          const profile = this.findProfile(walletData.address)
+          walletData.title = this.wallet.title
+          walletData.icon = profile ? profile.icon : ''
+          await this.$store.dispatch('REMOVE_OBSERVER', walletData.address)
+          await this.$store.dispatch('SAVE_WALLET', walletData)
+          this.$store.dispatch('FETCH_BALANCE')
+          this.$store.dispatch('FETCH_DELEGATION')
+        } else {
+          this.addMnemonicIsError = true
+          this.addMnemonicErrorMsg = this.$t('This is the mnemonic for another address')
+        }
+      } else {
+        this.addMnemonicIsError = true
+        this.addMnemonicErrorMsg = this.$t('Invalid mnemonic')
+      }
     },
     unbondOpen (pubKey, coin, value) {
       this.unbondDialogData = {
@@ -407,8 +470,6 @@ export default {
       this.delegationsGroup = null
       this.delegationsData = null
       const loadDelegations = await this.$store.dispatch('FETCH_DELEGATIONS_ADDRESS', this.wallet.address)
-      console.log(this.wallet.address)
-      console.log(this.address)
       let tmpDelegations
       if (this.unbond[this.wallet.address]) {
         const unbondList = this.unbond[this.wallet.address].map(unbondItem => {
@@ -521,7 +582,7 @@ export default {
     },
     removeWallet () {
       this.logoutDialog = false
-      this.$store.commit('REMOVE_WALLET', this.wallet.address)
+      this.$store.dispatch('REMOVE_WALLET', this.wallet.address)
       this.wallet = this.walletsSelect[0]
       this.$store.commit('SET_WALLET', this.wallet.address)
       this.$store.dispatch('FETCH_BALANCE')
@@ -529,7 +590,7 @@ export default {
     },
     removeObserver () {
       this.removeObserveDialog = false
-      this.$store.commit('REMOVE_OBSERVER', this.wallet.address)
+      this.$store.dispatch('REMOVE_OBSERVER', this.wallet.address)
       this.$router.push({ path: '/' })
     }
   },
@@ -553,11 +614,11 @@ export default {
       'walletsSelect',
       'findValidator',
       'findWallet',
+      'findProfile',
       'findUser'
     ])
   },
   beforeRouteUpdate (to, from, next) {
-    console.log(to.obsAddress)
     if (to.obsAddress === undefined) {
       this.init(this.address, true)
     } else {
@@ -567,7 +628,6 @@ export default {
   },
   watch: {
     address (val) {
-      console.log('Wallet', val)
       this.init(val, true)
     }
   }

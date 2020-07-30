@@ -72,7 +72,7 @@ export default {
           tmpObserver.icon = profile ? profile.icon : ''
 
           this.newWalletDialog = false
-          this.$store.commit('SAVE_OBSERVER', tmpObserver)
+          this.$store.dispatch('SAVE_OBSERVER', tmpObserver)
           this.$router.push({ path: '/wallet/' + tmpObserver.address })
         }
       } else {

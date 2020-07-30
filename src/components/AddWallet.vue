@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { isValidMnemonic, walletFromMnemonic, generateWallet } from 'minterjs-wallet'
+import { isValidMnemonic, walletFromMnemonic, generateMnemonic } from 'minterjs-wallet'
 import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'AddWallet',
@@ -70,9 +70,7 @@ export default {
   methods: {
     generateWallet () {
       this.generateWalletLoading = true
-      setTimeout(() => {
-        this.newMnemonic = generateWallet()._mnemonic
-      }, 200)
+      this.newMnemonic = generateMnemonic()
     },
     saveNewWallet () {
       if (isValidMnemonic(this.newMnemonic)) {
@@ -92,14 +90,14 @@ export default {
           walletData.icon = profile ? profile.icon : ''
 
           this.newWalletDialog = false
-          this.$store.commit('SAVE_WALLET', walletData)
+          this.$store.dispatch('SAVE_WALLET', walletData)
           this.$store.dispatch('FETCH_BALANCE')
           this.$store.dispatch('FETCH_DELEGATION')
           this.$router.push({ path: '/wallet' })
         }
       } else {
         this.newMnemonicIsError = true
-        this.newMnemonicErrorMsg = 'Invalid mnemonic'
+        this.newMnemonicErrorMsg = this.$t('Invalid mnemonic')
       }
     }
   },
