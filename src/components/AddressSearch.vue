@@ -160,7 +160,8 @@
                   </q-item-section>
 
                   <q-item-section side top>
-                    <q-badge :label="pretty(item.part, 2)" />
+                    <q-badge color="blue" v-if="validatorsCommissions[item.value]" :label="validatorsCommissions[item.value] + ' %'" />
+                    <!-- <q-badge color="blue" :label="pretty(item.part, 2)" /> -->
                   </q-item-section>
                 </q-item>
               </template>
@@ -233,6 +234,7 @@ export default {
     ...mapState({
       requests: state => state.request.requests,
       validators: state => state.api.validators,
+      validatorsCommissions: state => state.api.validatorsCommissions,
       contacts: state => state.contacts.contacts,
       profiles: state => state.contacts.profiles
     }),

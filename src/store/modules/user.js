@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { issueCheck } from 'minter-js-sdk'
 import { strapiMessage } from '../../utils/error'
 import { i18n } from '../../boot/i18n'
 import { Notify } from 'quasar'
@@ -25,12 +26,18 @@ const getters = {
 const mutations = {
   RESET_APP: state => {
     Object.assign(state, getDefaultState())
+    if (location.hostname === 'localhost') {
+      state.backendApi = 'http://localhost:1337/'
+    } else if (location.hostname === 'dev.wallet.reef.mn') {
+      state.backendApi = 'https://dev.api.reef.mn/'
+    }
   },
-  SET_DEV: state => {
-    state.backendApi = 'http://localhost:1337/'
-  },
-  SET_TEST: state => {
-    state.backendApi = 'https://dev.api.reef.mn/'
+  SET_API: state => {
+    if (location.hostname === 'localhost') {
+      state.backendApi = 'http://localhost:1337/'
+    } else if (location.hostname === 'dev.wallet.reef.mn') {
+      state.backendApi = 'https://dev.api.reef.mn/'
+    }
   },
   LOGIN_USER_DATA: (state, payload) => {
     state.jwt = payload.jwt
@@ -40,6 +47,9 @@ const mutations = {
       }
     }
     state.user = payload.user
+  },
+  SET_USER: (state, payload) => {
+    state.user = payload
   },
   SET_SYNC_SETTINGS: (state, payload) => {
     state[payload[0]] = payload[1]
@@ -51,17 +61,18 @@ const mutations = {
     state.jwt = null
     state.httpConfig = null
     state.user = null
+  },
+  SET_HELPER: (state, payload) => {
+    console.log(payload)
+    // state.tariff =
   }
-  // UPDATE: (state, payload) => {
-  //   console.log('mut', payload)
-  // }
 }
 
 const actions = {
-  GET_USER_PROFILE: async ({ state }, payload) => {
+  GET_USER_PROFILE: async ({ state, commit }, payload) => {
     try {
       const { data } = await axios.get(`${ state.backendApi }users/me`, state.httpConfig)
-      console.log(data)
+      commit('SET_USER', data)
       return data
     } catch (error) {
       return strapiMessage(error)
@@ -69,10 +80,7 @@ const actions = {
   },
   LOGIN_USER: async ({ state, commit }, payload) => {
     try {
-      const { data } = await axios.post(state.backendApi + 'auth/local', {
-        identifier: payload.identifier,
-        password: payload.password
-      })
+      const { data } = await axios.post(state.backendApi + 'auth/local', { ...payload })
       console.log(data)
       if (data.jwt) {
         commit('LOGIN_USER_DATA', data)
@@ -111,6 +119,42 @@ const actions = {
           position: 'bottom'
         })
         return data
+      }
+    } catch (error) {
+      Notify.create({
+        progress: true,
+        message: strapiMessage(error),
+        type: 'negative',
+        position: 'bottom'
+      })
+      return new Error(strapiMessage(error))
+    }
+  },
+  GET_HELPER: async ({ state, commit }, payload) => {
+    try {
+      const { data } = await axios.get(state.backendApi + 'helper')
+      // commit('SET_HELPER', data)
+      return data
+    } catch (error) {
+      Notify.create({
+        progress: true,
+        message: strapiMessage(error),
+        type: 'negative',
+        position: 'bottom'
+      })
+      return new Error(strapiMessage(error))
+    }
+  },
+  PAY_TARIFF: async ({ state }, payload) => {
+    try {
+      const check = issueCheck({ ...payload })
+      console.log(check)
+      const { data } = await axios.post(state.backendApi + 'tariff-pays', { tariff: payload.tariff, check: check }, state.httpConfig)
+
+      if (data && !data.err) {
+        return data
+      } else {
+        throw new Error(data.err)
       }
     } catch (error) {
       Notify.create({

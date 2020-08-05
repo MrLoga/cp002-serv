@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- $t('Сhoose active wallet')" -->
-    <div v-if="wallets && wallets.length === 1">
+    <div v-if="wallets && wallets.length === 1 && wallet && wallet.title">
       <b>{{ wallet.title }}</b>
     </div>
     <q-select
@@ -62,11 +62,15 @@ export default {
     }
   },
   created () {
-    if (this.address) {
+    if (this.walletsSelect && this.walletsSelect.length && this.address) {
       const currentWallet = this.walletsSelect.findIndex(item => item.address === this.address)
       this.wallet = this.walletsSelect[currentWallet]
     } else {
-      this.$store.commit('SET_WALLET', this.walletsSelect[0].address)
+      if (this.walletsSelect && this.walletsSelect.length) {
+        this.$store.commit('SET_WALLET', this.walletsSelect[0].address)
+      } else {
+        this.$store.commit('SET_WALLET', null)
+      }
     }
   },
   methods: {

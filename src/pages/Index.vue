@@ -45,10 +45,14 @@
           <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Contacts') }}</div>
         </q-btn>
       </div>
-      <div v-if="isAuth" class="col-md-6 col-xs-6 q-pa-xs">
-        <q-btn push stack class="bg-light-blue-14 text-white full-width q-pa-xs" to="/profile">
+      <div class="col-md-6 col-xs-6 q-pa-xs">
+        <q-btn v-if="isAuth" push stack class="bg-light-blue-14 text-white full-width q-pa-xs" to="/profile">
           <q-icon name="account_circle" size="1.4rem" class="text-white" />
           <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Profile') }}</div>
+        </q-btn>
+        <q-btn v-else push stack class="bg-light-blue-14 text-white full-width q-pa-xs" to="/profile/login">
+          <q-icon name="account_circle" size="1.4rem" class="text-white" />
+          <div style="font-size: 0.6rem" class="text-width-medium">{{ $t('Sign In') }}</div>
         </q-btn>
       </div>
     </div>

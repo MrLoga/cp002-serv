@@ -6,13 +6,14 @@ const getDefaultState = () => {
     scoringApi: 'https://minter-scoring.space/api/',
     explorerApi: 'https://explorer-api.minter.network/api/v1/',
     status: null,
-    balance: null,
     currency: null,
     unbond: {},
-    coins: null,
     delegations: null,
     delegationsTotal: null,
-    validators: null
+    balance: null,
+    coins: null,
+    validators: null,
+    validatorsCommissions: null
   }
 }
 const state = getDefaultState()
@@ -105,7 +106,14 @@ const getters = {
 
 const mutations = {
   RESET_API: state => {
-    Object.assign(state, getDefaultState())
+    Object.assign(state, {
+      status: null,
+      currency: null,
+      unbond: {},
+      delegations: null,
+      delegationsTotal: null
+    })
+    // Object.assign(state, getDefaultState())
   },
   SET_BALANCE: (state, payload) => {
     state.balance = payload
@@ -122,6 +130,9 @@ const mutations = {
   // },
   SET_VALIDATORS: (state, payload) => {
     state.validators = payload
+  },
+  SET_VALIDATORS_COMMISSIONS: (state, payload) => {
+    state.validatorsCommissions = payload
   },
   SET_TRANSACTION: (state, payload) => {
     state.transactions = payload
@@ -183,6 +194,11 @@ const actions = {
   FETCH_VALIDATORS: async (context, pubKey) => {
     const { data } = await axios.get(`${ state.explorerApi }validators`)
     context.commit('SET_VALIDATORS', data.data)
+  },
+  FETCH_VALIDATORS_COMMISSIONS: async ({ state, commit, rootState }, pubKey) => {
+    const { data } = await axios.get(`${ rootState.user.backendApi }validators`)
+    console.log(data.commission)
+    commit('SET_VALIDATORS_COMMISSIONS', data.commission)
   },
   GET_VALIDATOR: async (context, pubKey) => {
     const { data } = await axios.get(`${ state.explorerApi }validators/${ pubKey }`)

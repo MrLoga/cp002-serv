@@ -62,7 +62,7 @@ export default {
       this.$store.dispatch('LOGIN_USER', {
         identifier: this.identifier,
         password: this.password
-      }).then((data) => {
+      }).then(data => {
         if (!(data instanceof Error)) {
           this.$store.dispatch('SYNC_USER_CONTACTS').then(sync => {
             console.log(this.isLogin, this.isAuth)

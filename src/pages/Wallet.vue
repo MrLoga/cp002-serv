@@ -12,11 +12,11 @@
         <div v-if="balanceData && delegationsData">
           <div>
             Available balance: <b class="q-ml-sm">{{ prettyNumber(balanceData.available_balance_sum, 2) }}</b> bip
-            <span class="q-ml-xs text-grey-7">({{ Big(balanceData.available_balance_sum).times(currency.usd).round(2, 3).toString() }} $)</span>
+            <span class="q-ml-xs text-grey-7" v-if="currency && currency.usd">({{ Big(balanceData.available_balance_sum).times(currency.usd).round(2, 3).toString() }} $)</span>
           </div>
           <div>
             Delegated: <b class="q-ml-sm">{{ prettyNumber(delegationsData.meta.additional.total_delegated_bip_value, 2) }}</b> bip
-            <span class="q-ml-xs text-grey-7">({{ Big(delegationsData.meta.additional.total_delegated_bip_value).times(currency.usd).round(2, 3).toString() }} $)</span>
+            <span class="q-ml-xs text-grey-7" v-if="currency && currency.usd">({{ Big(delegationsData.meta.additional.total_delegated_bip_value).times(currency.usd).round(2, 3).toString() }} $)</span>
           </div>
         </div>
         <div v-else>
@@ -553,10 +553,10 @@ export default {
     },
     saveNewTitle () {
       if (this.newTitle) {
-        this.$store.commit('CHANGE_NAME_WALLET', { title: this.newTitle, address: this.wallet.address, isObserve: this.isObserve })
+        this.$store.dispatch('CHANGE_NAME_WALLET', { title: this.newTitle, address: this.wallet.address, isObserve: this.isObserve })
         this.wallet.title = this.newTitle
       } else {
-        this.$store.commit('CHANGE_NAME_WALLET', { title: 'No name', address: this.wallet.address, isObserve: this.isObserve })
+        this.$store.dispatch('CHANGE_NAME_WALLET', { title: 'No name', address: this.wallet.address, isObserve: this.isObserve })
         this.wallet.title = 'No name'
       }
     },
@@ -583,10 +583,15 @@ export default {
     removeWallet () {
       this.logoutDialog = false
       this.$store.dispatch('REMOVE_WALLET', this.wallet.address)
-      this.wallet = this.walletsSelect[0]
-      this.$store.commit('SET_WALLET', this.wallet.address)
-      this.$store.dispatch('FETCH_BALANCE')
-      this.$store.dispatch('FETCH_DELEGATION')
+      if (this.walletsSelect && this.walletsSelect[0]) {
+        this.wallet = this.walletsSelect[0]
+        this.$store.commit('SET_WALLET', this.wallet.address)
+        this.$store.dispatch('FETCH_BALANCE')
+        this.$store.dispatch('FETCH_DELEGATION')
+      } else {
+        this.$store.commit('SET_WALLET', null)
+      }
+      this.$router.push({ path: '/' })
     },
     removeObserver () {
       this.removeObserveDialog = false
@@ -628,7 +633,11 @@ export default {
   },
   watch: {
     address (val) {
-      this.init(val, true)
+      if (val) {
+        this.init(val, true)
+      } else {
+        this.$router.push({ path: '/' })
+      }
     }
   }
 }

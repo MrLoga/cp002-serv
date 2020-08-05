@@ -191,10 +191,8 @@ const actions = {
       return data
     } catch (error) {
       console.log(error.response)
-      if (state.contacts.length) {
-        if (error.response && error.response.data.statusCode === 404) {
-          await axios.post(`${ rootState.user.backendApi }user-data`, sendUserData(), rootState.user.httpConfig)
-        }
+      if (error.response && error.response.data.statusCode === 404) {
+        await axios.post(`${ rootState.user.backendApi }user-data`, sendUserData(), rootState.user.httpConfig)
       }
     }
   }

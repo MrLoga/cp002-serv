@@ -62,10 +62,17 @@ const mutations = {
     Object.assign(state, getDefaultState())
   },
   SET_WALLET: (state, payload) => {
-    const itemId = state.wallets.findIndex(item => item.address === payload)
-    state.address = state.wallets[itemId].address
-    state.privateKey = state.wallets[itemId].privateKey
-    state.mnemonic = state.wallets[itemId].mnemonic
+    if (payload === null) {
+      console.log(payload)
+      state.address = null
+      state.privateKey = null
+      state.mnemonic = null
+    } else {
+      const itemId = state.wallets.findIndex(item => item.address === payload)
+      state.address = state.wallets[itemId].address
+      state.privateKey = state.wallets[itemId].privateKey
+      state.mnemonic = state.wallets[itemId].mnemonic
+    }
   },
   SAVE_WALLET: (state, payload) => {
     state.wallets.push(payload)
@@ -150,6 +157,7 @@ const actions = {
     const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations`)
     return data
   },
+
   SAVE_WALLET: async ({ state, rootState, commit }, payload) => {
     commit('SAVE_WALLET', payload)
     if (rootState.user.jwt && rootState.user.syncWallets) {
@@ -178,6 +186,14 @@ const actions = {
       axios.put(`${ rootState.user.backendApi }user-data/pull-observer`, { address: payload }, rootState.user.httpConfig)
     }
   },
+  CHANGE_NAME_WALLET: ({ state, rootState, commit }, payload) => {
+    commit('CHANGE_NAME_WALLET', payload)
+    if (rootState.user.jwt && ((payload.isObserve && rootState.user.syncObservers) || (!payload.isObserve && rootState.user.syncWallets))) {
+      const updateURL = `${ rootState.user.backendApi }user-data/${ payload.isObserve ? 'observers' : 'wallets' }/${ payload.address }`
+      axios.put(updateURL, { title: payload.title }, rootState.user.httpConfig)
+    }
+  },
+
   GET_COMMISSION: (context, payload) => {
     const txParams = {
       chainId: 1,
