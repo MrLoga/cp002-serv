@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-checkbox v-model="showMultisend" label="Show Multisend" class="q-mt-sm q-ml-sm" />
+    <q-checkbox v-model="showMultisend" :label="$t('Show Multisend')" class="q-mt-sm q-ml-sm" />
     <div v-if="transactions">
       <q-list class="transactions" separator v-for="(transactionList, index) in transactions" :key="index">
         <div class="text-grey text-h6 q-mb-xs q-pl-md q-mt-md" v-if="checkOnlyMultisend(transactionList) || showMultisend">{{ index}}</div>
@@ -10,6 +10,7 @@
             <q-icon v-else-if="item.type === 'DELEGATE' || item.type === 'UNBOND'" name="work" color="light-blue-4" size="xs" />
             <q-icon v-else-if="item.type === 'BUY' || item.type === 'SELL' || item.type === 'SELL_ALL'" name="cached" color="light-blue-4" size="xs" />
             <q-icon v-else-if="item.type === 'MULTISEND'" name="playlist_play" color="light-blue-4" size="sm" />
+            <q-icon v-else-if="item.type === 'REDEEM_CHECK'" name="receipt" color="light-blue-4" size="sm" />
           </q-item-section>
           <q-item-section>
             <q-item-label class="q-mb-xs text-weight-medium" lines="1" v-html="item.title" />
@@ -45,10 +46,14 @@
           <span class="col-2 text-grey-7">Date: </span>
           <span class="col">{{ txDataDialog.date }}</span>
         </div>
+        <div class="row">
+          <span class="col-2 text-grey-7">Block: </span>
+          <span class="col">{{ txDataDialog.block }}</span>
+        </div>
         <div v-if="txDataDialog.message" class="q-mt-md">
           {{ txDataDialog.message }}
         </div>
-        <div v-if="txDataDialog.type === 'SEND' && txDataDialog.symbol === '-'" class="row q-mt-md">
+        <div v-if="txDataDialog.type === 'SEND' && txDataDialog.symbol === '-' && !isObserve" class="row q-mt-md">
           <div class="col-6 q-pr-xs">
             <q-btn @click="$router.push({ name: 'send', params: { import: { address: txDataDialog.to, coin: txDataDialog.coin, amount: txDataDialog.value } } })" stack label="Repeat" icon="repeat" class="bg-light-blue-14 text-white full-width" />
           </div>
@@ -75,6 +80,7 @@ import Big from 'big.js'
 export default {
   name: 'Transactions',
   props: {
+    isObserve: Boolean,
     address: String
   },
   data () {
@@ -127,6 +133,7 @@ export default {
         const tmpObj = {
           to: item.data.to,
           hash: item.hash,
+          block: item.block,
           type: this.txTypeId[item.type],
           date: date.formatDate(item.timestamp, 'DD.MM.YYYY HH:mm'),
           timestamp: item.timestamp,
@@ -179,7 +186,14 @@ export default {
           tmpObj.title = validator ? validator.meta.name : shortAddress(item.data.pub_key)
           tmpObj.value = prettyNumber(item.data.value, 2)
           tmpObj.coin = item.data.coin
+        } else if (tmpObj.type === 'REDEEM_CHECK') {
+          tmpObj.symbol = '-'
+          tmpObj.value = prettyNumber(item.data.check.value, 2)
+          tmpObj.coin = item.data.check.coin
+          const user = this.findUser(item.data.check.sender)
+          tmpObj.title = user ? user.title : shortAddress(item.data.check.sender)
         }
+
         return tmpObj
       })
 

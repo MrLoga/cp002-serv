@@ -38,6 +38,7 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   updated (/* registration */) {
     Notify.create({
+      type: 'positive',
       message: 'App update is available',
       icon: 'cloud_download',
       closeBtn: 'Update',

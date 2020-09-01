@@ -11,11 +11,11 @@
 
         <div v-if="balanceData && delegationsData">
           <div>
-            Available balance: <b class="q-ml-sm">{{ prettyNumber(balanceData.available_balance_sum, 2) }}</b> bip
+            {{ $t('Available balance') }}: <b class="q-ml-sm">{{ prettyNumber(balanceData.available_balance_sum, 2) }}</b> bip
             <span class="q-ml-xs text-grey-7" v-if="currency && currency.usd">({{ Big(balanceData.available_balance_sum).times(currency.usd).round(2, 3).toString() }} $)</span>
           </div>
           <div>
-            Delegated: <b class="q-ml-sm">{{ prettyNumber(delegationsData.meta.additional.total_delegated_bip_value, 2) }}</b> bip
+            {{ $t('Delegations') }}: <b class="q-ml-sm">{{ prettyNumber(delegationsData.meta.additional.total_delegated_bip_value, 2) }}</b> bip
             <span class="q-ml-xs text-grey-7" v-if="currency && currency.usd">({{ Big(delegationsData.meta.additional.total_delegated_bip_value).times(currency.usd).round(2, 3).toString() }} $)</span>
           </div>
         </div>
@@ -59,10 +59,7 @@
         </q-btn>
         <q-btn flat round color="teal" icon="file_copy" @click="copyAddress" />
         <q-btn flat round color="primary" icon="share" v-if="shareTest()" @click="shareAddress" />
-        <!-- <q-btn flat round color="purple" icon="format_list_bulleted" to="/transactions" /> -->
         <q-btn flat round color="purple" icon="settings" @click="settingWalletDialog = true" />
-        <!-- <q-btn flat round color="purple" icon="settings" v-if="!isObserve" @click="settingWalletDialog = true" />
-        <q-btn flat round color="deep-orange-14" icon="delete" v-else @click="removeObserveDialog = true" /> -->
       </q-card-actions>
     </q-card>
 
@@ -281,7 +278,7 @@
         <q-item-label v-else header>{{ $t('No delegations') }}</q-item-label>
       </q-tab-panel>
       <q-tab-panel name="transactions" class="q-pa-none transactions__wrap">
-        <TransactionsList :address="wallet.address" />
+        <TransactionsList :isObserve="isObserve" :address="wallet.address" />
       </q-tab-panel>
     </q-tab-panels>
     <q-dialog v-model="unbondDialog" transition-show="scale" transition-hide="scale">
@@ -390,12 +387,20 @@ export default {
           privateKey: tmpWallet.getPrivateKeyString(),
           mnemonic: tmpWallet.getMnemonic()
         }
+        // console.log('walletData', walletData)
         if (walletData.address === this.wallet.address) {
           const profile = this.findProfile(walletData.address)
           walletData.title = this.wallet.title
           walletData.icon = profile ? profile.icon : ''
-          await this.$store.dispatch('REMOVE_OBSERVER', walletData.address)
-          await this.$store.dispatch('SAVE_WALLET', walletData)
+          if (this.isObserve) {
+            await this.$store.dispatch('REMOVE_OBSERVER', walletData.address)
+            await this.$store.dispatch('SAVE_WALLET', walletData)
+          } else {
+            await this.$store.dispatch('SET_SEED_WALLET', walletData)
+          }
+          this.wallet.privateKey = walletData.privateKey
+          this.wallet.mnemonic = walletData.mnemonic
+          this.addMnemonicDialog = false
           this.$store.dispatch('FETCH_BALANCE')
           this.$store.dispatch('FETCH_DELEGATION')
         } else {
@@ -415,7 +420,7 @@ export default {
         value
       }
       this.unbondDialog = true
-      console.log(this.unbondDialogData)
+      // console.log(this.unbondDialogData)
     },
     unbondSend () {
       const txParams = {
@@ -476,11 +481,15 @@ export default {
           const validator = this.findValidator(unbondItem.pub_key)
           const tmpItem = Object.assign({}, unbondItem)
           const time = Big(518400).minus(this.status.latestBlockHeight - tmpItem.height).times(this.status.averageBlockTime).round(0, 0).toString()
+          tmpItem.finish = (this.status.latestBlockHeight - tmpItem.height) > 0
           tmpItem.days = Big(time).div(86400).round(0, 0)
           tmpItem.hours = Big(time).minus(Big(tmpItem.days).times(86400)).div(3600).round(0, 0).toString()
           tmpItem.validator_meta = validator.meta
           tmpItem.bip_value = false
           return tmpItem
+        })
+        unbondList.filter(item => {
+          return !item.finish
         })
         tmpDelegations = loadDelegations.data.filter(item => {
           if (this.unbond && unbondList) {
@@ -534,21 +543,37 @@ export default {
       const blob = new Blob([ab], { type: mimeString })
       return blob
     },
-    shareAddress () {
-      const file = this.dataURItoBlob(this.qrImg)
+    async shareAddress () {
+      const shareData = {
+        text: this.wallet.address
+      }
+      // const file = this.dataURItoBlob(this.qrImg)
+      const fileBlob = this.dataURItoBlob(this.qrImg)
+      const file = new File([fileBlob], shareData.text + '.png', { type: 'image/png' })
+      // shareData.files = [file]
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({
-          files: [file],
-          text: this.wallet.address
-        })
-          .then(() => console.log('Share was successful.'))
-          .catch((error) => console.log('Sharing failed', error))
+        shareData.files = [file]
+        try {
+          await navigator.share(shareData)
+        } catch (err) {
+          this.$q.notify({
+            message: 'Error: ' + err,
+            type: 'negative',
+            position: 'bottom',
+            timeout: 500
+          })
+        }
       } else {
-        navigator.share({
-          text: this.wallet.address
-        })
-          .then(() => console.log('Successful share'))
-          .catch(error => console.log('Error sharing', error))
+        try {
+          await navigator.share(shareData)
+        } catch (err) {
+          this.$q.notify({
+            message: 'Error: ' + err,
+            type: 'negative',
+            position: 'bottom',
+            timeout: 500
+          })
+        }
       }
     },
     saveNewTitle () {

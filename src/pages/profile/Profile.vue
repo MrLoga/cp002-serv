@@ -4,16 +4,14 @@
       <q-card-section>
         <div class="row items-center no-wrap">
           <div class="col" v-if="user">
-            <div class="text-h5">{{ user.username }}<span class="text-caption q-ml-lg">{{ user.email }}</span></div>
-            <div class="text-caption" v-if="user.role.name === 'Paid'">
-              {{ $t('Tariff ends') }} - {{ user.endTariff }}
-            </div>
+            <div class="text-h5">{{ user.username }}</div>
+            <span class="text-caption text-grey-7">{{ user.email }}</span>
           </div>
           <div class="col" v-else>
             <div class="text-h5">???</div>
           </div>
 
-          <div class="col-auto">
+          <!-- <div class="col-auto">
             <q-btn color="grey-7" round flat icon="more_vert">
               <q-menu cover auto-close>
                 <q-list>
@@ -23,28 +21,54 @@
                 </q-list>
               </q-menu>
             </q-btn>
+          </div> -->
+        </div>
+      </q-card-section>
+    </q-card>
+
+    <div class="text-h6 q-pl-md q-pb-xs q-mt-lg">
+      {{ $t('Settings') }}
+      <span class="text-caption q-ml-md text-grey-7" v-if="user && user.role.name !== 'Paid'">Disabled</span>
+    </div>
+    <q-card flat bordered>
+      <q-card-section>
+        <div class="q-gutter-sm">
+          <q-checkbox :disable="user && user.role.name !== 'Paid'" v-model="syncContacts" :label="$t('Sync contacts')" />
+        </div>
+        <div class="q-gutter-sm">
+          <q-checkbox :disable="user && user.role.name !== 'Paid'" v-model="syncWallets" :label="$t('Sync wallets')" />
+        </div>
+        <div class="q-gutter-sm">
+          <q-checkbox :disable="user && user.role.name !== 'Paid'" v-model="syncObservers" :label="$t('Sync observers')" />
+        </div>
+      </q-card-section>
+    </q-card>
+
+    <div class="text-h6 q-pa-md q-mt-md">{{ $t('Subscriptions') }}</div>
+    <q-card flat bordered v-if="user">
+      <q-card-section>
+        <div class="row items-center no-wrap">
+          <div class="col-9">
+            <div class="text-subtitle2">
+              {{ $t('Synchronization') }}
+              <q-icon v-if="user && user.role.name === 'Paid'" color="positive" size="xs" name="done" />
+            </div>
+            <div class="text-caption q-pt-sm">{{ $t('Sync wallets and contacts across devices and platforms') }}</div>
+          </div>
+
+          <div class="col" v-if="user.role.name !== 'Paid'">
+            <q-btn class="bg-light-blue-14 text-white full-width" dense size="0.9em" :label="$t('Buy')" @click="payTariffDialog = true" />
+            <div class="text-caption text-center q-pt-sm">{{ $t('from') }} 0.75$</div>
+          </div>
+          <div class="col" v-else>
+            <q-btn class="text-white full-width" color="positive" dense size="0.9em" :label="$t('Renew')" @click="payTariffDialog = true" />
+            <div class="text-caption text-center q-pt-sm">{{ $t('Tariff ends') }}<br>{{ user.endTariff }}</div>
           </div>
         </div>
       </q-card-section>
     </q-card>
 
-    <div class="q-mt-md">
-      <q-item-label header>{{ $t('Settings') }}</q-item-label>
-      <div class="q-gutter-sm">
-        <q-checkbox v-model="syncContacts" :label="$t('Sync contacts')" />
-      </div>
-      <div class="q-gutter-sm">
-        <q-checkbox v-model="syncWallets" :label="$t('Sync wallets')" />
-      </div>
-      <div class="q-gutter-sm">
-        <q-checkbox v-model="syncObservers" :label="$t('Sync observers')" />
-      </div>
-    </div>
-
-    <div class="q-pt-lg">
-      <Tarif />
-    </div>
-
+    <Tarif v-bind:rootDialog="payTariffDialog" v-on:update:rootDialog="payTariffDialog = $event" />
   </q-page>
 </template>
 
@@ -57,7 +81,9 @@ export default {
     Tarif
   },
   data () {
-    return {}
+    return {
+      payTariffDialog: false
+    }
   },
   created () {
     if (!this.isAuth) {

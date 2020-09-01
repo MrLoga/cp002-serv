@@ -70,7 +70,9 @@ export default {
           const profile = this.findProfile(tmpObserver.address)
           tmpObserver.title = this.newTitle || (profile ? profile.title : '') || (this.observerSelect.length ? (this.observerSelect.length + 1) + ' observer' : 'Observer')
           tmpObserver.icon = profile ? profile.icon : ''
-
+          if (tmpObserver.icon && tmpObserver.icon.includes('file:')) {
+            tmpObserver.icon = ''
+          }
           this.newWalletDialog = false
           this.$store.dispatch('SAVE_OBSERVER', tmpObserver)
           this.$router.push({ path: '/wallet/' + tmpObserver.address })

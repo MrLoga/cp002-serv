@@ -174,6 +174,13 @@ const actions = {
     try {
       const address = payload || context.rootState.wallet.address
       const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }/delegations`)
+      if (data && data.meta.total && data.meta.total > (data.meta.per_page || 50)) {
+        const pages = Math.floor(data.meta.total / (data.meta.per_page || 50))
+        for (let i = 0; i < pages; i++) {
+          const dataAdd = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations?page=${ i + 2 }`)
+          data.data = data.data.concat(dataAdd.data.data)
+        }
+      }
       if (!payload || !payload.length) {
         context.commit('SET_DELEGATION', { coins: data.data, total: data.meta.additional.total_delegated_bip_value })
       }

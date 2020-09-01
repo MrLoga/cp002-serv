@@ -117,19 +117,19 @@ const actions = {
     }
   },
   SAVE_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
+    const user = getters.findProfile(payload.address)
+    payload.icon = (user && user.icon) ? user.icon : null
+    commit('ADD_CONTACT', payload)
+    Notify.create({
+      progress: true,
+      message: i18n.t('Contact added'),
+      type: 'positive',
+      position: 'bottom'
+    })
     try {
       if (rootState.user.jwt && rootState.user.syncContacts) {
         await axios.put(`${ rootState.user.backendApi }user-data/push-contact`, payload, rootState.user.httpConfig)
       }
-      const user = getters.findProfile(payload.address)
-      payload.icon = (user && user.icon) ? user.icon : null
-      commit('ADD_CONTACT', payload)
-      Notify.create({
-        progress: true,
-        message: i18n.t('Contact added'),
-        type: 'positive',
-        position: 'bottom'
-      })
     } catch (error) {
       Notify.create({
         progress: true,

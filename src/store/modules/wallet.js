@@ -80,6 +80,14 @@ const mutations = {
     state.privateKey = payload.privateKey
     state.mnemonic = payload.mnemonic
   },
+  SET_SEED_WALLET: (state, payload) => {
+    const curWallet = state.wallets.find(item => item.address === payload.address)
+    curWallet.privateKey = payload.privateKey
+    curWallet.mnemonic = payload.mnemonic
+    state.address = payload.address
+    state.privateKey = payload.privateKey
+    state.mnemonic = payload.mnemonic
+  },
   SAVE_OBSERVER: (state, payload) => {
     state.observer.push(payload)
   },
@@ -155,9 +163,19 @@ const actions = {
   },
   FETCH_DELEGATIONS_ADDRESS: async (context, payload) => {
     const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations`)
+    if (data && data.meta.total && data.meta.total > (data.meta.per_page || 50)) {
+      const pages = Math.floor(data.meta.total / (data.meta.per_page || 50))
+      for (let i = 0; i < pages; i++) {
+        const dataAdd = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations?page=${ i + 2 }`)
+        data.data = data.data.concat(dataAdd.data.data)
+      }
+    }
     return data
   },
-
+  SET_SEED_WALLET: async ({ state, rootState, commit }, payload) => {
+    commit('SET_SEED_WALLET', payload)
+    return payload
+  },
   SAVE_WALLET: async ({ state, rootState, commit }, payload) => {
     commit('SAVE_WALLET', payload)
     if (rootState.user.jwt && rootState.user.syncWallets) {
@@ -167,6 +185,7 @@ const actions = {
       }
       await axios.put(`${ rootState.user.backendApi }user-data/push-wallet`, tmpWallet, rootState.user.httpConfig)
     }
+    return payload
   },
   SAVE_OBSERVER: ({ state, rootState, commit }, payload) => {
     commit('SAVE_OBSERVER', payload)

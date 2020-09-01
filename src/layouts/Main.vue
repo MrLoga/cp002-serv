@@ -12,9 +12,6 @@
       >
         <router-view></router-view>
       </transition>
-      <!-- <q-page-sticky position="bottom-right" :offset="[18, 36]">
-        <q-btn to="/qr-code" round color="accent" icon="camera_alt" size="lg" /><br>
-      </q-page-sticky> -->
     </q-page-container>
 
   </q-layout>
@@ -27,7 +24,6 @@
 </style>
 
 <script>
-import { mapGetters } from 'vuex'
 import HeaderApp from '../components/HeaderApp.vue'
 import MainMenu from '../components/MainMenu.vue'
 export default {
@@ -41,26 +37,11 @@ export default {
       transitionNameEnter: 'fadeInLeft',
       transitionNameLeave: 'fadeOutRight',
       transitionMode: 'out-in'
-      // transitionMode: 'in-out'
     }
   },
-  methods: {
-  },
-  computed: {
-    ...mapGetters([
-      'isLogin',
-      'isAuth'
-    ])
-  },
-  created () {
-    if (!this.isLogin && !this.isAuth) {
-      this.$router.push({ path: '/start' })
-    } else if (!this.isLogin && this.isAuth) {
-      if (this.$route.path !== '/') {
-        this.$router.push({ path: '/' })
-      }
-    }
-  },
+  methods: {},
+  created () {},
+  computed: {},
   watch: {
     '$route' (to, from) {
       const tabs = ['/home', '/wallet', '/send', '/convert']

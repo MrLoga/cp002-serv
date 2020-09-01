@@ -5,6 +5,7 @@ export default {
   // Start
   'I\'ve saved the password': 'Я сохранил пароль',
   'Quick start': 'Быстрый старт',
+  'Password copied': 'Пароль скопирован',
 
   // Common
   'My Address': 'Мой адрес',
@@ -37,7 +38,7 @@ export default {
   'Sync contacts': 'Синхронизировать контакты',
   'Sync wallets': 'Синхронизировать кошельки',
   'Sync observers': 'Синхронизировать наблюдателей',
-  'choose a tariff': 'выберите тариф',
+  'select a subscription plan': 'выберите план подписки',
   'Pay for a subscription?': 'Оплатить подписку?',
   'Cost': 'Цена',
   'Pay': 'Оплатить',
@@ -48,7 +49,15 @@ export default {
   'Tariff ends': 'Тариф закончится',
   'Congratulations, the tariff has been successfully paid': 'Поздравляем, тариф успешно оплачен',
   'Excellent': 'Отлично',
-  'Extend tariff': 'Продлить тариф',
+  'Renew your subscription plan': 'Продлите свой план подписки',
+  'Synchronization': 'Синхронизация',
+  'Subscriptions': 'Подписки',
+  'Buy': 'Купить',
+  'Renew': 'Продлить',
+  'Sync wallets and contacts across devices and platforms': 'Синхронизируйте кошельки и контакты на разных устройствах и платформах',
+  'Billed monthly': 'Ежемесячная оплата',
+  'Billed yearly': 'Ежегодная оплата',
+  'Billed once': 'Единоразовая оплата',
 
   // HeaderApp
   'Home': 'Главная',
@@ -114,6 +123,7 @@ export default {
   'Send dialog': 'отправляете',
   'Add message': 'Добавить сообщение',
   'Message': 'Сообщение',
+  'from': 'от',
   'Please use maximum 1024 characters': 'Пожалуйста используйте не более 1024 символов',
   // 'Send': 'Отправить',
   'Convert': 'Конвертация',
@@ -138,6 +148,7 @@ export default {
   'for transaction fee': 'для оплаты комиссии',
   'Transaction is being sent, please wait': 'Транзакция отправляется, пожалуйста подождите',
   'Unbonding': 'Возврат',
+  'Show Multisend': 'Показать Multisend',
 
   // Settings
   'General': 'Основные',
@@ -158,8 +169,11 @@ export default {
   'Link copied to your clipboard': 'Ссылка скопирована в ваш буфер обмена',
   'Move menu': 'Переместить меню',
   'Logout app': 'Выйти из приложения',
+  'Logout profile': 'Выйти из профиля',
   'Logout': 'Выйти',
   'All data will be deleted from this device': 'Все данные будут удалены с этого устройства',
+  'The data will be saved and you can log in later': 'Данные будут сохранены и вы сможете войти позже.',
+  'Are you sure you want to logout profile': 'Вы уверены что хотите выйти из профиля',
 
   //
   'You are not registered in the Authenticator': 'Вы не зарегистрированы в Authenticator',

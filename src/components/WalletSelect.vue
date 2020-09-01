@@ -75,9 +75,9 @@ export default {
   },
   methods: {
     inputChange (val) {
-      if (this.wallet.address === val.address && this.$route.path !== '/wallet') {
-        this.$router.push({ path: '/wallet' })
-      }
+      // if (this.wallet.address === val.address && this.$route.path !== '/wallet') {
+      //   this.$router.push({ path: '/wallet' })
+      // }
       if (val && val.address) {
       // if (val && val.address && val.address !== this.address) {
         this.wallet = val

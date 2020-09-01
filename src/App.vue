@@ -19,7 +19,7 @@ export default {
 
     const nowDate = new Date()
     const lastDate = new Date()
-    lastDate.setDate(lastDate.getDate() - 1)
+    lastDate.setHours(lastDate.getHours() - 3)
     this.$store.dispatch('GET_CURRENCY')
     this.$store.dispatch('GET_STATUS')
     // this.$store.dispatch('FETCH_COINS')
@@ -40,15 +40,25 @@ export default {
     // this.$store.dispatch('FETCH_CURRENCY')
     if (this.isAuth) {
       this.$store.dispatch('GET_USER_PROFILE')
-      this.$store.dispatch('SYNC_USER_CONTACTS')
+      if (this.user && this.user.role.name === 'Paid') {
+        this.$store.dispatch('SYNC_USER_CONTACTS')
+      }
     }
     if (this.isLogin) {
       this.$store.dispatch('FETCH_BALANCE')
       this.$store.dispatch('FETCH_DELEGATION')
     }
+    if (!this.isLogin && !this.isAuth) {
+      this.$router.push({ path: '/start' })
+    } else if (!this.isLogin && this.isAuth) {
+      if (this.$route.path !== '/') {
+        this.$router.push({ path: '/' })
+      }
+    }
   },
   computed: {
     ...mapState({
+      user: state => state.user.user,
       language: state => state.app.language,
       coins: state => state.api.coins,
       profiles: state => state.contacts.profiles,

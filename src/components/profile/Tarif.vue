@@ -1,41 +1,65 @@
 <template>
   <div>
-    <div v-if="user.role.name === 'Authenticated'">
-      <div class="text-h4 text-center q-mt-md">{{ $t('Please') }}</div>
-      <div class="text-h4 text-center q-mb-md">{{ $t('choose a tariff') }}</div>
-    </div>
-    <div v-else>
-      <div class="text-h4 text-center q-mt-md q-mb-md">{{ $t('Extend tariff') }}</div>
-    </div>
-    <div class="row justify-center">
-      <div class="col-xs-8">
-        <q-list v-if="tariff" separator bordered class="q-mb-md text-center">
-          <q-item v-ripple clickable @click="selectTariff('month')">
-            <q-item-section>
-              <div class="text-h6 text-teal">1 {{ $t('month') }}</div>
-              <div class="text-subtitle1 text-caption">{{ Big(tariff.month).div(tariff.currency).round(0, 3).toString() }} bip</div>
-            </q-item-section>
-          </q-item>
-          <q-item v-ripple clickable @click="selectTariff('year')">
-            <q-item-section>
-              <div class="text-h5 text-center text-green">1 {{ $t('year') }}</div>
-              <div class="text-subtitle1 text-caption">{{ Big(tariff.year).div(tariff.currency).round(0, 3).toString() }} bip</div>
-            </q-item-section>
-          </q-item>
-          <q-item v-ripple clickable @click="selectTariff('forever')">
-            <q-item-section>
-              <div class="text-h5 text-center text-positive"><b>{{ $t('Forever') }}</b></div>
-              <div class="text-subtitle1 text-caption">{{ Big(tariff.forever).div(tariff.currency).round(0, 3).toString() }} bip</div>
-            </q-item-section>
-          </q-item>
-        </q-list>
-        <div v-else class="text-center">
+    <q-dialog v-model="rootDialog" @hide="onRootDialogHide" full-width transition-show="scale" transition-hide="scale">
+      <q-card v-if="user && address && address.length" class="dialog-min300">
+        <q-card-section v-if="user.role.name === 'Authenticated'">
+          <div class="text-h5 text-center">{{ $t('Please') }}</div>
+          <div class="text-h5 text-center q-ma-none">{{ $t('select a subscription plan') }}</div>
+        </q-card-section>
+        <q-card-section v-else>
+          <div class="text-h5 text-center q-mt-md q-mb-none">{{ $t('Renew your subscription plan') }}</div>
+        </q-card-section>
+        <q-card-section v-if="tariff">
+          <q-card flat bordered class="q-mb-sm">
+            <q-card-section v-ripple clickable @click="selectTariff('month')">
+              <div class="row items-center no-wrap">
+                <div class="col-9">
+                  <div class="text-h6 text-positive">1 {{ $t('month') }}</div>
+                  <div class="text-caption text-grey-7">{{ $t('Billed monthly') }}</div>
+                </div>
+                <div class="col text-center">
+                  <div class="text-h6">{{ tariff.month }}$</div>
+                  <div class="text-subtitle2">{{ Big(tariff.month).div(tariff.currency).round(0, 3).toString() }} bip</div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+          <q-card flat bordered class="q-mb-sm">
+            <q-card-section v-ripple clickable @click="selectTariff('year')">
+              <div class="row items-center no-wrap">
+                <div class="col-9">
+                  <div class="text-h6 text-positive">1 {{ $t('year') }}</div>
+                  <div class="text-caption text-grey-7">{{ $t('Billed yearly') }}</div>
+                </div>
+                <div class="col text-center">
+                  <div class="text-h6">{{ tariff.year }}$</div>
+                  <div class="text-subtitle2">{{ Big(tariff.year).div(tariff.currency).round(0, 3).toString() }} bip</div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+          <q-card flat bordered class="q-mb-sm">
+            <q-card-section v-ripple clickable @click="selectTariff('forever')">
+              <div class="row items-center no-wrap">
+                <div class="col-9">
+                  <div class="text-h6 text-positive">1 {{ $t('Forever') }}</div>
+                  <div class="text-caption text-grey-7">{{ $t('Billed once') }}</div>
+                </div>
+                <div class="col text-center">
+                  <div class="text-h6">{{ tariff.forever }}$</div>
+                  <div class="text-subtitle2">{{ Big(tariff.forever).div(tariff.currency).round(0, 3).toString() }} bip</div>
+                </div>
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-card-section>
+        <q-card-section v-else class="text-center">
           <q-skeleton height="68px" class="q-mb-xs" />
           <q-skeleton height="68px" class="q-mb-xs" />
           <q-skeleton height="68px" class="q-mb-xs" />
-        </div>
-      </div>
-    </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <q-dialog v-model="payTariffDialog" @hide="onPayTariffDialogHide" full-width transition-show="scale" transition-hide="scale">
       <q-card v-if="address && address.length" class="dialog-min300">
@@ -72,6 +96,9 @@ import { mapState, mapGetters } from 'vuex'
 import Big from 'big.js'
 export default {
   name: 'Tarif',
+  props: {
+    rootDialog: Boolean
+  },
   data () {
     return {
       payTariffDialog: false,
@@ -93,9 +120,13 @@ export default {
     },
     selectTariff (name) {
       if (this.address && this.address.length) {
+        this.$emit('update:rootDialog', false)
         this.payTariffDialog = true
         this.selectedTariff = name
       }
+    },
+    onRootDialogHide () {
+      this.$emit('update:rootDialog', false)
     },
     async payTariff () {
       this.loadingTariffDialog = true
@@ -117,6 +148,7 @@ export default {
           this.payTariffDialog = false
           this.loadingTariffDialog = false
           this.selectedTariff = null
+          this.$store.dispatch('SYNC_USER_CONTACTS')
         })
       } else {
         console.log(paidData.message)

@@ -5,6 +5,7 @@ export default {
   // Start
   'I\'ve saved the password': 'I\'ve saved the password',
   'Quick start': 'Quick start',
+  'Password copied': 'Password copied',
 
   // Common
   'My Address': 'My Address',
@@ -37,7 +38,7 @@ export default {
   'Sync contacts': 'Sync contacts',
   'Sync wallets': 'Sync wallets',
   'Sync observers': 'Sync observers',
-  'choose a tariff': 'choose a tariff',
+  'select a subscription plan': 'select a subscription plan',
   'Pay for a subscription?': 'Pay for a subscription?',
   'Cost': 'Cost',
   'Pay': 'Pay',
@@ -48,7 +49,15 @@ export default {
   'Tariff ends': 'Tariff ends',
   'Congratulations, the tariff has been successfully paid': 'Congratulations, the tariff has been successfully paid',
   'Excellent': 'Excellent',
-  'Extend tariff': 'Extend tariff',
+  'Renew your subscription plan': 'Renew your subscription plan',
+  'Synchronization': 'Synchronization',
+  'Subscriptions': 'Subscriptions',
+  'Buy': 'Buy',
+  'Renew': 'Renew',
+  'Sync wallets and contacts across devices and platforms': 'Sync wallets and contacts across devices and platforms',
+  'Billed monthly': 'Billed monthly',
+  'Billed yearly': 'Billed yearly',
+  'Billed once': 'Billed once',
 
   // HeaderApp
   'Home': 'Home',
@@ -114,6 +123,7 @@ export default {
   'Send dialog': 'send',
   'Add message': 'Add message',
   'Message': 'Message',
+  'from': 'from',
   'Please use maximum 1024 characters': 'Please use maximum 1024 characters',
   // 'Send': 'Send',
   'Convert': 'Convert',
@@ -138,6 +148,7 @@ export default {
   'for transaction fee': 'for transaction fee',
   'Transaction is being sent, please wait': 'Transaction is being sent, please wait',
   'Unbonding': 'Unbonding',
+  'Show Multisend': 'Show Multisend',
 
   // Settings
   'General': 'General',
@@ -158,8 +169,11 @@ export default {
   'Link copied to your clipboard': 'Link copied to your clipboard',
   'Move menu': 'Move menu',
   'Logout app': 'Logout app',
+  'Logout profile': 'Logout profile',
   'Logout': 'Logout',
   'All data will be deleted from this device': 'All data will be deleted from this device',
+  'The data will be saved and you can log in later': 'The data will be saved and you can log in later',
+  'Are you sure you want to logout profile': 'Are you sure you want to logout profile',
 
   //
   'You are not registered in the Authenticator': 'You are not registered in the Authenticator',

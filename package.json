@@ -1,6 +1,6 @@
 {
   "name": "reef_wallet",
-  "version": "0.2.8",
+  "version": "0.3.2",
   "description": "Minter Wallet by Reef",
   "productName": "REEF Wallet",
   "capacitorId": "",
@@ -38,7 +38,8 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^6.1.2"
+    "eslint-plugin-vue": "^6.1.2",
+    "quasar-app-extension-swipe-to-close": "0.0.6"
   },
   "engines": {
     "node": ">= 8.9.0",

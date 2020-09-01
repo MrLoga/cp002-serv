@@ -139,12 +139,11 @@ export default {
         address: this.import.address
       }
     }
-    console.log(this.import)
     if (this.import && this.import.coin !== '') {
       const tmpCoin = this.balanceSelect.find(item => item.value === this.import.coin)
       if (tmpCoin) this.coin = tmpCoin
     }
-    if (this.import && this.import.amount !== '') {
+    if (this.import && this.import.amount && this.import.amount !== '') {
       const tmpAmount = this.import.amount.replace(' ', '').replace(',', '.')
       this.amount = tmpAmount
     }
@@ -153,10 +152,14 @@ export default {
   methods: {
     prettyNumber: (val, l) => prettyNumber(val, l),
     setDefaultCoin () {
-      if (Big(this.balanceSelect[0].amount).gt(0)) {
-        this.coin = this.balanceSelect[0]
+      if (this.balanceObj.BIP && Big(this.balanceObj.BIP).gte(0)) {
+        this.coin = this.balanceSelect.find(coin => coin.value === 'BIP')
       } else {
-        this.coin = this.balanceSelect[1] ? this.balanceSelect[1] : this.balanceSelect[0]
+        if (Big(this.balanceSelect[0].amount).gt(0)) {
+          this.coin = this.balanceSelect[0]
+        } else {
+          this.coin = this.balanceSelect[1] ? this.balanceSelect[1] : this.balanceSelect[0]
+        }
       }
     },
     maxAmount () {

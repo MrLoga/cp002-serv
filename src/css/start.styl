@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,500;1,400&display=swap');
+
 .start_animate {
   opacity: 0;
   transform: translate(0, 0, 0);
@@ -12,6 +14,15 @@
   position: relative;
   justify-content: center;
   align-items: center;
+  
+  & .text-h6,
+  & .text-h5,
+  & .text-h4,
+  & .text-h3,
+  & .text-h2,
+  & .text-h1 {
+    font-family: 'Montserrat', sans-serif;
+  }
 
   &:before,
   &:after {
@@ -30,7 +41,7 @@
     transform: translate(10%, -10%) rotate(0deg);
     background: linear-gradient(#9cf4d8, #0fa7ff);
     align-self: flex-end;
-    animation: gradient-fade 8s ease-in-out 3s infinite alternate;
+    animation: gradient-fade 6s ease-in-out 3s infinite alternate;
   }
   &:after {
     top: 0;
@@ -40,7 +51,7 @@
     border-radius: 15em;
     transform: translate(-30%, 20%) rotate(0deg);
     background: linear-gradient(#6ffff2, #0fa7ff);
-    animation: gradient-fade-alt 10s ease-in-out 3s infinite alternate;
+    animation: gradient-fade-alt 8s ease-in-out 3s infinite alternate;
   }
 
   &-in {
@@ -63,7 +74,7 @@
       border-radius: 15em;
       transform: translate(10%, -10%) rotate(0deg);
       background: linear-gradient(#87ceeb, #6ffff2);
-      animation: gradient-fade 5s ease-in-out 3s infinite alternate;
+      animation: gradient-fade 4s ease-in-out 3s infinite alternate;
     }
 
     &:after {
@@ -76,7 +87,7 @@
       border-radius: 16em;
       transform: translate(-30%, 20%) rotate(0deg);
       background: linear-gradient(#15e0ff, #9dffd2);
-      animation: gradient-fade-alt 9s ease-in-out 3s infinite alternate;
+      animation: gradient-fade-alt 7s ease-in-out 3s infinite alternate;
     }
   }
 }
@@ -84,7 +95,7 @@
 @keyframes start-show {
   from {
     opacity: 0;
-    transform: translate(0, -20px);
+    transform: translate(0, -30px);
   }
   to {
     opacity: 1;

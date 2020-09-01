@@ -78,9 +78,12 @@ export default {
         password: this.password
       }).then((data) => {
         if (!(data instanceof Error)) {
-          this.$store.dispatch('SYNC_USER_CONTACTS')
-          console.log(this.isLogin, this.isAuth)
-          this.$router.push({ path: '/profile' })
+          if (data.user.role.name === 'Paid') {
+            this.$store.dispatch('SYNC_USER_CONTACTS')
+          }
+          if (this.$route.fullPath !== '/profile') {
+            this.$router.push({ path: '/profile' })
+          }
         }
       })
     }
