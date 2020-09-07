@@ -1,9 +1,10 @@
-import { Minter, TX_TYPE, prepareSignedTx } from 'minter-js-sdk'
+import { Minter, TX_TYPE, prepareSignedTx, DelegateTxParams } from 'minter-js-sdk'
 import { Loading, QSpinnerFacebook } from 'quasar'
 import { prettyNumber, shortAddress } from '../../utils'
 import Big from 'big.js'
 import axios from 'axios'
 import { i18n } from '../../boot/i18n'
+import assert from 'assert'
 
 const getDefaultState = () => {
   return {
@@ -254,5 +255,35 @@ export const actions = {
         reject(error.response && error.response.data ? error.response.data.error.message : error.response.error.message)
       })
     })
+  },
+
+  /**
+   * @param {{ type: string; data: {to:string, value: number, coin: string}; gasCoin: string; payload: string; }} payload
+   */
+  async SETUP_AUTODELGATION ({ state }, payload) {
+    assert(state.address)
+    assert(state.privateKey)
+
+    const txParams = {
+      chainId: 1,
+      type: TX_TYPE[payload.type.toUpperCase()],
+      data: payload.data,
+      gasCoin: payload.gasCoin || 'BIP',
+      payload: payload.payload || ''
+    }
+    const nonce = await state.minterGate.getNonce(state.address)
+    const signedTx = prepareSignedTx(
+      new DelegateTxParams({
+        ...txParams,
+        nonce
+      }),
+      { privateKey: state.privateKey }
+    )
+      .serialize()
+      .toString('hex')
+
+    axios
+      .create('https://autodelegator-api.minter.network/api/v1/')
+      .post('transactions', { transactions: [signedTx] })
   }
 }
