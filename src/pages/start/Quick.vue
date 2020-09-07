@@ -69,7 +69,7 @@ export default {
       }
       console.log('SAVE_WALLET', walletData)
       this.$store.commit('SAVE_WALLET', walletData)
-      await this.$store.dispatch('GET_CURRENCY')
+      await this.$store.dispatch('FETCH_CURRENCY')
       await this.$store.dispatch('FETCH_BALANCE')
       await this.$store.dispatch('FETCH_COINS')
       await this.$store.dispatch('FETCH_DELEGATION')

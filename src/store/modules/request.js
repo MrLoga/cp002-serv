@@ -3,7 +3,7 @@ import axios from 'axios'
 import nacl from 'tweetnacl'
 nacl.util = require('tweetnacl-util')
 
-const state = {
+export const state = {
   wsRequest: null,
   wsStatus: false,
   wssApi: 'wss://wallet.reef.mn/api/ws',
@@ -13,11 +13,11 @@ const state = {
   hasRequest: false
 }
 
-const getters = {
+export const getters = {
   requestsCount: state => state.requests.length
 }
 
-const mutations = {
+export const mutations = {
   CLEAR_ALL_REQUESTS: state => {
     state.requests.length = 0
   },
@@ -64,7 +64,7 @@ const mutations = {
   }
 }
 
-const actions = {
+export const actions = {
   FETCH_CURRENCY: context => {
     axios.get(`${context.state.httpApi}currency`).then(data => {
       context.commit('SET_CURRENCY', data.data)
@@ -173,11 +173,4 @@ const actions = {
       })
     })
   }
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
 }

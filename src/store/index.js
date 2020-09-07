@@ -3,12 +3,12 @@ import Vuex from 'vuex'
 
 // import example from './module-example'
 
-import app from './modules/app'
-import api from './modules/api'
-import wallet from './modules/wallet'
-import user from './modules/user'
+import * as app from './modules/app'
+import * as api from './modules/api'
+import * as wallet from './modules/wallet'
+import * as user from './modules/user'
 // import request from './modules/request'
-import contacts from './modules/contacts'
+import * as contacts from './modules/contacts'
 import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)

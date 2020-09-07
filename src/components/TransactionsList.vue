@@ -128,7 +128,7 @@ export default {
       return list.reduce((prev, curr) => curr.type !== 'MULTISEND' ? prev + 1 : prev, 0)
     },
     async loadTransactions () {
-      const data = await this.$store.dispatch('FETCH_TRANSACTION', this.address)
+      const data = await this.$store.dispatch('GET_TRANSACTION', this.address)
       const updateData = data.data.map(item => {
         const tmpObj = {
           to: item.data.to,

@@ -22,9 +22,9 @@ const getDefaultState = () => {
   }
 }
 
-const state = getDefaultState()
+export const state = getDefaultState()
 
-const getters = {
+export const getters = {
   isLogin: state => (!!state.privateKey && !!state.address && !!state.address.length),
   // isRegistered: state => (!!state.key && !!state.nonce),
   findWallet: state => address => state.wallets.find(item => item.address === address),
@@ -57,7 +57,7 @@ const getters = {
   })
 }
 
-const mutations = {
+export const mutations = {
   RESET_WALLET: state => {
     Object.assign(state, getDefaultState())
   },
@@ -155,7 +155,7 @@ const mutations = {
   }
 }
 
-const actions = {
+export const actions = {
   FETCH_BALANCE_ADDRESS: async (context, payload) => {
     const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }?withSum=true`)
     context.commit('SET_WALLET_BALANCE', { address: payload, balance: data.data.available_balance_sum })
@@ -255,11 +255,4 @@ const actions = {
       })
     })
   }
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
 }

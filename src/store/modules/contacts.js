@@ -10,9 +10,9 @@ const getDefaultState = () => {
     profiles: []
   }
 }
-const state = getDefaultState()
+export const state = getDefaultState()
 
-const getters = {
+export const getters = {
   filterContacts: state => searchVal => state.contacts.filter(item => item.title && item.title.toLowerCase().indexOf(searchVal.toLowerCase()) > -1),
   findContact: state => address => state.contacts.find(item => item.address && item.address === address),
   filterProfiles: state => searchVal => state.profiles.filter(item => item.title && item.title.toLowerCase().indexOf(searchVal.toLowerCase()) > -1),
@@ -48,7 +48,7 @@ const getters = {
   }
 }
 
-const mutations = {
+export const mutations = {
   RESET_CONTACTS: state => {
     Object.assign(state, getDefaultState())
   },
@@ -67,7 +67,7 @@ const mutations = {
   }
 }
 
-const actions = {
+export const actions = {
   // NEW_CONTACT: (context, payload) => {
   //   return new Promise((resolve, reject) => {
   //     const findContact = context.state.contacts.filter(item => item.address.toLowerCase() === payload.address.toLowerCase())
@@ -80,7 +80,7 @@ const actions = {
   // },
   FETCH_ALL_PROFILES: async (context, payload) => {
     try {
-      const { data } = await axios.get(`${ state.minterscanApi }profiles`)
+      const { data } = await axios.get(`${ context.state.minterscanApi }profiles`)
       context.commit('SET_PROFILES', data)
     } catch (error) {
       const { data } = await axios.get('https://api.charity.cloudp.group/mscanprofiles')
@@ -89,7 +89,7 @@ const actions = {
   },
   GET_PROFILE: async (context, payload) => {
     try {
-      const { data } = await axios.get(`${ state.minterscanApi }profiles/${ payload }`)
+      const { data } = await axios.get(`${ context.state.minterscanApi }profiles/${ payload }`)
       return data
     } catch (error) {
       return null
@@ -142,7 +142,7 @@ const actions = {
   SYNC_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
     const sendUserData = () => {
       return {
-        contacts: !rootState.user.syncContacts ? false : state.contacts.map(item => {
+        contacts: !rootState.user.syncContacts ? false : context.state.contacts.map(item => {
           return {
             title: item.title,
             address: item.address
@@ -196,11 +196,4 @@ const actions = {
       }
     }
   }
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
 }

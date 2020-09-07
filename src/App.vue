@@ -20,8 +20,8 @@ export default {
     const nowDate = new Date()
     const lastDate = new Date()
     lastDate.setHours(lastDate.getHours() - 3)
-    this.$store.dispatch('GET_CURRENCY')
-    this.$store.dispatch('GET_STATUS')
+    this.$store.dispatch('FETCH_CURRENCY')
+    this.$store.dispatch('FETCH_STATUS')
     // this.$store.dispatch('FETCH_COINS')
     if (!this.dataUpdateDate || (this.dataUpdateDate && this.dataUpdateDate < lastDate.getTime())) {
       this.$store.dispatch('FETCH_ALL_PROFILES')

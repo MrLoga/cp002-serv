@@ -8,13 +8,13 @@ const getDefaultState = () => {
     menu: 'header'
   }
 }
-const state = getDefaultState()
+export const state = getDefaultState()
 
-const getters = {
+export const getters = {
   // isLogin: state => (!!state.address && !!state.address.length),
 }
 
-const mutations = {
+export const mutations = {
   RESET_APP: state => {
     Object.assign(state, getDefaultState())
   },
@@ -33,13 +33,6 @@ const mutations = {
   }
 }
 
-const actions = {
+export const actions = {
   // s
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
 }

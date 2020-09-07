@@ -17,13 +17,14 @@ const getDefaultState = () => {
     syncObservers: true
   }
 }
-const state = getDefaultState()
 
-const getters = {
+export const state = getDefaultState()
+
+export const getters = {
   isAuth: state => (!!state.jwt && state.jwt.length)
 }
 
-const mutations = {
+export const mutations = {
   RESET_APP: state => {
     Object.assign(state, getDefaultState())
     if (location.hostname === 'localhost') {
@@ -68,7 +69,7 @@ const mutations = {
   }
 }
 
-const actions = {
+export const actions = {
   GET_USER_PROFILE: async ({ state, commit }, payload) => {
     try {
       const { data } = await axios.get(`${ state.backendApi }users/me`, state.httpConfig)
@@ -166,11 +167,4 @@ const actions = {
       return new Error(strapiMessage(error))
     }
   }
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
 }

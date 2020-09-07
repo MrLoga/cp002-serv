@@ -5,9 +5,9 @@ const getDefaultState = () => {
     authDB: {}
   }
 }
-const state = getDefaultState()
+export const state = getDefaultState()
 
-const getters = {
+export const getters = {
   getAuthorized: state => {
     const authObj = {}
     for (const auth in state.authDB) {
@@ -28,7 +28,7 @@ const getters = {
   }
 }
 
-const mutations = {
+export const mutations = {
   RESET_APP: state => {
     Object.assign(state, getDefaultState())
   },
@@ -50,12 +50,4 @@ const mutations = {
   }
 }
 
-const actions = {
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
-}
+export const actions = {}

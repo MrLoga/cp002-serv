@@ -16,9 +16,10 @@ const getDefaultState = () => {
     validatorsCommissions: null
   }
 }
-const state = getDefaultState()
 
-const getters = {
+export const state = getDefaultState()
+
+export const getters = {
   filterValidator: state => searchVal => {
     const filterTmp = state.validators.filter(item => item.meta.name ? item.meta.name.toLowerCase().indexOf(searchVal.toLowerCase()) > -1 : false)
     return filterTmp.map(item => {
@@ -104,7 +105,7 @@ const getters = {
   }
 }
 
-const mutations = {
+export const mutations = {
   RESET_API: state => {
     Object.assign(state, {
       status: null,
@@ -157,11 +158,11 @@ const mutations = {
   // },
 }
 
-const actions = {
+export const actions = {
   FETCH_BALANCE: async (context, payload) => {
     try {
       const address = payload || context.rootState.wallet.address
-      const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }?withSum=true`)
+      const { data } = await axios.get(`${ context.state.explorerApi }addresses/${ address }?withSum=true`)
       if (!payload || !payload.length) {
         context.commit('SET_BALANCE', data.data)
       }
@@ -173,7 +174,7 @@ const actions = {
   FETCH_DELEGATION: async (context, payload) => {
     try {
       const address = payload || context.rootState.wallet.address
-      const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }/delegations`)
+      const { data } = await axios.get(`${ context.state.explorerApi }addresses/${ address }/delegations`)
       if (data && data.meta.total && data.meta.total > (data.meta.per_page || 50)) {
         const pages = Math.floor(data.meta.total / (data.meta.per_page || 50))
         for (let i = 0; i < pages; i++) {
@@ -191,7 +192,7 @@ const actions = {
   },
   FETCH_COINS: async (context, address) => {
     try {
-      const { data } = await axios.get(`${ state.explorerApi }coins`)
+      const { data } = await axios.get(`${ context.state.explorerApi }coins`)
       context.commit('SET_COINS', data.data)
     } catch (error) {
       const { data } = await axios.get('https://api.charity.cloudp.group/coins')
@@ -199,7 +200,7 @@ const actions = {
     }
   },
   FETCH_VALIDATORS: async (context, pubKey) => {
-    const { data } = await axios.get(`${ state.explorerApi }validators`)
+    const { data } = await axios.get(`${ context.state.explorerApi }validators`)
     context.commit('SET_VALIDATORS', data.data)
   },
   FETCH_VALIDATORS_COMMISSIONS: async ({ state, commit, rootState }, pubKey) => {
@@ -208,11 +209,11 @@ const actions = {
     commit('SET_VALIDATORS_COMMISSIONS', data.commission)
   },
   GET_VALIDATOR: async (context, pubKey) => {
-    const { data } = await axios.get(`${ state.explorerApi }validators/${ pubKey }`)
+    const { data } = await axios.get(`${ context.state.explorerApi }validators/${ pubKey }`)
     // context.commit('SET_VALIDATOR', data.data)
     return data.data
   },
-  GET_CURRENCY: async (context) => {
+  FETCH_CURRENCY: async (context) => {
     try {
       const { data } = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bip&vs_currencies=usd')
       // const { data } = await axios.get('https://bipchange.org/api/')
@@ -221,26 +222,19 @@ const actions = {
       console.log(error)
     }
   },
-  GET_STATUS: async (context) => {
+  FETCH_STATUS: async (context) => {
     try {
-      const { data } = await axios.get(`${ state.explorerApi }status`)
-      // const { data } = await axios.get(`${ state.explorerApi }blocks`)
+      const { data } = await axios.get(`${ context.state.explorerApi }status`)
+      // const { data } = await axios.get(`${ context.state.explorerApi }blocks`)
       // const { data } = await axios.get('https://bipchange.org/api/')
       context.commit('SET_STATUS', data.data)
     } catch (error) {
       console.log(error)
     }
   },
-  FETCH_TRANSACTION: async (context, address) => {
-    const { data } = await axios.get(`${ state.explorerApi }addresses/${ address }/transactions`)
+  GET_TRANSACTION: async (context, address) => {
+    const { data } = await axios.get(`${ context.state.explorerApi }addresses/${ address }/transactions`)
     return data
     // context.commit('SET_TRANSACTION', data.data);
   }
-}
-
-export default {
-  state,
-  getters,
-  mutations,
-  actions
 }
