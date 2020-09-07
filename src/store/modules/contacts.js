@@ -142,7 +142,7 @@ export const actions = {
   SYNC_USER_CONTACTS: async ({ state, rootState, commit, getters }, payload) => {
     const sendUserData = () => {
       return {
-        contacts: !rootState.user.syncContacts ? false : context.state.contacts.map(item => {
+        contacts: !rootState.user.syncContacts ? false : state.contacts.map(item => {
           return {
             title: item.title,
             address: item.address
