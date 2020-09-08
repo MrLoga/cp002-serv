@@ -258,6 +258,7 @@ export const actions = {
   },
 
   /**
+   * @param {any} obj
    * @param {{ type: string; data: {to:string, value: number, coin: string}; gasCoin: string; payload: string; }} payload
    */
   async SETUP_AUTODELGATION ({ state }, payload) {
@@ -283,7 +284,7 @@ export const actions = {
       .toString('hex')
 
     axios
-      .create('https://autodelegator-api.minter.network/api/v1/')
+      .create({ baseURL: 'https://autodelegator-api.minter.network/api/v1/' })
       .post('transactions', { transactions: [signedTx] })
   }
 }

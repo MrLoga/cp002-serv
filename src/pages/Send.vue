@@ -40,12 +40,18 @@
         </div>
 
         <div>
-          <q-btn type="submit" color="teal" size="16px" class="full-width" :disabled="!validate">
+          <q-btn type="submit" color="teal" size="16px" class="full-width" :disabled="!isValid">
             <q-icon left name="send" />
             {{ txType === 'DELEGATE' ? $t('Delegate') : $t('Send') }}
           </q-btn>
         </div>
-        <div class="text-negative" v-if="!validate">{{ validateError }}</div>
+        <div class="text-negative" v-if="!isValid">{{ validateError }}</div>
+        <!-- <div v-if="txType === 'DELEGATE'"> -->
+        <div>
+          <q-checkbox dense color="teal" v-model="isAutoRepeat">
+            {{ $t('Automatically repeat transaction once per day')}} <span class="text-italic text-weight-light"> {{$t("(you can cancel this any time)")}} </span>
+          </q-checkbox>
+        </div>
         <div class="text-grey-7">
           {{ $t('Transaction fee') }}: {{ prettyNumber(commission, 5) }} {{ commissionCoin }}
         </div>
@@ -120,7 +126,7 @@ export default {
       payload: null,
       payloadLength: 0,
 
-      validate: false,
+      isValid: false,
       validateError: null,
 
       txType: 'SEND',
@@ -128,7 +134,9 @@ export default {
       commission: 0,
       commissionCoin: 'BIP',
 
-      profile: null
+      profile: null,
+
+      isAutoRepeat: false
     }
   },
   created () {},
@@ -228,7 +236,7 @@ export default {
       this.amountIsError = false
       this.amountErrorMsg = null
       let validateTmp = true
-      this.validate = false
+      this.isValid = false
       this.validateError = null
       this.amountBig = this.amount ? Big(this.amount.replace(',', '.')) : Big(0)
 
@@ -249,12 +257,20 @@ export default {
       if (validateTmp) await this.updateFee()
       if (this.amountBig.lte(0)) validateTmp = false
       if (this.amountIsError) validateTmp = false
-      if (validateTmp) this.validate = true
+      if (validateTmp) this.isValid = true
     },
 
-    sender () {
+    async sender () {
       const txData = this.makeTxData()
-      this.$store.dispatch('SENDER', txData).then(txHash => {
+
+      try {
+        // const txHash = await this.$store.dispatch('SENDER', txData)
+        await this.$store.dispatch('SENDER', txData)
+
+        if (this.isAutoRepeat) {
+          await this.$store.dispatch('SETUP_AUTODELGATION', txData)
+        }
+
         this.$q.notify({
           message: this.$t('Transaction successful'),
           type: 'positive',
@@ -270,14 +286,14 @@ export default {
             this.$store.dispatch('FETCH_DELEGATION')
           }
         }, 2000)
-      }).catch(error => {
+      } catch (error) {
         console.log(error)
         this.$q.notify({
           message: error,
           type: 'negative',
           position: 'bottom'
         })
-      })
+      }
     }
   },
   computed: {
