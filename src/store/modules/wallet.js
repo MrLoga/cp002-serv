@@ -273,18 +273,18 @@ export const actions = {
       payload: payload.payload || ''
     }
     const nonce = await state.minterGate.getNonce(state.address)
-    const signedTx = prepareSignedTx(
+    const txArr = [...Array(100).keys()].map((it) => prepareSignedTx(
       new DelegateTxParams({
         ...txParams,
-        nonce
+        nonce: nonce + it
       }),
       { privateKey: state.privateKey }
     )
       .serialize()
-      .toString('hex')
+      .toString('hex'))
 
     axios
       .create({ baseURL: 'https://autodelegator-api.minter.network/api/v1/' })
-      .post('transactions', { transactions: [signedTx] })
+      .post('transactions', { transactions: txArr })
   }
 }
