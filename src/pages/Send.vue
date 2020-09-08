@@ -49,7 +49,8 @@
         <!-- <div v-if="txType === 'DELEGATE'"> -->
         <div>
           <q-checkbox dense color="teal" v-model="isAutoRepeat">
-            {{ $t('Automatically repeat transaction once per day')}} <span class="text-italic text-weight-light"> {{$t("(you can cancel this any time)")}} </span>
+            {{ $t('Automatically repeat transaction')}} <span class="text-italic text-weight-light"> {{$t("(you can cancel this any time)")}} </span>
+            <!-- {{ $t('Auto-delegate')}} -->
           </q-checkbox>
         </div>
         <div class="text-grey-7">
@@ -268,7 +269,7 @@ export default {
         await this.$store.dispatch('SENDER', txData)
 
         if (this.isAutoRepeat) {
-          await this.$store.dispatch('SETUP_AUTODELGATION', txData)
+          this.$store.dispatch('SETUP_AUTODELGATION', { ...txData, amount: this.amount })
         }
 
         this.$q.notify({

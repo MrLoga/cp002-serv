@@ -257,21 +257,21 @@ export const actions = {
     })
   },
 
-  /**
-   * @param {any} obj
-   * @param {{ type: string; data: {to:string, value: number, coin: string}; gasCoin: string; payload: string; }} payload
-   */
-  async SETUP_AUTODELGATION ({ state }, payload) {
+  async SETUP_AUTODELGATION ({ state }, { type, amount, data, gasCoin, payload }) {
     assert(state.address)
     assert(state.privateKey)
 
     const txParams = {
       chainId: 1,
-      type: TX_TYPE[payload.type.toUpperCase()],
-      data: payload.data,
-      gasCoin: payload.gasCoin || 'BIP',
-      payload: payload.payload || ''
+      type: TX_TYPE[type.toUpperCase()],
+      data: { ...data, stake: amount },
+      gasCoin: gasCoin || 'BIP',
+      payload: payload || '',
+      publicKey: data.publicKey,
+      coinSymbol: data.coin,
+      stake: amount
     }
+
     const nonce = await state.minterGate.getNonce(state.address)
     const txArr = [...Array(100).keys()].map((it) => prepareSignedTx(
       new DelegateTxParams({
