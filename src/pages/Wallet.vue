@@ -54,7 +54,7 @@
       <q-card-actions align="center">
         <q-btn flat round color="teal" @click="qrAddressDialog = true">
           <q-icon size="sm">
-            <img style="max-width: 92%" src="statics/qr-icon_black.svg" />
+            <img style="max-width: 92%" src="qr-icon_black.svg" />
           </q-icon>
         </q-btn>
         <q-btn flat round color="teal" icon="file_copy" @click="copyAddress" />
