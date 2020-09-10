@@ -29,7 +29,7 @@ export default {
   data () {
     return {
       menu: [
-        { icon: 'accessibility_new', text: this.$t('Profile'), url: '/profile' },
+        { icon: 'accessibility_new', text: this.$t('Services'), url: '/profile' },
         { icon: 'supervisor_account', text: this.$t('Сontact list'), url: '/contacts' }
         // { icon: 'star_border', text: 'Favourites' },
         // { icon: 'search', text: 'Saved searches' }
