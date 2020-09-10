@@ -7,6 +7,7 @@
   "author": "Andrew L. <mrlogaz@gmail.com>",
   "private": true,
   "scripts": {
+    "dev": "quasar d",
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0"
   },
