@@ -1,23 +1,16 @@
 // Configuration for your app
 // https://quasar.dev/quasar-cli/quasar-conf-js
 
-module.exports = function (ctx) {
+module.exports = function(ctx) {
   return {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/cli-documentation/boot-files
-    boot: [
-      'i18n',
-      'axios',
-      'notify-defaults'
-    ],
+    boot: ['i18n', 'axios', 'notify-defaults'],
     // debug: false,
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-    css: [
-      'app.styl',
-      'start.styl',
-    ],
+    css: ['app.styl', 'start.styl'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -50,12 +43,7 @@ module.exports = function (ctx) {
       directives: [],
 
       // Quasar plugins
-      plugins: [
-        'Dialog',
-        'Notify',
-        'Loading',
-        'LoadingBar'
-      ]
+      plugins: ['Dialog', 'Notify', 'Loading', 'LoadingBar']
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
@@ -63,7 +51,7 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      scopeHoisting: true,
+      scopeHoisting: true
       // vueRouterMode: 'history',
       // showProgress: false,
       // gzip: true,
@@ -72,17 +60,17 @@ module.exports = function (ctx) {
       // extractCSS: false,
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
-      extendWebpack (cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/,
-          options: {
-            formatter: require('eslint').CLIEngine.getFormatter('stylish')
-          }
-        })
-      }
+      // extendWebpack (cfg) {
+      //   cfg.module.rules.push({
+      //     enforce: 'pre',
+      //     test: /\.(js|vue)$/,
+      //     loader: 'eslint-loader',
+      //     exclude: /node_modules/,
+      //     options: {
+      //       formatter: require('eslint').CLIEngine.getFormatter('stylish')
+      //     }
+      //   })
+      // }
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
@@ -118,7 +106,7 @@ module.exports = function (ctx) {
 
     // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'GenerateSW',// workboxPluginMode: 'InjectManifest',
+      workboxPluginMode: 'GenerateSW', // workboxPluginMode: 'InjectManifest',
       workboxOptions: {
         skipWaiting: true,
         clientsClaim: true
@@ -133,69 +121,69 @@ module.exports = function (ctx) {
         theme_color: '#027be3',
         icons: [
           {
-            'src': 'statics/icons/Icon-16.png',
-            'sizes': '16x16',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-16.png',
+            sizes: '16x16',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-32.png',
-            'sizes': '32x32',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-32.png',
+            sizes: '32x32',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-64.png',
-            'sizes': '64x64',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-64.png',
+            sizes: '64x64',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-72.png',
-            'sizes': '72x72',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-72.png',
+            sizes: '72x72',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-96.png',
-            'sizes': '96x96',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-96.png',
+            sizes: '96x96',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-100.png',
-            'sizes': '100x100',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-100.png',
+            sizes: '100x100',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-128.png',
-            'sizes': '128x128',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-128.png',
+            sizes: '128x128',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-144.png',
-            'sizes': '144x144',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-144.png',
+            sizes: '144x144',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-192.png',
-            'sizes': '192x192',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-192.png',
+            sizes: '192x192',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-196.png',
-            'sizes': '196x196',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-196.png',
+            sizes: '196x196',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-256.png',
-            'sizes': '256x256',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-256.png',
+            sizes: '256x256',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-512.png',
-            'sizes': '512x512',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-512.png',
+            sizes: '512x512',
+            type: 'image/png'
           },
           {
-            'src': 'statics/icons/Icon-1024.png',
-            'sizes': '1024x1024',
-            'type': 'image/png'
+            src: 'statics/icons/Icon-1024.png',
+            sizes: '1024x1024',
+            type: 'image/png'
           }
         ]
       }
@@ -211,20 +199,18 @@ module.exports = function (ctx) {
     electron: {
       // bundler: 'builder', // or 'packager'
 
-      extendWebpack (cfg) {
+      extendWebpack(cfg) {
         // do something with Electron main process Webpack cfg
         // chainWebpack also available besides this extendWebpack
       },
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-
         // OS X / Mac App Store
         // appBundleId: '',
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
-
         // Windows only
         // win32metadata: { ... }
       },
