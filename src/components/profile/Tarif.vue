@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-dialog v-model="rootDialog" @hide="onRootDialogHide" full-width transition-show="scale" transition-hide="scale">
+    <q-dialog ref="dialog" @hide="onRootDialogHide" full-width transition-show="scale" transition-hide="scale">
       <q-card v-if="user && address && address.length" class="dialog-min300">
         <q-card-section v-if="user.role.name === 'Authenticated'">
           <div class="text-h5 text-center">{{ $t('Please') }}</div>
@@ -97,9 +97,6 @@ import Big from 'big.js'
 
 export default {
   name: 'Tarif',
-  props: {
-    rootDialog: Boolean
-  },
   data () {
     return {
       payTariffDialog: false,
@@ -123,13 +120,16 @@ export default {
     },
     selectTariff (name) {
       if (this.address && this.address.length) {
-        this.$emit('update:rootDialog', false)
+        // this.$emit('update:rootDialog', false)
         this.payTariffDialog = true
         this.selectedTariff = name
       }
     },
     onRootDialogHide () {
-      this.$emit('update:rootDialog', false)
+      // this.$emit('update:rootDialog', false)
+    },
+    toggle() {
+      this.$refs.dialog.toggle()
     },
     async payTariff () {
       this.loadingTariffDialog = true
