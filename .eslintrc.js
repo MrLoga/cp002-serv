@@ -1,60 +1,127 @@
 module.exports = {
   root: true,
-
-  parserOptions: {
-    parser: 'babel-eslint',
-    sourceType: 'module'
-  },
-
   env: {
-    browser: true
+    // node: true,
+    // browser: true,
+    es2020: true,
   },
-
+  parser: 'vue-eslint-parser',
+  parserOptions: {
+    parser: require.resolve('babel-eslint'),
+    extraFileExtensions: ['.vue'],
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
+  plugins: ['prettier', 'import', 'promise', 'unicorn'],
   extends: [
-    // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
-    // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
-    'plugin:vue/essential',
-    '@vue/standard'
+    'eslint-config-airbnb-base',
+    'plugin:vue/vue3-recommended',
+    // 'plugin:@typescript-eslint/eslint-recommended',
+    // 'plugin:@typescript-eslint/recommended',
+    // 'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:promise/recommended',
+    'plugin:unicorn/recommended',
+    'plugin:import/warnings',
+    'plugin:import/errors',
+    'plugin:import/typescript',
+    'prettier',
+    'prettier/vue',
+    'prettier/@typescript-eslint',
   ],
+  settings: {
+    'import/resolver': {
+      // [require.resolve('eslint-import-resolver-node')]: {},
+      // [require.resolve('eslint-import-resolver-webpack')]: {
+      //   config: 'webpack.config.js',
+      // },
+    },
+  },
+  rules: {
+    'prettier/prettier': [
+      'error',
+      {
+        singleQuote: true,
+        endOfLine: 'auto',
+        semi: false,
+        trailingComma: 'es5',
+      },
+    ],
+    'import/extensions': [
+      'error',
+      'always',
+      {
+        js: 'never',
+        mjs: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
+      },
+    ],
+    'no-param-reassign': [
+      'warn',
+      {
+        props: true,
+        ignorePropertyModificationsFor: [
+          'state', // for vuex state
+          'acc', // for reduce accumulators
+          'e', // for e.returnvalue
+        ],
+      },
+    ],
 
-  // required to lint *.vue files
-  plugins: [
-    'vue'
-  ],
+    // single or double - choose either, but this is a required rule
+    quotes: ['error', 'single'],
 
-  globals: {
-    'ga': true, // Google Analytics
-    'cordova': true,
-    '__statics': true,
-    'process': true,
-    'Capacitor': true
+    // #region rules that allow usage of plugin:vue/vue3 for vue2 files.
+    // comment out if you're on vue 3
+    'vue/no-deprecated-dollar-scopedslots-api': ['off'],
+    'vue/require-explicit-emits': 'off',
+    'vue/no-deprecated-v-bind-sync': 'off',
+    // #endregion
+
+    // #region rules that prettier should not disable
+    'vue/attributes-order': [
+      'error',
+      {
+        order: [
+          'DEFINITION',
+          'LIST_RENDERING',
+          'CONDITIONALS',
+          'RENDER_MODIFIERS',
+          'GLOBAL',
+          'UNIQUE',
+          'TWO_WAY_BINDING',
+          'OTHER_DIRECTIVES',
+          'OTHER_ATTR',
+          'EVENTS',
+          'CONTENT',
+        ],
+        alphabetical: true,
+      },
+    ],
+    'vue/html-self-closing': 'warn',
+    // #endregion
+
+    // #region optional rules that can be safely disabled
+    'vue/custom-event-name-casing': 'warn',
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+    'linebreak-style': 'off',
+    semi: ['error', 'never'],
+    'prefer-destructuring': ['error', { object: true, array: false }],
+    'no-shadow': ['warn'],
+    'import/prefer-default-export': 'off',
+
+    'unicorn/prevent-abbreviations': 'off',
+    // Once Vetur rolls out Rename.symbol support - I'll stop using different .ts files for vue
+    'unicorn/filename-case': 'off',
+    'no-use-before-define': [
+      'error',
+      { functions: false, classes: true, variables: true },
+    ],
+    // #endregion
   },
 
-  // add your custom rules here
-  rules: {
-    // allow async-await
-    'generator-star-spacing': 'off',
-    // allow paren-less arrow functions
-    'arrow-parens': 'off',
-    'one-var': 'off',
-
-    'import/first': 'off',
-    'import/named': 'error',
-    'import/namespace': 'error',
-    'import/default': 'error',
-    'import/export': 'error',
-    'import/extensions': 'off',
-    'import/no-unresolved': 'off',
-    'import/no-extraneous-dependencies': 'off',
-    'prefer-promise-reject-errors': 'off',
-
-    'template-curly-spacing': 'off',
-    'quote-props': ["error", "consistent"],
-    
-    // allow console.log during development only
-    // 'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-console': 'off',
-    // allow debugger during development only
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
-  }
+  // globals: {
+  //   process: 'readonly',
+  // },
 }

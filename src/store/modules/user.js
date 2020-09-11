@@ -27,11 +27,7 @@ export const getters = {
 export const mutations = {
   RESET_APP: state => {
     Object.assign(state, getDefaultState())
-    if (location.hostname === 'localhost') {
-      state.backendApi = 'http://localhost:1337/'
-    } else if (location.hostname === 'dev.wallet.reef.mn') {
-      state.backendApi = 'https://dev.api.reef.mn/'
-    }
+    this.commit('SET_API')
   },
   SET_API: state => {
     if (location.hostname === 'localhost') {

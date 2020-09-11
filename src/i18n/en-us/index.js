@@ -69,6 +69,7 @@ export default {
   // MainMenu
   'Сontact list': 'Сontact list',
   'Profile': 'Profile',
+  'Services': 'Services',
   'Settings': 'Settings',
   'Exit': 'Exit',
   'Transactions': 'Transactions',
@@ -135,6 +136,7 @@ export default {
   'Coin you want': 'Coin you want',
   'Not enough': 'Not enough',
   'Transaction fee': 'Transaction fee',
+  'Automatically repeat transaction': 'Automatically repeat transaction',
   'Transaction successful': 'Transaction successful',
   'You will pay': 'You will pay',
   'You will get': 'You will get',

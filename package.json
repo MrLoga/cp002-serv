@@ -7,6 +7,7 @@
   "author": "Andrew L. <mrlogaz@gmail.com>",
   "private": true,
   "scripts": {
+    "dev": "quasar d",
     "lint": "eslint --ext .js,.vue src",
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -31,14 +32,19 @@
     "@quasar/app": "^1.6.1",
     "@vue/eslint-config-standard": "latest",
     "babel-eslint": "latest",
-    "eslint": "^6.8.0",
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-loader": "^3.0.3",
-    "eslint-plugin-import": "^2.14.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-import-resolver-webpack": "^0.12.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-unicorn": "^21.0.0",
     "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^6.1.2",
+    "eslint-plugin-vue": "^7.0.0-beta.3",
     "quasar-app-extension-swipe-to-close": "0.0.6"
   },
   "engines": {

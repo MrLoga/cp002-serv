@@ -69,6 +69,7 @@ export default {
   // MainMenu
   'Сontact list': 'Список контактов',
   'Profile': 'Профиль',
+  'Services': 'Сервисы',
   'Settings': 'Настройки',
   'Exit': 'Выход',
   'Transactions': 'Переводы',
@@ -135,6 +136,7 @@ export default {
   'Coin you want': 'Желаемая монета',
   'Not enough': 'Недостаточно',
   'Transaction fee': 'Комиссия сети',
+  'Automatically repeat transaction': 'Авто-делегирование',
   'Transaction successful': 'Транзакция успешна',
   'You will pay': 'Вы должны заплатить',
   'You will get': 'Вы получите',

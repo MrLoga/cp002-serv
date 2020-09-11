@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-dialog v-model="rootDialog" @hide="onRootDialogHide" full-width transition-show="scale" transition-hide="scale">
+    <q-dialog ref="dialog" @hide="onRootDialogHide" full-width transition-show="scale" transition-hide="scale">
       <q-card v-if="user && address && address.length" class="dialog-min300">
         <q-card-section v-if="user.role.name === 'Authenticated'">
           <div class="text-h5 text-center">{{ $t('Please') }}</div>
@@ -67,7 +67,7 @@
           <q-icon name="stars" size="lg" color="positive" class="q-mb-sm" />
           <div class="text-h5 q-mb-md">{{ $t('Pay for a subscription?') }}</div>
           <div class="text-subtitle1">{{ $t('Wallet') }}: <b>{{ findWallet(address).title }}</b></div>
-          <div class="text-subtitle1" v-if="selectedTariff !== null">{{ $t('Cost') }}: <b>{{ Big(tariff[selectedTariff]).div(tariff.currency).round(0, 3).toString() }} bip</b></div>
+          <div class="text-subtitle1" v-if="selectedTariff !== null">{{ $t('Cost') }}: <b>{{ Big(1).div(tariff.currency).round(0, 3).toString() }} bip</b></div>
         </q-card-section>
         <q-card-actions align="center" class="q-pb-md">
           <q-btn color="red" flat :label="$t('Cancel')" v-close-popup />
@@ -76,7 +76,7 @@
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="paidDialog" full-width transition-show="scale" transition-hide="scale">
+    <q-dialog v-if="user" v-model="paidDialog" full-width transition-show="scale" transition-hide="scale">
       <q-card class="dialog-min300">
         <q-card-section class="text-center">
           <q-icon name="stars" size="lg" color="positive" class="q-mb-sm" />
@@ -94,11 +94,9 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import Big from 'big.js'
+
 export default {
   name: 'Tarif',
-  props: {
-    rootDialog: Boolean
-  },
   data () {
     return {
       payTariffDialog: false,
@@ -109,7 +107,9 @@ export default {
     }
   },
   created () {
+
     this.$store.dispatch('GET_HELPER').then(data => {
+      console.log(data)
       this.tariff = data
     })
   },
@@ -120,13 +120,16 @@ export default {
     },
     selectTariff (name) {
       if (this.address && this.address.length) {
-        this.$emit('update:rootDialog', false)
+        // this.$emit('update:rootDialog', false)
         this.payTariffDialog = true
         this.selectedTariff = name
       }
     },
     onRootDialogHide () {
-      this.$emit('update:rootDialog', false)
+      // this.$emit('update:rootDialog', false)
+    },
+    toggle() {
+      this.$refs.dialog.toggle()
     },
     async payTariff () {
       this.loadingTariffDialog = true
@@ -138,7 +141,7 @@ export default {
         nonce: nonce,
         coin: 'BIP',
         // value: 1,
-        value: Big(this.tariff[this.selectedTariff]).div(this.tariff.currency).round(0, 3).toString(),
+        value: Big(this.tariff(1)).div(this.tariff.currency).round(0, 3).toString(),
         gasCoin: 'BIP',
         dueBlock: 9999999
       })
