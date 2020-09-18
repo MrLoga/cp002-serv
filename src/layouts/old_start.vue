@@ -6,7 +6,7 @@
           <q-step :name="2" title="About" icon="settings" :done="step > 2" style="height: 250px;">
             <div class="text-h5 text-center">WALLET.REEF.MN</div>
             <div class="text-center q-mt-md">
-              <q-img src="statics/app-logo-128x128.png" height="128px" width="128px" />
+              <q-img src="app-logo-128x128.png" height="128px" width="128px" />
             </div>
           </q-step>
           <q-step :name="3" title="Login" icon="settings" :done="step > 3" style="height: 250px; text-align: center;">
