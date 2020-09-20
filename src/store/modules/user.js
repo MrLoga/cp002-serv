@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { issueCheck } from 'minter-js-sdk'
+import { Notify } from 'quasar'
 import { strapiMessage } from '../../utils/error'
 import { i18n } from '../../boot/i18n'
-import { Notify } from 'quasar'
 
 const getDefaultState = () => {
   return {
@@ -14,20 +14,20 @@ const getDefaultState = () => {
     // sync Settings
     syncContacts: true,
     syncWallets: true,
-    syncObservers: true
+    syncObservers: true,
   }
 }
 
 export const state = getDefaultState()
 
 export const getters = {
-  isAuth: state => (!!state.jwt && state.jwt.length)
+  isAuth: state => !!state.jwt && state.jwt.length,
 }
 
 export const mutations = {
   RESET_APP: state => {
     Object.assign(state, getDefaultState())
-    this.commit('SET_API')
+    mutations.SET_API(state)
   },
   SET_API: state => {
     if (location.hostname === 'localhost') {
@@ -40,8 +40,8 @@ export const mutations = {
     state.jwt = payload.jwt
     state.httpConfig = {
       headers: {
-        Authorization: `Bearer ${ payload.jwt }`
-      }
+        Authorization: `Bearer ${payload.jwt}`,
+      },
     }
     state.user = payload.user
   },
@@ -62,13 +62,16 @@ export const mutations = {
   SET_HELPER: (state, payload) => {
     console.log(payload)
     // state.tariff =
-  }
+  },
 }
 
 export const actions = {
   GET_USER_PROFILE: async ({ state, commit }, payload) => {
     try {
-      const { data } = await axios.get(`${ state.backendApi }users/me`, state.httpConfig)
+      const { data } = await axios.get(
+        `${state.backendApi}users/me`,
+        state.httpConfig
+      )
       commit('SET_USER', data)
       return data
     } catch (error) {
@@ -77,7 +80,9 @@ export const actions = {
   },
   LOGIN_USER: async ({ state, commit }, payload) => {
     try {
-      const { data } = await axios.post(state.backendApi + 'auth/local', { ...payload })
+      const { data } = await axios.post(`${state.backendApi}auth/local`, {
+        ...payload,
+      })
       console.log(data)
       if (data.jwt) {
         commit('LOGIN_USER_DATA', data)
@@ -85,7 +90,7 @@ export const actions = {
           progress: true,
           message: i18n.t('Successful login'),
           type: 'positive',
-          position: 'bottom'
+          position: 'bottom',
         })
         return data
       }
@@ -94,18 +99,21 @@ export const actions = {
         progress: true,
         message: strapiMessage(error),
         type: 'negative',
-        position: 'bottom'
+        position: 'bottom',
       })
       return new Error(strapiMessage(error))
     }
   },
   REGISTER_USER: async ({ state, commit }, payload) => {
     try {
-      const { data } = await axios.post(state.backendApi + 'auth/local/register', {
-        username: payload.username,
-        email: payload.email,
-        password: payload.password
-      })
+      const { data } = await axios.post(
+        `${state.backendApi}auth/local/register`,
+        {
+          username: payload.username,
+          email: payload.email,
+          password: payload.password,
+        }
+      )
       console.log(data)
       if (data.jwt) {
         commit('LOGIN_USER_DATA', data)
@@ -113,7 +121,7 @@ export const actions = {
           progress: true,
           message: i18n.t('Account created'),
           type: 'positive',
-          position: 'bottom'
+          position: 'bottom',
         })
         return data
       }
@@ -122,14 +130,14 @@ export const actions = {
         progress: true,
         message: strapiMessage(error),
         type: 'negative',
-        position: 'bottom'
+        position: 'bottom',
       })
       return new Error(strapiMessage(error))
     }
   },
   GET_HELPER: async ({ state, commit }, payload) => {
     try {
-      const { data } = await axios.get(state.backendApi + 'helper')
+      const { data } = await axios.get(`${state.backendApi}helper`)
       // commit('SET_HELPER', data)
       return data
     } catch (error) {
@@ -137,7 +145,7 @@ export const actions = {
         progress: true,
         message: strapiMessage(error),
         type: 'negative',
-        position: 'bottom'
+        position: 'bottom',
       })
       return new Error(strapiMessage(error))
     }
@@ -146,21 +154,24 @@ export const actions = {
     try {
       const check = issueCheck({ ...payload })
       console.log(check)
-      const { data } = await axios.post(state.backendApi + 'tariff-pays', { tariff: payload.tariff, check: check }, state.httpConfig)
+      const { data } = await axios.post(
+        `${state.backendApi}tariff-pays`,
+        { tariff: payload.tariff, check },
+        state.httpConfig
+      )
 
       if (data && !data.err) {
         return data
-      } else {
-        throw new Error(data.err)
       }
+      throw new Error(data.err)
     } catch (error) {
       Notify.create({
         progress: true,
         message: strapiMessage(error),
         type: 'negative',
-        position: 'bottom'
+        position: 'bottom',
       })
       return new Error(strapiMessage(error))
     }
-  }
+  },
 }
