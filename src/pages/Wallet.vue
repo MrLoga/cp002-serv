@@ -474,7 +474,7 @@ export default {
       // this.$store.commit('REMOVE_UNBOND')
       this.delegationsGroup = null
       this.delegationsData = null
-      const loadDelegations = await this.$store.dispatch('FETCH_DELEGATIONS_ADDRESS', this.wallet.address)
+      const loadDelegations = await this.$store.dispatch('GET_DELEGATIONS_ADDRESS', this.wallet.address)
       let tmpDelegations
       if (this.unbond[this.wallet.address]) {
         const unbondList = this.unbond[this.wallet.address].map(unbondItem => {

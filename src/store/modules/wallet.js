@@ -162,7 +162,7 @@ export const actions = {
     context.commit('SET_WALLET_BALANCE', { address: payload, balance: data.data.available_balance_sum })
     return data.data
   },
-  FETCH_DELEGATIONS_ADDRESS: async (context, payload) => {
+  GET_DELEGATIONS_ADDRESS: async (context, payload) => {
     const { data } = await axios.get(`${ context.rootState.api.explorerApi }addresses/${ payload }/delegations`)
     if (data && data.meta.total && data.meta.total > (data.meta.per_page || 50)) {
       const pages = Math.floor(data.meta.total / (data.meta.per_page || 50))
@@ -257,34 +257,48 @@ export const actions = {
     })
   },
 
-  async SETUP_AUTODELGATION ({ state }, { type, amount, data, gasCoin, payload }) {
+  async SETUP_AUTODELGATION(
+    // eslint-disable-next-line no-shadow
+    { state, rootState },
+    { type, stake, data, gasCoin, payload }
+  ) {
     assert(state.address)
     assert(state.privateKey)
+
+    const transactionAmount = 100
 
     const txParams = {
       chainId: 1,
       type: TX_TYPE[type.toUpperCase()],
-      data: { ...data, stake: amount },
+      data: { ...data, stake },
       gasCoin: gasCoin || 'BIP',
       payload: payload || '',
       publicKey: data.publicKey,
       coinSymbol: data.coin,
-      stake: amount
+      stake,
     }
 
     const nonce = await state.minterGate.getNonce(state.address)
-    const txArr = [...Array(100).keys()].map((it) => prepareSignedTx(
-      new DelegateTxParams({
-        ...txParams,
-        nonce: nonce + it
-      }),
-      { privateKey: state.privateKey }
+    const txArr = [...new Array(transactionAmount)].map((_, it) =>
+      prepareSignedTx(
+        new DelegateTxParams({
+          ...txParams,
+          nonce: nonce + it,
+        }),
+        { privateKey: state.privateKey }
+      )
+        .serialize()
+        .toString('hex')
     )
-      .serialize()
-      .toString('hex'))
 
-    axios
-      .create({ baseURL: 'https://autodelegator-api.minter.network/api/v1/' })
-      .post('transactions', { transactions: txArr })
-  }
+    axios.create({ baseURL: `${rootState.user.backendApi}` }).put(
+      'auto-delegations',
+      {
+        transactions: txArr,
+        wallet: state.address,
+        nonce: nonce + transactionAmount,
+      },
+      rootState.user.httpConfig
+    );
+  },
 }

@@ -48,7 +48,7 @@
         <div class="text-negative" v-if="!isValid">{{ validateError }}</div>
         <!-- <div v-if="txType === 'DELEGATE'"> -->
         <div>
-          <q-checkbox dense color="teal" v-model="isAutoRepeat">
+          <q-checkbox dense color="teal" v-model="isAutoDelegate">
             {{ $t('Automatically repeat transaction')}} <span class="text-italic text-weight-light"> {{$t("(you can cancel this any time)")}} </span>
             <!-- {{ $t('Auto-delegate')}} -->
           </q-checkbox>
@@ -137,10 +137,9 @@ export default {
 
       profile: null,
 
-      isAutoRepeat: false
+      isAutoDelegate: false
     }
   },
-  created () {},
   mounted () {
     // console.log(this.import)
     if (this.import && this.import.address !== '') {
@@ -268,8 +267,8 @@ export default {
         // const txHash = await this.$store.dispatch('SENDER', txData)
         await this.$store.dispatch('SENDER', txData)
 
-        if (this.isAutoRepeat) {
-          this.$store.dispatch('SETUP_AUTODELGATION', { ...txData, amount: this.amount })
+        if (this.isAutoDelegate) {
+          this.$store.dispatch('SETUP_AUTODELGATION', { ...txData, stake: this.amount })
         }
 
         this.$q.notify({
