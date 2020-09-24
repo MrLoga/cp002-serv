@@ -23,6 +23,7 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/profile/Profile.vue'), props: true },
       { path: 'sync', component: () => import('pages/profile/Sync.vue'), props: true },
+      { path: 'auto-transactions', component: () => import('pages/profile/AutoTransactions.vue'), props: true },
       { path: 'reg', component: () => import('pages/profile/Registration.vue'), props: true },
       { path: 'login', component: () => import('pages/profile/Login.vue'), props: true }
     ]

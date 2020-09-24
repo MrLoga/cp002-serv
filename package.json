@@ -28,6 +28,7 @@
     "vue-i18n": "latest",
     "vue-qrcode-reader": "latest",
     "vue-template-compiler": "^2.6.12",
+    "vuex": "^3.5.1",
     "vuex-persistedstate": "latest"
   },
   "devDependencies": {

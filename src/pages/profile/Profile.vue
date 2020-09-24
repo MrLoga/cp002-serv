@@ -28,14 +28,14 @@
 
     <div class="text-h6 q-pa-md q-mt-md">{{ $t('Subscriptions') }}</div>
     <SubscriptionItem
-      description="Sync wallets and contacts across devices and platforms"
-      name="Synchronization"
+      :description="$t('Create a bunch of transactions that will be automaticly applied')"
+      :name="$t('Auto-Transations')"
       @click:buy="triggerTariff()"
-      @click:settings="openSettings('sync')"
+      @click:settings="openSettings('auto-transactions')"
     />
     <SubscriptionItem
-      description="Create a bunch of transactions that will be automaticly applied"
-      name="Auto-delegation"
+      description="Sync wallets and contacts across devices and platforms"
+      name="Synchronization"
       @click:buy="triggerTariff()"
       @click:settings="openSettings('sync')"
     />
@@ -92,6 +92,8 @@ export default {
     },
   },
   created() {
+    window.test.pay = () => this.user.role.name = 'Paid'
+
     if (!this.isAuth) {
       this.$router.push({ path: '/profile/login' })
     } else {

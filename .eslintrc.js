@@ -46,6 +46,9 @@ module.exports = {
         trailingComma: 'es5',
       },
     ],
+    'no-restricted-syntax': ['off'],
+    'promise/always-return': ['off'],
+    'promise/catch-or-return': ['off'],
     'import/extensions': [
       'error',
       'always',
@@ -114,10 +117,7 @@ module.exports = {
     'unicorn/prevent-abbreviations': 'off',
     // Once Vetur rolls out Rename.symbol support - I'll stop using different .ts files for vue
     'unicorn/filename-case': 'off',
-    'no-use-before-define': [
-      'error',
-      { functions: false, classes: true, variables: true },
-    ],
+    'no-use-before-define': ['error', { functions: false, classes: true, variables: true }],
     // #endregion
   },
 
