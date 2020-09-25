@@ -12,6 +12,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "lodash": "4.17.20",
     "@quasar/extras": "^1.6.1",
     "axios": "latest",
     "axios-extensions": "latest",

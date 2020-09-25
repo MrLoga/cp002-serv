@@ -1,7 +1,7 @@
 <template>
-  <div class="item-wrapper">
+  <div class="item-wrapper" :class="isPaused ? 'grey' : ''">
     <div class="item-inner d-contents">
-      <q-item v-ripple class="bg-white">
+      <q-item v-ripple>
         <!-- @click="openDialog(item)" -->
         <q-item-section avatar>
           <q-icon
@@ -38,7 +38,12 @@
         <q-item-section class="q-mt-xs">
           <q-item-label class="text-weight-medium" lines="">
             From: {{ wallets.find(it => it.address === from).title }} <br />
-            To: {{ to }}
+            To:
+            {{
+              (local.temp = wallets.find(it => it.address === to))
+                ? local.temp.title
+                : to
+            }}
           </q-item-label>
           <q-item-label class="text-grey-9 q-pt-xs">
             {{ type.charAt(0) + type.substring(1).toLowerCase() }}: {{ amount }}
@@ -47,7 +52,7 @@
           <q-item-label caption class="text-grey" lines="1">
             <div class="q-mt-xs">
               {{ new Date(dateCreated).toLocaleString() }},
-              {{ amountLeft }} transactions left
+              {{ trAmountLeft }} transactions left
             </div>
             <!-- <div class="q-mt-xs"></div>
             <div class="q-mt-xs">Coin - {{ coin }}</div>
@@ -83,7 +88,7 @@
               Remove
             </q-btn>
             <q-checkbox
-              size="lg"
+              size="lg z-max"
               :value="onlyRewardsAndMultisend"
               @input="$emit('click:rewards')"
             >
@@ -93,9 +98,9 @@
           </span>
         </q-item-section>
       </q-item>
-      <div v-if="isPaused" class="item-outer">
-        <!-- <span class="q-mx-auto"> Paused </span> -->
-      </div>
+      <!-- <div v-if="isPaused" class="item-outer"> -->
+      <!-- <span class="q-mx-auto"> Paused </span> -->
+      <!-- </div> -->
     </div>
   </div>
 </template>
@@ -107,7 +112,7 @@ export default {
       default: false,
       type: Boolean,
     },
-    amountLeft: {
+    trAmountLeft: {
       default: 1,
       type: Number,
     },
@@ -144,6 +149,13 @@ export default {
       type: String,
     },
   },
+  data() {
+    return {
+      local: {
+        temp: undefined,
+      },
+    }
+  },
   computed: {
     wallets() {
       return this.$store.state.wallet.wallets
@@ -171,6 +183,10 @@ export default {
   height: 100%;
   width: 100%;
   position: relative;
+}
+
+.grey {
+  background-color: #dcdcdc;
 }
 
 .d-contents {

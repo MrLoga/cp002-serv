@@ -2,11 +2,16 @@
   <q-page>
     <div class="text-h6 q-pl-md q-pb-xs q-mt-lg q-mb-sm">
       {{ $t('Auto-Transactions settings') }}
-      <span v-if="user && user.role.name !== 'Paid'" class="text-caption q-ml-md text-grey-7"
+      <span
+        v-if="user && user.role.name !== 'Paid'"
+        class="text-caption q-ml-md text-grey-7"
         >Disabled</span
       >
     </div>
-    <div v-if="transactions.length === 0" class="text-h7 q-pl-md q-pb-xs q-mt-lg">
+    <div
+      v-if="transactions.length === 0"
+      class="text-h7 q-pl-md q-pb-xs q-mt-lg"
+    >
       You don't have any transactions
     </div>
 
@@ -17,7 +22,9 @@
             <span class="text-h6">Active operations</span>
             <q-btn
               class="q-ml-auto bg-teal text-white"
-              @click="restockTransactions(transactions.filter(it => !it.paused))"
+              @click="
+                restockTransactions(transactions.filter(it => !it.paused))
+              "
             >
               Restock
             </q-btn>
@@ -28,7 +35,6 @@
           <AutoTransactionItem
             v-if="!item.paused"
             :amount="item.amount"
-            :amount-left="item.transactions.length"
             :coin="item.coin"
             :date-created="new Date(item.createdAt)"
             :description="item.description"
@@ -36,8 +42,11 @@
             :is-paused="item.paused"
             :only-rewards-and-multisend="item.onlyRewardsAndMultisend"
             :to="item.to"
+            :tr-amount-left="item.transactions.length"
             :type="item.type"
             @click:pause="pause(item)"
+            @click:remove="cancel(item)"
+            @click:rewards="switchType(item)"
           />
           <q-separator :dark="item.paused" />
         </div>
@@ -47,8 +56,8 @@
           <span class="flex items-center">
             <span class="text-h6">Paused operations</span>
             <q-btn
-              @click="restockTransactions(transactions.filter(it => it.paused))"
               class="q-ml-auto bg-teal text-white"
+              @click="restockTransactions(transactions.filter(it => it.paused))"
             >
               Restock
             </q-btn>
@@ -58,7 +67,7 @@
         <div v-for="(item, index) in transactions" :key="index">
           <AutoTransactionItem
             v-if="item.paused"
-            :amount-left="item.transactions.length"
+            :amount="item.amount"
             :coin="item.coin"
             :date-created="new Date(item.createdAt)"
             :description="item.description"
@@ -66,7 +75,10 @@
             :is-paused="item.paused"
             :only-rewards-and-multisend="item.onlyRewardsAndMultisend"
             :to="item.to"
+            :tr-amount-left="item.transactions.length"
             @click:pause="pause(item)"
+            @click:remove="cancel(item)"
+            @click:rewards="switchType(item)"
           />
           <q-separator :dark="item.paused" />
         </div>
@@ -76,6 +88,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import axios from 'axios'
 import { prepareSignedTx } from 'minter-js-sdk'
 import AutoTransactionItem from '../../components/profile/AutoTransactionItem.vue'
@@ -100,10 +113,22 @@ export default {
       return
     }
 
-    this.transactions = await axios
-      .create({ baseURL: this.$store.state.user.backendApi })
-      .get(`auto-transactions?user.email=${this.$store.state.user.user.email}`)
-      .then(it => it.data)
+    const walletsAddreses = this.$store.state.wallet.wallets.map(
+      it => it.address
+    )
+
+    const transactionPromises = []
+
+    for (const address of walletsAddreses) {
+      const promise = axios
+        .create({ baseURL: this.$store.state.user.backendApi })
+        .get(`auto-transactions?wallet=${address}`)
+        .then(it => it.data)
+
+      transactionPromises.push(promise)
+    }
+
+    this.transactions = await Promise.all(transactionPromises).then(_.flatten)
   },
   methods: {
     async pause(item) {
@@ -118,9 +143,10 @@ export default {
       item.paused = !item.paused
     },
     async restockTransactions(transactions) {
-
       for (const item of transactions) {
-        const nonce = await this.$store.state.wallet.minterGate.getNonce(item.wallet)
+        const nonce = await this.$store.state.wallet.minterGate.getNonce(
+          item.wallet
+        )
         const txArr = [...new Array(100)].map((_, it) =>
           prepareSignedTx(
             { ...item.txParams, nonce: nonce + it },
@@ -132,7 +158,7 @@ export default {
 
         const transactions = await axios
           .create({ baseURL: this.$store.state.user.backendApi })
-          .post(`transactions/create-bunch`, {
+          .post('transactions/create-bunch', {
             transactions: txArr,
             email: item.user.email,
             wallet: item.wallet,
