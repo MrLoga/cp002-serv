@@ -4,7 +4,7 @@
       <div class="text-h5 text-weight-light text-uppercase">Welcome to</div>
       <div class="text-h3">&nbsp;</div>
       <div class="text-h2" style="height: 128px">
-        <q-img src="~assets/icon-256.png" width="128px" />
+        <q-img src="icons/icon-256.png" width="128px" />
       </div>
       <div class="text-h4 text-weight-light text-uppercase">&nbsp;</div>
       <div class="text-h4 text-weight-light text-uppercase">Reef</div>
