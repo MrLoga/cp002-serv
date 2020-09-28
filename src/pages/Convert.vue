@@ -45,6 +45,16 @@
             <q-btn type="submit" color="teal" size="16px"  icon="compare_arrows" class="full-width" :disabled="!validate" :label="$t('Exchange')" />
           </div>
 
+          <div v-if="user">
+            <q-checkbox v-model="isAutoTransaction" color="teal" dense>
+              {{ $t('Automatically repeat transaction') }}
+              <span class="text-italic text-weight-light">
+                {{ $t('(you can cancel this any time)') }}
+              </span>
+              <!-- {{ $t('Auto-delegate')}} -->
+            </q-checkbox>
+          </div>
+
           <div v-if="validate && txType === 'SELL' && resultSell != 0">
             <span class="text-subtitle1">{{ $t('You will get') }}</span>&nbsp;
             <span class="text-h6">{{ prettyNumber(resultSell, 3) }}</span>&nbsp;
@@ -159,7 +169,8 @@ export default {
 
       confirmConvert: false,
       resultBuy: 0,
-      resultSell: 0
+      resultSell: 0,
+      isAutoTransaction: false,
     }
   },
   mounted () {
@@ -187,6 +198,7 @@ export default {
       this.resultSell = 0
       this.validate = false
       this.txError = ''
+      this.isAutoTransaction = false
 
       this.txType = this.convertTab.toUpperCase()
       this.setDefaultCoin()
@@ -323,35 +335,61 @@ export default {
       }
     },
 
-    senderConvert () {
+    async senderConvert() {
       const txData = this.makeTxData()
       console.log(txData)
-      this.$store.dispatch('SENDER', txData).then(txHash => {
-        this.$q.notify({
-          message: this.$t('Transaction successful'),
-          icon: 'tag_faces',
-          color: 'teal'
+
+      if (this.isAutoTransaction) {
+        try {
+
+          await this.$store.dispatch('SETUP_AUTOTRANSACTIONS', {
+            txData,
+          type: this.txType,
+          description: '',
+          to: this.coinTo.value,
+          coin: this.coin.value,
+          amount: this.amountBig.toString(),
         })
-        this.clearAll()
-        setTimeout(() => {
-          this.$store.dispatch('FETCH_BALANCE').then(data => {
-            this.setDefaultCoin()
-          })
-        }, 2000)
-      }).catch(error => {
-        console.log(error)
-        this.$q.notify({
-          message: error,
+        } catch (error) {
+          this.$q.notify({
+            message: this.$t(error?.response?.data?.response?.message),
           icon: 'report_problem',
-          color: 'negative'
+          color: 'negative',
         })
-      })
-    }
+        return
+          }
+      }
+
+      this.$store
+        .dispatch('SENDER', txData)
+        .then(() => {
+          this.$q.notify({
+            message: this.$t('Transaction successful'),
+            icon: 'tag_faces',
+            color: 'teal',
+          })
+          this.clearAll()
+          setTimeout(() => {
+            this.$store.dispatch('FETCH_BALANCE').then((data) => {
+              this.setDefaultCoin()
+            })
+          }, 2000)
+        })
+        .catch((error) => {
+          console.log(error)
+          this.$q.notify({
+            message: error,
+            icon: 'report_problem',
+            color: 'negative',
+          })
+        })
+    },
   },
   computed: {
     ...mapState({
       minterGate: state => state.wallet.minterGate,
-      activeWalletAddress: state => state.wallet.address
+      activeWalletAddress: state => state.wallet.address,
+      user: state => state.user.user
     }),
     ...mapGetters([
       'balanceSelect',

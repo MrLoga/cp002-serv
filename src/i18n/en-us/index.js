@@ -148,7 +148,7 @@ export default {
   'Field is required': 'Field is required',
   'Сhoose different coins': 'Сhoose different coins',
   'for transaction fee': 'for transaction fee',
-  'Transaction is being sent, please wait': 'Transaction is being sent, please wait',
+  'We\'re sending your transaction, please wait': 'We\'re sending your transaction, please wait',
   'Unbonding': 'Unbonding',
   'Show Multisend': 'Show Multisend',
 

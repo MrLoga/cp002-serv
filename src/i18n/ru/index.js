@@ -148,7 +148,7 @@ export default {
   'Field is required': 'Поле обязательно',
   'Сhoose different coins': 'Выберите разные монеты',
   'for transaction fee': 'для оплаты комиссии',
-  'Transaction is being sent, please wait': 'Транзакция отправляется, пожалуйста подождите',
+  'We\'re sending your transaction, please wait': 'Транзакция отправляется, пожалуйста подождите',
   'Unbonding': 'Возврат',
   'Show Multisend': 'Показать Multisend',
 

@@ -138,7 +138,7 @@ export const mutations = {
         spinnerColor: 'white',
         spinnerSize: 120,
         backgroundColor: 'indigo-10',
-        message: i18n.t('Transaction is being sent, please wait'),
+        message: i18n.t('We\'re sending your transaction, please wait'),
         messageColor: 'white'
       })
     } else {
@@ -248,55 +248,64 @@ export const actions = {
       context.state.minterGate.postTx(txParams, { privateKey: context.state.privateKey }).then(txHash => {
         console.log(payload.type + ' created: ' + txHash)
         resolve(txHash)
-        context.commit('SET_SENDING', false)
       }).catch(error => {
         console.log(error)
-        context.commit('SET_SENDING', false)
         reject(error.response && error.response.data ? error.response.data.error.message : error.response.error.message)
+        })
+        .finally(() => {
+        context.commit('SET_SENDING', false)
       })
     })
   },
 
-  async SETUP_AUTODELGATION(
+  async SETUP_AUTOTRANSACTIONS(
     // eslint-disable-next-line no-shadow
     { state, rootState },
-    { type, stake, data, gasCoin, payload }
+    { txData, description, to, coin, amount, type, wallet }
   ) {
-    assert(state.address)
-    assert(state.privateKey)
+    assert(state.address);
+    assert(state.privateKey);
 
-    const transactionAmount = 100
+    const transactionAmount = 100;
+
+    // console.log(publicKey)
+    // return
 
     const txParams = {
       chainId: 1,
-      type: TX_TYPE[type.toUpperCase()],
-      data: { ...data, stake },
-      gasCoin: gasCoin || 'BIP',
-      payload: payload || '',
-      publicKey: data.publicKey,
-      coinSymbol: data.coin,
-      stake,
+      type: TX_TYPE[txData.type],
+      data: txData.data,
+      gasCoin: txData.gasCoin || 'BIP',
+      payload: description || '',
     }
 
-    const nonce = await state.minterGate.getNonce(state.address)
+    const nonce = await state.minterGate.getNonce(state.address);
     const txArr = [...new Array(transactionAmount)].map((_, it) =>
       prepareSignedTx(
-        new DelegateTxParams({
+        {
           ...txParams,
           nonce: nonce + it,
-        }),
+        },
         { privateKey: state.privateKey }
       )
         .serialize()
         .toString('hex')
     )
 
-    axios.create({ baseURL: `${rootState.user.backendApi}` }).put(
-      'auto-delegations',
+    console.log(txArr)
+
+
+    return axios.create({ baseURL: `${rootState.user.backendApi}` }).put(
+      'auto-transactions',
       {
         transactions: txArr,
-        wallet: state.address,
-        nonce: nonce + transactionAmount,
+        wallet: wallet || state.address,
+        description: description || '',
+        to: to || '',
+        coin: coin || 'BIP',
+        amount,
+        type,
+        txParams,
       },
       rootState.user.httpConfig
     );

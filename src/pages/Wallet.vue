@@ -639,7 +639,7 @@ export default {
       'balanceObj',
       // 'delegationsGroup',
       'coinsInfo',
-      'delegationsSum',
+      // 'delegationsSum',
       'observerSelect',
       'walletsSelect',
       'findValidator',
