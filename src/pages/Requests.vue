@@ -28,7 +28,7 @@ import { mapGetters, mapState } from 'vuex'
 import Payment from '../components/Payment'
 import Login from '../components/Login'
 import { getFeeValue } from 'minterjs-util'
-import { TX_TYPE } from 'minterjs-tx'
+import { TX_TYPE_SEND  } from 'minterjs-tx'
 
 export default {
   name: 'Requests',
@@ -62,7 +62,7 @@ export default {
       this.$store.commit('CLEAR_ALL_REQUESTS')
     },
     signFee () {
-      return getFeeValue(TX_TYPE.SEND, { payload: 'MX4qptIH0mXijR8XlroE56txuOeyig==' })
+      return getFeeValue(TX_TYPE_SEND, { payload: 'MX4qptIH0mXijR8XlroE56txuOeyig==' })
     }
   },
   created () {
