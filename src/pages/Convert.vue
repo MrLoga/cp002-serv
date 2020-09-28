@@ -45,7 +45,7 @@
             <q-btn type="submit" color="teal" size="16px"  icon="compare_arrows" class="full-width" :disabled="!validate" :label="$t('Exchange')" />
           </div>
 
-          <div v-if="user">
+          <div v-if="user && user.role.name === 'Paid'">
             <q-checkbox v-model="isAutoTransaction" color="teal" dense>
               {{ $t('Automatically repeat transaction') }}
               <span class="text-italic text-weight-light">

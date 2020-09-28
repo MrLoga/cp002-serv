@@ -11,7 +11,11 @@ import * as contacts from './modules/contacts'
 
 Vue.use(Vuex)
 
-window.test = {}
+window.test = {
+  user() {
+    user.state.role.name = 'Paid'
+  }
+}
 
 export default (/* { ssrContext } */) => {
 

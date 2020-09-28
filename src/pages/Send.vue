@@ -54,7 +54,7 @@
         </div>
         <div v-if="!isValid" class="text-negative">{{ validateError }}</div>
         <!-- <div v-if="txType === 'DELEGATE'"> -->
-        <div v-if="user">
+        <div v-if="user && user.role.name === 'Paid'">
           <q-checkbox v-model="isAutoTransaction" color="teal" dense>
             {{ $t('Automatically repeat transaction') }}
             <span class="text-italic text-weight-light">

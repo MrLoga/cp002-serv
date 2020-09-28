@@ -92,8 +92,6 @@ export default {
     },
   },
   created() {
-    window.test.pay = () => this.user.role.name = 'Paid'
-
     if (!this.isAuth) {
       this.$router.push({ path: '/profile/login' })
     } else {
