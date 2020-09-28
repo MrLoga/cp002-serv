@@ -30,12 +30,12 @@ export const mutations = {
     mutations.SET_API(state)
   },
   SET_API: state => {
-    state.backendApi = 'http://35.224.235.176:1337/'
-    // if (location.hostname === 'localhost') {
-    //   state.backendApi = 'http://localhost:1337/'
-    // } else if (location.hostname === 'dev.wallet.reef.mn') {
-    //   state.backendApi = 'https://dev.api.reef.mn/'
-    // }
+    // state.backendApi = 'http://35.224.235.176:1337/'
+    if (location.hostname === 'localhost') {
+      state.backendApi = 'http://localhost:1337/'
+    } else if (location.hostname === 'dev.wallet.reef.mn') {
+      state.backendApi = 'https://dev.api.reef.mn/'
+    }
   },
   LOGIN_USER_DATA: (state, payload) => {
     state.jwt = payload.jwt
