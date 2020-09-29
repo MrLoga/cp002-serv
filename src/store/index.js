@@ -11,12 +11,6 @@ import * as contacts from './modules/contacts'
 
 Vue.use(Vuex)
 
-window.test = {
-  user() {
-    user.state.user.role.name = 'Paid'
-  }
-}
-
 export default (/* { ssrContext } */) => {
 
   const Store = new Vuex.Store({
@@ -32,6 +26,8 @@ export default (/* { ssrContext } */) => {
 
     strict: !!process.env.DEV,
   })
+
+  window.store = Store
 
   return Store
 }
