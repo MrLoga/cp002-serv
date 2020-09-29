@@ -318,7 +318,7 @@ export default {
       }
 
       try {
-        // await this.$store.dispatch('SENDER', txData)
+        await this.$store.dispatch('SENDER', txData)
         // console.log(txData)
 
         this.$q.notify({
