@@ -13,7 +13,7 @@ Vue.use(Vuex)
 
 window.test = {
   user() {
-    user.state.role.name = 'Paid'
+    user.state.user.role.name = 'Paid'
   }
 }
 
