@@ -235,6 +235,10 @@ export const actions = {
   },
 
   SENDER: (context, payload) => {
+    if (!context.state.minterGate) {
+      context.commit('SAVE_GATE')
+    }
+
     context.commit('SET_SENDING', true)
     const txParams = {
       chainId: 1,
@@ -260,11 +264,15 @@ export const actions = {
 
   async SETUP_AUTOTRANSACTIONS(
     // eslint-disable-next-line no-shadow
-    { state, rootState },
+    { state, commit, rootState },
     { txData, description, to, coin, amount, type, wallet }
   ) {
     assert(state.address);
     assert(state.privateKey);
+
+    if (!state.minterGate) {
+      commit('SAVE_GATE')
+    }
 
     const transactionAmount = 100;
 
