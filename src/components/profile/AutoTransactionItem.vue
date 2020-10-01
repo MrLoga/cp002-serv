@@ -52,7 +52,7 @@
           <q-item-label caption class="text-grey" lines="1">
             <div class="q-mt-xs">
               {{ new Date(dateCreated).toLocaleString() }},
-              {{ trAmountLeft }} transactions left
+              {{ trAmountLeft }} {{$t('transactions left')}}
             </div>
             <!-- <div class="q-mt-xs"></div>
             <div class="q-mt-xs">Coin - {{ coin }}</div>
@@ -65,34 +65,34 @@
       </q-item>
       <q-item class="no-border second-item">
         <q-item-section avatar />
-        <q-item-section>
+        <q-item-section no-wrap>
           <span>
             <q-btn
               v-if="isPaused"
               class="bg-green text-white q-mr-md"
               @click="$emit('click:pause')"
             >
-              Continue
+              {{$t('Continue')}}
             </q-btn>
             <q-btn
               v-else
               class="pause-toggle bg-light-blue-14 text-white q-mr-md"
               @click="$emit('click:pause')"
             >
-              Pause
+              {{$t('Pause')}}
             </q-btn>
             <q-btn
-              class="bg-red text-white q-mr-md"
+              class="bg-red text-white q-mr-sm"
               @click="$emit('click:cancel')"
             >
-              Remove
+              {{$t('Remove')}}
             </q-btn>
             <q-checkbox
-              size="lg"
+              size="md"
               :value="onlyRewardsAndMultisend"
               @input="$emit('click:rewards')"
             >
-              Use only rewards and multisends
+              {{$t('Use only rewards and multisends')}}
             </q-checkbox>
             <!-- <q-btn label="Cancel"> </q-btn> -->
           </span>

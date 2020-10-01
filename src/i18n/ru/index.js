@@ -220,5 +220,14 @@ export default {
   //
   'Soon': 'Скоро',
 
-  'Create a bunch of transactions that will be automaticly applied': 'Сохраните транзакции для автоматического применения'
+  'Create a bunch of transactions that will be automaticly applied': 'Сохраните транзакции для автоматического применения',
+  'Auto-Transations': 'Авто-Транзакции',
+  'Auto-Transactions settings': 'Настройки Авто-Транзакций',
+  "You don't have any transactions": 'У вас нет авто - транзакций',
+  'Active operations': 'Активные',
+  'Paused operations': 'Остановленные',
+  'Use only rewards and multisends': 'Использовать только реварды и мультисенды',
+  'Pause': 'Пауза',
+  'transactions left': 'осталось транзакций'
+
 }

@@ -12,14 +12,14 @@
       v-if="transactions.length === 0"
       class="text-h7 q-pl-md q-pb-xs q-mt-lg"
     >
-      You don't have any transactions
+      {{$t("You don't have any transactions")}}
     </div>
 
     <div v-else>
       <q-card bordered flat>
         <q-card-section>
           <span class="flex items-center">
-            <span class="text-h6">Active operations</span>
+            <span class="text-h6">{{$t('Active operations')}}</span>
             <!-- <q-btn
               class="q-ml-auto bg-teal text-white"
               @click="
@@ -54,7 +54,7 @@
       <q-card bordered class="q-mt-lg" flat>
         <q-card-section>
           <span class="flex items-center">
-            <span class="text-h6">Paused operations</span>
+            <span class="text-h6">{{$t('Paused operations')}}</span>
             <!-- <q-btn
               class="q-ml-auto bg-teal text-white"
               @click="restockTransactions(transactions.filter(it => it.paused))"
