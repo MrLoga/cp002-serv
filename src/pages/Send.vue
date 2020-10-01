@@ -58,7 +58,7 @@
           <q-checkbox v-model="isAutoTransaction" color="teal" dense>
             {{ $t('Automatically repeat transaction') }}
             <span class="text-italic text-weight-light">
-              {{ $t('(you can cancel this any time)') }}
+              {{ `(${$t('you can cancel this any time')})` }}
             </span>
             <!-- {{ $t('Auto-delegate')}} -->
           </q-checkbox>

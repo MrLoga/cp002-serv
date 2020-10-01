@@ -34,8 +34,8 @@
       @click:settings="openSettings('auto-transactions')"
     />
     <SubscriptionItem
-      description="Sync wallets and contacts across devices and platforms"
-      name="Synchronization"
+      :description="$t('Sync wallets and contacts across devices and platforms')"
+      :name="$t('Synchronization')"
       @click:buy="triggerTariff()"
       @click:settings="openSettings('sync')"
     />

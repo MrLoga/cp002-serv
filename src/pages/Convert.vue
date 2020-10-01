@@ -49,7 +49,7 @@
             <q-checkbox v-model="isAutoTransaction" color="teal" dense>
               {{ $t('Automatically repeat transaction') }}
               <span class="text-italic text-weight-light">
-                {{ $t('(you can cancel this any time)') }}
+                {{ `(${$t('you can cancel this any time')})` }}
               </span>
               <!-- {{ $t('Auto-delegate')}} -->
             </q-checkbox>
@@ -234,6 +234,7 @@ export default {
       return txData
     },
     async estimateTx () {
+      console.log('test')
       const estimateTxAction = this.txType === 'BUY' ? 'estimateCoinBuy' : 'estimateCoinSell'
       const estimateTxData = {
         coinToSell: this.coin.value,
@@ -245,6 +246,7 @@ export default {
         estimateTxData.valueToSell = this.amountBig.toString()
       }
       try {
+        debugger
         const result = await this.minterGate[estimateTxAction](estimateTxData)
         console.log(result)
         this.resultSell = result.will_get
@@ -312,6 +314,8 @@ export default {
       }
     },
     valifateForm () {
+      console.log('debugger')
+      debugger
       this.amountIsError = false
       this.amountErrorMsg = null
       this.validate = true

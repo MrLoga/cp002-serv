@@ -69,26 +69,26 @@
           <span>
             <q-btn
               v-if="isPaused"
-              class="z-max bg-green text-white q-mr-md"
+              class="bg-green text-white q-mr-md"
               @click="$emit('click:pause')"
             >
               Continue
             </q-btn>
             <q-btn
               v-else
-              class="pause-toggle z-max bg-light-blue-14 text-white q-mr-md"
+              class="pause-toggle bg-light-blue-14 text-white q-mr-md"
               @click="$emit('click:pause')"
             >
               Pause
             </q-btn>
             <q-btn
-              class="z-max bg-red text-white q-mr-md"
+              class="bg-red text-white q-mr-md"
               @click="$emit('click:cancel')"
             >
               Remove
             </q-btn>
             <q-checkbox
-              size="lg z-max"
+              size="lg"
               :value="onlyRewardsAndMultisend"
               @input="$emit('click:rewards')"
             >

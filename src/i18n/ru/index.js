@@ -137,6 +137,7 @@ export default {
   'Not enough': 'Недостаточно',
   'Transaction fee': 'Комиссия сети',
   'Automatically repeat transaction': 'Авто-делегирование',
+  'you can cancel this any time': 'вы можете отменить их в настройках',
   'Transaction successful': 'Транзакция успешна',
   'You will pay': 'Вы должны заплатить',
   'You will get': 'Вы получите',
@@ -217,5 +218,7 @@ export default {
   'or send to someone else': 'или отправить кому-то еще',
 
   //
-  'Soon': 'Скоро'
+  'Soon': 'Скоро',
+
+  'Create a bunch of transactions that will be automaticly applied': 'Сохраните транзакции для автоматического применения'
 }

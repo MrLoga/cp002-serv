@@ -20,14 +20,14 @@
         <q-card-section>
           <span class="flex items-center">
             <span class="text-h6">Active operations</span>
-            <q-btn
+            <!-- <q-btn
               class="q-ml-auto bg-teal text-white"
               @click="
                 restockTransactions(transactions.filter(it => !it.paused))
               "
             >
               Restock
-            </q-btn>
+            </q-btn> -->
           </span>
         </q-card-section>
         <q-separator />
@@ -55,12 +55,12 @@
         <q-card-section>
           <span class="flex items-center">
             <span class="text-h6">Paused operations</span>
-            <q-btn
+            <!-- <q-btn
               class="q-ml-auto bg-teal text-white"
               @click="restockTransactions(transactions.filter(it => it.paused))"
             >
               Restock
-            </q-btn>
+            </q-btn> -->
           </span>
         </q-card-section>
         <q-separator />
