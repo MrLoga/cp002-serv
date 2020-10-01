@@ -176,7 +176,7 @@ export default {
         .create({ baseURL: this.$store.state.user.backendApi })
         .delete(`auto-transactions/${item.id}`)
 
-      this.transactions.splice(this.transactions.indexOf(item))
+      this.transactions.splice(this.transactions.indexOf(item), 1)
     },
     async switchType(item) {
       await axios
