@@ -44,8 +44,8 @@
             :to="item.to"
             :tr-amount-left="item.transactions.length"
             :type="item.type"
+            @click:cancel="cancel(item)"
             @click:pause="pause(item)"
-            @click:remove="cancel(item)"
             @click:rewards="switchType(item)"
           />
           <q-separator :dark="item.paused" />
@@ -76,8 +76,8 @@
             :only-rewards-and-multisend="item.onlyRewardsAndMultisend"
             :to="item.to"
             :tr-amount-left="item.transactions.length"
+            @click:cancel="cancel(item)"
             @click:pause="pause(item)"
-            @click:remove="cancel(item)"
             @click:rewards="switchType(item)"
           />
           <q-separator :dark="item.paused" />
