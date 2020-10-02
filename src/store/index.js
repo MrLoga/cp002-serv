@@ -12,7 +12,6 @@ import * as contacts from './modules/contacts'
 Vue.use(Vuex)
 
 export default (/* { ssrContext } */) => {
-
   const Store = new Vuex.Store({
     modules: {
       app,
@@ -26,6 +25,17 @@ export default (/* { ssrContext } */) => {
 
     strict: !!process.env.DEV,
   })
+
+  try {
+    Store.state.wallet.wallets.forEach(it => {
+      if (it.privateKey.startsWith('0x')) {
+        it.privateKey = it.privateKey.slice(2)
+        console.log('migrating wallet')
+      }
+    })
+  } catch (err) {
+    console.log('failed to migrate wallets')
+  }
 
   window.store = Store
 
