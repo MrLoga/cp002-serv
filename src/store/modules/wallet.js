@@ -248,8 +248,10 @@ export const actions = {
       payload: payload.payload || ''
     }
 
+    const privateKey = context.state.privateKey.startsWith('0x') ? context.state.privateKey.slice(2) : context.state.privateKey
+
     return new Promise((resolve, reject) => {
-      context.state.minterGate.postTx(txParams, { privateKey: context.state.privateKey }).then(txHash => {
+      context.state.minterGate.postTx(txParams, { privateKey }).then(txHash => {
         console.log(payload.type + ' created: ' + txHash)
         resolve(txHash)
       }).catch(error => {
@@ -287,6 +289,8 @@ export const actions = {
       payload: description || '',
     }
 
+    const privateKey = state.privateKey.startsWith('0x') ? context.state.privateKey.slice(2) : context.state.privateKey
+
     const nonce = await state.minterGate.getNonce(state.address);
     const txArr = [...new Array(transactionAmount)].map((_, it) =>
       prepareSignedTx(
@@ -294,7 +298,7 @@ export const actions = {
           ...txParams,
           nonce: nonce + it,
         },
-        { privateKey: state.privateKey }
+        { privateKey }
       )
         .serialize()
         .toString('hex')

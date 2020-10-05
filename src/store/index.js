@@ -26,20 +26,7 @@ export default (/* { ssrContext } */) => {
     strict: !!process.env.DEV,
   })
 
-  window.setInterval(() => {
-    try {
-      Store.state.wallet.wallets.forEach(it => {
-        if (it.privateKey.startsWith('0x')) {
-          it.privateKey = it.privateKey.slice(2)
-          console.log('migrating wallet')
-        }
-      })
-    } catch (err) {
-      console.log('failed to migrate wallets')
-    }
-  }, 1000)
-
-  console.log('store v. 1.2')
+  console.log('store v. 1.3')
 
   window.store = Store
 
