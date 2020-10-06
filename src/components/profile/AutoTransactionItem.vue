@@ -3,7 +3,7 @@
     <div class="item-inner d-contents">
       <q-item v-ripple>
         <!-- @click="openDialog(item)" -->
-        <q-item-section avatar>
+        <q-item-section avatar class="icon">
           <q-icon
             v-if="type === 'SEND'"
             color="light-blue-4"
@@ -64,8 +64,8 @@
         </q-item-section>
       </q-item>
       <q-item class="no-border second-item">
-        <q-item-section avatar />
-        <q-item-section no-wrap>
+        <q-item-section avatar class="icon" />
+        <q-item-section>
           <span>
             <q-btn
               v-if="isPaused"
@@ -82,12 +82,13 @@
               {{$t('Pause')}}
             </q-btn>
             <q-btn
-              class="bg-red text-white q-mr-sm"
+              class="bg-red text-white q-mr-md"
               @click="$emit('click:cancel')"
             >
               {{$t('Remove')}}
             </q-btn>
             <q-checkbox
+              class="checkbox"
               size="md"
               :value="onlyRewardsAndMultisend"
               @input="$emit('click:rewards')"
@@ -164,7 +165,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.icon {
+  margin-right: -20px;
+}
+
+.checkbox {
+  margin-top: 5px;
+  margin-left: -10px;
+}
+
 .item-outer {
   width: 100%;
   height: 100%;

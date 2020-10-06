@@ -289,7 +289,7 @@ export const actions = {
       payload: description || '',
     }
 
-    const privateKey = state.privateKey.startsWith('0x') ? context.state.privateKey.slice(2) : context.state.privateKey
+    const privateKey = state.privateKey.startsWith('0x') ? state.privateKey.slice(2) : state.privateKey
 
     const nonce = await state.minterGate.getNonce(state.address);
     const txArr = [...new Array(transactionAmount)].map((_, it) =>

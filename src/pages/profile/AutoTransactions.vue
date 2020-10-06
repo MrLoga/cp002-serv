@@ -133,7 +133,7 @@ export default {
   methods: {
     async pause(item) {
       if (item.paused === true) {
-        this.restockTransactions([item])
+        // this.restockTransactions([item])
       }
 
       await axios
